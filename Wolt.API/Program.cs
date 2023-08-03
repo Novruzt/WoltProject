@@ -1,6 +1,11 @@
 
 using Microsoft.EntityFrameworkCore;
+using Wolt.Entities.Entities.RestaurantEntities;
 using WOLT.DAL.DATA;
+using WOLT.DAL.Repository;
+using WOLT.DAL.UnitOfWork.Abstract;
+using WOLT.DAL.UnitOfWork.Concrete;
+using Wolt.BLL.Services;
 
 namespace Wolt.API
 {
@@ -15,6 +20,10 @@ namespace Wolt.API
            
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.ConfigureRepository();
+            builder.Services.ConfigureServices();
+         // builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddDbContext<DataContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
