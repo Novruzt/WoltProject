@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,8 +15,13 @@ namespace Wolt.Entities.Entities.UserEntities
         public string Name { get; set; }
         public string Surname { get; set; }
         public string ProfilePicture { get; set; }
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         public string Password { get; set; }
+        public string? VerificationToken  { get; set; }
+        public DateTime? VerifiedAt { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? ResetExpirationDate { get; set; }
         public string Phone { get; set; }   
         public ICollection<FavoriteFood> FavoriteFoods { get; set; }
         public ICollection<FavoriteRestaurant> FavoriteRestaurants { get; set; }

@@ -27,6 +27,10 @@ namespace WOLT.DAL.DATA.FluentAPIs.WoltAPIs
              .HasForeignKey(o => o.UserId)
              .OnDelete(DeleteBehavior.NoAction);
 
+            entity
+                .Property(e => e.TotalPrice).HasColumnType("decimal(12,2)");
+                
+
 
         }
     }

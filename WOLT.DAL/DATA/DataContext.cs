@@ -13,6 +13,8 @@ using Wolt.Entities.Entities.BaseEntities;
 using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
+using WOLT.DAL.DATA.FluentAPIs.ResturantAPIs;
+using WOLT.DAL.DATA.FluentAPIs.UserAPIs;
 using WOLT.DAL.DATA.FluentAPIs.WoltAPIs;
 using WOLT.DAL.DATA.ForBaseEntity;
 
@@ -32,8 +34,50 @@ namespace WOLT.DAL.DATA
 
             modelBuilder.IgnoreDeleted();
 
+            
+            DiscountAPI.Fluent(modelBuilder);
+            ProductAPI.Fluent(modelBuilder);
+            UserReviewAPI.Fluent(modelBuilder);
+            BasketAPI.Fluent(modelBuilder);
             OrderAPI.Fluent(modelBuilder);
 
+
+
+        }
+
+        public  override int SaveChanges()
+        {
+            
+
+            foreach(var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                if(entry.State==EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.DeleteTime = DateTime.Now;
+                }
+
+                else
+                {
+                    _ = entry.State switch
+                    {
+                        EntityState.Added => entry.Entity.CreationTime = DateTime.Now,
+                        EntityState.Modified => entry.Entity.UpdateTime = DateTime.Now,
+                        _ => DateTime.Now
+                    };
+                }
+            }
+
+
+            foreach(var entry in ChangeTracker.Entries<Order>())
+            {
+                if (entry.State == EntityState.Added)
+                    entry.Entity.OrderStatus = 0;
+            }
+
+           
+
+            return base.SaveChanges();
         }
 
         public DbSet<Branch> Branches { get; set; }
