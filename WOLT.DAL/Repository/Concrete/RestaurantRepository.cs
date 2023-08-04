@@ -15,6 +15,11 @@ namespace WOLT.DAL.Repository.Concrete
     {
         private readonly DataContext _ctx;
 
+        public RestaurantRepository(DataContext context)
+        {
+            _ctx = context;
+        }
+
         public async Task<List<Restaurant>> GetAllAsync()
         {
            List<Restaurant> datas  = await _ctx.Restaurants.ToListAsync();
@@ -22,14 +27,7 @@ namespace WOLT.DAL.Repository.Concrete
             return datas;
         }
 
-        public async Task<List<Branch>> GetAllBranchesAsync(int id)
-        {
-            List<Branch> datas = await _ctx.Branches
-                .Where(c=>c.RestaurantId== id)
-                .ToListAsync();
-
-            return datas;
-        }
+        
 
         public async Task<List<Category>> GetAllCategoriesAsync(int id)
         {
@@ -54,6 +52,7 @@ namespace WOLT.DAL.Repository.Concrete
         {
             List<UserComment> datas = await _ctx.UserComments
                 .Where(c => c.RestaurantId == id)
+                .Include(c=>c.User)
                 .ToListAsync();
 
             return datas;
@@ -61,21 +60,19 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<Restaurant> GetAsync(int id)
         {
-            Restaurant data = await _ctx.Restaurants.FirstOrDefaultAsync(c=>c.Id==id);
+            Restaurant data = await _ctx.Restaurants
+                .Include(r=>r.Discounts)
+                .FirstOrDefaultAsync(c=>c.Id==id);
 
             return data;
         }
 
-        public async Task<Branch> GetBranchAsync(int id)
-        {
-            Branch data = await _ctx.Branches.FirstOrDefaultAsync(b=>b.Id==id);
-
-            return data;
-        }
-
+      
         public async Task<Category> GetCategoryAsync(int id)
         {
-           Category data  =  await _ctx.Categories.FirstOrDefaultAsync(d=>d.Id==id);
+           Category data  =  await _ctx.Categories
+                .Include(c=>c.Products)
+                .FirstOrDefaultAsync(d=>d.Id==id);
 
             return data;
         }
@@ -91,6 +88,7 @@ namespace WOLT.DAL.Repository.Concrete
         {
             List<UserReview> datas = await _ctx.UserReviews
                 .Where(c => c.ProductId == id)
+                .Include(c=>c.User)
                 .ToListAsync();
 
             return datas;

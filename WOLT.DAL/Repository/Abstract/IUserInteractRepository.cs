@@ -17,7 +17,7 @@ namespace WOLT.DAL.Repository.Abstract
         Task<UserComment> GetCommentAsync(int id, int commId); 
         Task UpdateCommentAsync(int id, int commId, string desc); 
         Task DeleteComment(int id, int CommId); 
-        Task  ReturnOrderAsync(int id, int OrderId);  
+        Task  ReturnOrderAsync(int id, int OrderId, string reason);  
         Task<List<UserReview>> GetAllUserReviewsAsync(int id); 
         Task<UserReview> GetUserReviewAsync(int id, int revId); 
         Task UpdateUserReviewAsync(int id, int RevId, int? score, string desc);

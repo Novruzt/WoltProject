@@ -9,6 +9,7 @@ using Wolt.BLL.AutoMappers;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Services.Concrete;
 using AutoMapper;
+using WOLT.DAL.Repository.Concrete;
 
 namespace Wolt.BLL.Services
 {
@@ -20,11 +21,13 @@ namespace Wolt.BLL.Services
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 
-            services.Scan(scan => scan
-                .FromAssemblyOf<UserProfileService>() 
-                .AddClasses(classes => classes.AssignableTo(typeof(IUserProfileService))) 
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()); 
+            services.Scan(scan =>
+            {
+                scan.FromAssembliesOf(typeof(UserProfileService))
+                .AddClasses()
+                .AsMatchingInterface()
+                .WithScopedLifetime();
+            });
         }
     }
 }

@@ -12,7 +12,7 @@ using WOLT.DAL.DATA;
 namespace WOLT.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230729154009_Initalizer")]
+    [Migration("20230804132533_Initalizer")]
     partial class Initalizer
     {
         /// <inheritdoc />
@@ -124,8 +124,8 @@ namespace WOLT.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<double>("Percantage")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Percantage")
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
@@ -184,8 +184,8 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("datetime2");
@@ -381,6 +381,9 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -389,11 +392,20 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("ResetExpirationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("VerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -557,43 +569,6 @@ namespace WOLT.DAL.Migrations
                     b.ToTable("UserPayments");
                 });
 
-            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserReturn", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DeleteTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ReturnTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserReturns");
-                });
-
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserReview", b =>
                 {
                     b.Property<int>("Id")
@@ -621,8 +596,8 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Score")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(5,0)");
 
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("datetime2");
@@ -656,8 +631,11 @@ namespace WOLT.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<double>("TotalAmount")
-                        .HasColumnType("float");
+                    b.Property<int>("PromoCodeId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("datetime2");
@@ -666,6 +644,8 @@ namespace WOLT.DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PromoCodeId");
 
                     b.HasIndex("UserId");
 
@@ -777,8 +757,8 @@ namespace WOLT.DAL.Migrations
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
-                    b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<DateTime>("UpdateTime")
                         .HasColumnType("datetime2");
@@ -796,9 +776,6 @@ namespace WOLT.DAL.Migrations
                     b.Property<int>("UserPaymentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserReturnId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("UserAddressId")
@@ -809,8 +786,6 @@ namespace WOLT.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex("UserPaymentId");
-
-                    b.HasIndex("UserReturnId");
 
                     b.ToTable("Orders");
                 });
@@ -1011,17 +986,6 @@ namespace WOLT.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserReturn", b =>
-                {
-                    b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
-                        .WithMany("UserReturns")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserReview", b =>
                 {
                     b.HasOne("Wolt.Entities.Entities.RestaurantEntities.Product", "Product")
@@ -1043,11 +1007,19 @@ namespace WOLT.DAL.Migrations
 
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.Basket", b =>
                 {
+                    b.HasOne("Wolt.Entities.Entities.WoltEntities.PromoCode", "PromoCode")
+                        .WithMany()
+                        .HasForeignKey("PromoCodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
                         .WithMany("Basket")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PromoCode");
 
                     b.Navigation("User");
                 });
@@ -1094,10 +1066,6 @@ namespace WOLT.DAL.Migrations
                         .HasForeignKey("UserPaymentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Wolt.Entities.Entities.UserEntities.UserReturn", null)
-                        .WithMany("Order")
-                        .HasForeignKey("UserReturnId");
 
                     b.Navigation("User");
 
@@ -1166,19 +1134,12 @@ namespace WOLT.DAL.Migrations
 
                     b.Navigation("UserPayment");
 
-                    b.Navigation("UserReturns");
-
                     b.Navigation("UserReviews");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserHistory", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserReturn", b =>
-                {
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.Basket", b =>

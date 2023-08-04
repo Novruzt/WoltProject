@@ -11,6 +11,6 @@ namespace Wolt.Entities.Enums
         Waiting= 0,
         Accepted= 1,
         Failed= 2,
-        Returned=3 
+        Returned=3
     }
 }
