@@ -14,12 +14,14 @@ namespace WOLT.DAL.Repository
 
         public static void ConfigureRepository(this IServiceCollection services)
         {
-            
-            services.Scan(scan => scan
-                .FromAssemblyOf<UserProfileRepository>() 
-                .AddClasses(classes => classes.AssignableTo(typeof(IUserProfileRepository))) 
-                .AsImplementedInterfaces() 
-                .WithScopedLifetime()); 
+
+            services.Scan(scan =>
+            {
+                scan.FromAssembliesOf(typeof(UserProfileRepository))
+                .AddClasses()
+                .AsMatchingInterface()
+                .WithScopedLifetime();
+            });
         }
 
     }

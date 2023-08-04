@@ -80,21 +80,24 @@ namespace WOLT.DAL.Repository.Concrete
             return review;
         }
 
-        public async Task ReturnOrderAsync(int id, int OrderId)
+        public async Task ReturnOrderAsync(int id, int OrderId, string reason)
         {
-            Order order = await _ctx.Orders.Where(o => o.UserId == id).FirstOrDefaultAsync(o=>o.Id==OrderId);
+            Order order = await _ctx.Orders
+                .IgnoreQueryFilters()
+                .Where(o => o.UserId == id && !o.IsDeleted).FirstOrDefaultAsync(o=>o.Id==OrderId);
 
             order.OrderStatus = OrderStatus.Returned;
 
-            UserHistory history = new UserHistory()
-            {
-                UserId = order.UserId,
-               
-            };
+            UserHistory history = await _ctx.UserHistories.FirstOrDefaultAsync(h => h.UserId == id);
 
             history.Orders.Add(order);
 
+            User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            _ctx.Users.Update(user);
             _ctx.Orders.Update(order);
+            _ctx.UserHistories.Update(history);
+            
      
         }
 

@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wolt.Entities.Entities.BaseEntities;
 
-namespace Wolt.Entities.Entities.RestaurantEntities
+namespace Wolt.BLL.DTOs.RestaurantDTOs
 {
-    public class WorkHours:BaseEntity
+    public record WorkHoursDTO
     {
-        public int RestaurantId { get; set; }
-        public Restaurant Restaurant { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string DayofWeek { get; set; }

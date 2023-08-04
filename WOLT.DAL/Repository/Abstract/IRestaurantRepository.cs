@@ -13,8 +13,6 @@ namespace WOLT.DAL.Repository.Abstract
     {
         Task<List<Restaurant>> GetAllAsync();
         Task<Restaurant> GetAsync(int id);
-        Task<List<Branch>> GetAllBranchesAsync(int id);
-        Task<Branch> GetBranchAsync(int id);
         Task<List<Category>> GetAllCategoriesAsync(int id);
         Task<Category> GetCategoryAsync(int id);
         Task<List<Product>> GetAllProductsAsync(int id);

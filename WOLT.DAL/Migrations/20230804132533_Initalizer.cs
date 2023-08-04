@@ -42,6 +42,10 @@ namespace WOLT.DAL.Migrations
                     ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VerificationToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResetExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -51,30 +55,6 @@ namespace WOLT.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Baskets",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalAmount = table.Column<double>(type: "float", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Baskets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Baskets_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -173,31 +153,6 @@ namespace WOLT.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserReturns",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReturnTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserReturns", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserReturns_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UsersAddress",
                 columns: table => new
                 {
@@ -258,12 +213,11 @@ namespace WOLT.DAL.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     OrderStatus = table.Column<int>(type: "int", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalPrice = table.Column<double>(type: "float", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
                     UserAddressId = table.Column<int>(type: "int", nullable: false),
                     UserPaymentId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserHistoryId = table.Column<int>(type: "int", nullable: true),
-                    UserReturnId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -283,11 +237,6 @@ namespace WOLT.DAL.Migrations
                         principalTable: "UserPayments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_UserReturns_UserReturnId",
-                        column: x => x.UserReturnId,
-                        principalTable: "UserReturns",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_UsersAddress_UserAddressId",
                         column: x => x.UserAddressId,
@@ -359,7 +308,7 @@ namespace WOLT.DAL.Migrations
                     RestaurantId = table.Column<int>(type: "int", nullable: false),
                     DiscountName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Percantage = table.Column<double>(type: "float", nullable: false),
+                    Percantage = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -501,6 +450,37 @@ namespace WOLT.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Baskets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
+                    PromoCodeId = table.Column<int>(type: "int", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Baskets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Baskets_PromoCodes_PromoCodeId",
+                        column: x => x.PromoCodeId,
+                        principalTable: "PromoCodes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Baskets_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -508,7 +488,7 @@ namespace WOLT.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
                     Picture = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     BasketId = table.Column<int>(type: "int", nullable: true),
@@ -552,7 +532,7 @@ namespace WOLT.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    Score = table.Column<double>(type: "float", nullable: false),
+                    Score = table.Column<decimal>(type: "decimal(5,0)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
@@ -577,6 +557,11 @@ namespace WOLT.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Baskets_PromoCodeId",
+                table: "Baskets",
+                column: "PromoCodeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Baskets_UserId",
@@ -640,11 +625,6 @@ namespace WOLT.DAL.Migrations
                 column: "UserPaymentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_UserReturnId",
-                table: "Orders",
-                column: "UserReturnId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Products_BasketId",
                 table: "Products",
                 column: "BasketId");
@@ -700,11 +680,6 @@ namespace WOLT.DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserReturns_UserId",
-                table: "UserReturns",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserReviews_ProductId",
                 table: "UserReviews",
                 column: "ProductId");
@@ -735,9 +710,6 @@ namespace WOLT.DAL.Migrations
                 name: "Discounts");
 
             migrationBuilder.DropTable(
-                name: "PromoCodes");
-
-            migrationBuilder.DropTable(
                 name: "UserComments");
 
             migrationBuilder.DropTable(
@@ -765,10 +737,16 @@ namespace WOLT.DAL.Migrations
                 name: "FavoriteFoods");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "PromoCodes");
 
             migrationBuilder.DropTable(
                 name: "Restaurants");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "FavoriteRestaurants");
 
             migrationBuilder.DropTable(
                 name: "UserHistories");
@@ -777,13 +755,7 @@ namespace WOLT.DAL.Migrations
                 name: "UserPayments");
 
             migrationBuilder.DropTable(
-                name: "UserReturns");
-
-            migrationBuilder.DropTable(
                 name: "UsersAddress");
-
-            migrationBuilder.DropTable(
-                name: "FavoriteRestaurants");
 
             migrationBuilder.DropTable(
                 name: "Users");

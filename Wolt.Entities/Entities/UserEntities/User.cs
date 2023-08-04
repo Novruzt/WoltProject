@@ -14,7 +14,7 @@ namespace Wolt.Entities.Entities.UserEntities
         //User properties:
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string ProfilePicture { get; set; }
+        public string? ProfilePicture { get; set; }
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         public string Password { get; set; }
@@ -32,34 +32,9 @@ namespace Wolt.Entities.Entities.UserEntities
         public ICollection<UserAddress> UserAddresses { get; set; }
         public ICollection<UserReview > UserReviews { get; set; } 
         public ICollection<UserComment> UserComments { get; set; }
-        public ICollection<UserReturn> UserReturns { get; set; }
-
         //All user add payment type onDelivery (ALl paramters null when User auto create)
 
 
-        // reliationship:
-
-        /* 
-         
-        UserFavorites (one to many)
-        
-        PromeCode (one to many)
-
-        UserPayment (one to many)
-
-        Orders (one to many)
-
-        User Adress (one to many)
-
-        User reviews (one to many)
-
-        user comment(one to many)
-
-        ReturnRequests (one to many)
-
-        Comments (one to many)
-
-        */
 
 
     }

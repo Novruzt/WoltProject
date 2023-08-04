@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="DTOs\UserInteractDTOs\" />
-    <Folder Include="DTOs\RestaurantDTOs\" />
     <Folder Include="DTOs\UserProfileDTOs\" />
     <Folder Include="DTOs\UserAuthDTOs\" />
   </ItemGroup>
@@ -28,6 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Scrutor" Version="4.2.2" />
   </ItemGroup>
 

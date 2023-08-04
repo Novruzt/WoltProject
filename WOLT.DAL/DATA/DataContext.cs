@@ -13,6 +13,7 @@ using Wolt.Entities.Entities.BaseEntities;
 using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
+using WOLT.DAL.DATA.DataSeeds;
 using WOLT.DAL.DATA.FluentAPIs.ResturantAPIs;
 using WOLT.DAL.DATA.FluentAPIs.UserAPIs;
 using WOLT.DAL.DATA.FluentAPIs.WoltAPIs;
@@ -33,6 +34,7 @@ namespace WOLT.DAL.DATA
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.IgnoreDeleted();
+            modelBuilder.ActiveOrders(); //Global Query Filter for only Active/Waiting Orders
 
             
             DiscountAPI.Fluent(modelBuilder);
@@ -40,6 +42,13 @@ namespace WOLT.DAL.DATA
             UserReviewAPI.Fluent(modelBuilder);
             BasketAPI.Fluent(modelBuilder);
             OrderAPI.Fluent(modelBuilder);
+
+
+            RestaurantData.Seed(modelBuilder);
+            UserCommentData.Seed(modelBuilder);
+            UserData.Seed(modelBuilder);
+            
+            
 
 
 
@@ -55,6 +64,7 @@ namespace WOLT.DAL.DATA
                 {
                     entry.State = EntityState.Modified;
                     entry.Entity.DeleteTime = DateTime.Now;
+                    entry.Entity.IsDeleted = true;
                 }
 
                 else
@@ -75,12 +85,10 @@ namespace WOLT.DAL.DATA
                     entry.Entity.OrderStatus = 0;
             }
 
-           
-
             return base.SaveChanges();
         }
 
-        public DbSet<Branch> Branches { get; set; }
+       
         public DbSet<Category> Categories { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -93,7 +101,6 @@ namespace WOLT.DAL.DATA
         public DbSet<UserComment> UserComments { get; set; }
         public DbSet<UserHistory> UserHistories { get; set; }
         public DbSet<UserPayment> UserPayments { get; set; }
-        public DbSet<UserReturn> UserReturns { get; set; }
         public DbSet<UserReview> UserReviews { get; set; }
         public DbSet<Basket>  Baskets { get; set; }
         public DbSet<Courier> Couriers { get; set; }
