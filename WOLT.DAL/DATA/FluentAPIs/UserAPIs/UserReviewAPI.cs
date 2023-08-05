@@ -15,7 +15,7 @@ namespace WOLT.DAL.DATA.FluentAPIs.UserAPIs
         {
             var entity = modelBuilder.Entity<UserReview>();
 
-            entity.Property(e => e.Score).HasColumnType("decimal(5,0)");
+            entity.Property(e => e.Score).HasColumnType("decimal(2,0)");
         }
     }
 }

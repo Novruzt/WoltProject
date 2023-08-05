@@ -20,5 +20,6 @@ namespace WOLT.DAL.Repository.Abstract
         Task<List<UserComment>> GetAllCommentsAsync(int id);
         Task<List<UserReview>> GetUserReviewsAsync(int id);
         
+        
     }
 }

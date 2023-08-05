@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,10 @@ namespace WOLT.DAL.Repository.Concrete
     public class UserAuthRepository : IUserAuthRepository
     {
         private readonly DataContext _ctx;
+        public UserAuthRepository(DataContext context)
+        {
+            _ctx = context;
+        }
         public async Task DeleteUserAsync(int id)
         {
             User user  = await _ctx.Users.FirstOrDefaultAsync(c => c.Id == id);

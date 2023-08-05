@@ -43,10 +43,13 @@ namespace WOLT.DAL.DATA
             BasketAPI.Fluent(modelBuilder);
             OrderAPI.Fluent(modelBuilder);
 
-
+            UserData.Seed(modelBuilder);
             RestaurantData.Seed(modelBuilder);
             UserCommentData.Seed(modelBuilder);
-            UserData.Seed(modelBuilder);
+            CategoryData.Seed(modelBuilder);
+            ProductData.Seed(modelBuilder);
+            UserReviewData.Seed(modelBuilder);
+            
             
             
 

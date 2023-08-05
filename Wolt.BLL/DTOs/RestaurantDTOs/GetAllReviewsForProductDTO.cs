@@ -8,13 +8,13 @@ using Wolt.Entities.Entities.UserEntities;
 
 namespace Wolt.BLL.DTOs.RestaurantDTOs
 {
-    public record GetRestaurantDTO
+    public record  GetAllReviewsForProductDTO
     {
-        public string Name { get; set; }
-        public string BaseAddress { get; set; }
-        public string Phone { get; set; }
+        public string UserName { get; set; }
+        public double Score { get; set; }
         public string Description { get; set; }
-        public ICollection<GetAllDiscountsDTO> Discounts { get; set; }
-        public int Comments { get; set; }
+        public DateTime ReviewDate { get; set; }
+
     }
+
 }
