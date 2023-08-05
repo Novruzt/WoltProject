@@ -15,15 +15,18 @@ namespace WOLT.DAL.UnitOfWork.Concrete
         public IUserAuthRepository UserAuthRepository { get; set; }
         public IUserInteractRepository UserInteractRepository { get; set; }
         public IUserProfileRepository UserProfileRepository { get; set; }
+        public IThingsRepository ThingsRepository { get; set; }
+
         private readonly DataContext _context;
         public UnitOfWork(IUserProfileRepository profile, IUserInteractRepository interact, IUserAuthRepository auth, 
-            IRestaurantRepository restaurant, DataContext context)
+            IRestaurantRepository restaurant,IThingsRepository things, DataContext context)
         {
 
             UserProfileRepository = profile;
             UserInteractRepository = interact;
             UserAuthRepository = auth;
             RestaurantRepository = restaurant;
+            ThingsRepository = things;
 
             _context= context;
 

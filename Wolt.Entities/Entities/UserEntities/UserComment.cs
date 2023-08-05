@@ -15,7 +15,6 @@ namespace Wolt.Entities.Entities.UserEntities
         public User User { get; set; }
         [MaxLength(100)]
         public string? Details { get; set; }
-        public DateTime CommentDate { get; set; }
         public int RestaurantId { get; set; }
         public Restaurant Restaurant { get; set; }
         // Restaurant and Id

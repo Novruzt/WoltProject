@@ -15,6 +15,11 @@ namespace WOLT.DAL.Repository.Concrete
     {
         private readonly DataContext _ctx;
 
+        public UserProfileRepository(DataContext context)
+        {
+            _ctx = context;
+        }
+
         public async Task AddUserPayment(UserPayment payment)
         {
             await _ctx.UserPayments.AddAsync(payment);

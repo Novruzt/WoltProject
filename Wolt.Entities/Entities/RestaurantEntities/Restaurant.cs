@@ -16,9 +16,9 @@ namespace Wolt.Entities.Entities.RestaurantEntities
         public string Phone { get; set; }
         [MaxLength(100)]
         public string Description { get; set; }
-        public ICollection<Discount> Discounts { get; set; }
-        public ICollection<Category> Categories { get; set; }
-        public ICollection<UserComment> UserComments { get; set; }
+        public ICollection<Discount>? Discounts { get; set; }
+        public ICollection<Category>? Categories { get; set; }
+        public ICollection<UserComment>? UserComments { get; set; }
 
         // catogoreis (many to many)
         // product(food) 

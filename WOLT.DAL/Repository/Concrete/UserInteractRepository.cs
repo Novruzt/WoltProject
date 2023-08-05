@@ -16,6 +16,10 @@ namespace WOLT.DAL.Repository.Concrete
     public class UserInteractRepository : IUserInteractRepository
     {
         private readonly DataContext _ctx;
+        public UserInteractRepository(DataContext context)
+        {
+            _ctx = context;
+        }
         public async Task AddCommentAsync(UserComment comment)
         {
 
@@ -53,7 +57,11 @@ namespace WOLT.DAL.Repository.Concrete
 
         public  async Task<List<UserComment>> GetAllCommentsAsync(int id)
         {
-            List<UserComment> comments =  await _ctx.UserComments.Where(c=>c.UserId==id).ToListAsync();
+            List<UserComment> comments =  await _ctx.UserComments
+                .Where(c=>c.UserId==id)
+                .Include(c=>c.User)
+                .Include(c=>c.Restaurant)
+                .ToListAsync();
 
             return comments;
 
@@ -68,7 +76,11 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<UserComment> GetCommentAsync(int id, int commId)
         {
-            UserComment comment = await _ctx.UserComments.Where(c=>c.UserId==id).FirstOrDefaultAsync(c=>c.Id==commId);
+            UserComment comment = await _ctx.UserComments
+                .Where(c=>c.UserId==id)
+                .Include(c=>c.User)
+                .Include(c=>c.Restaurant)
+                .FirstOrDefaultAsync(c=>c.Id==commId);
 
             return comment;
         }

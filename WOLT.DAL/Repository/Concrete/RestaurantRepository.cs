@@ -33,6 +33,7 @@ namespace WOLT.DAL.Repository.Concrete
         {
             List<Category> datas = await _ctx.Categories
                 .Where(c=>c.RestaurantId==id)
+                .Include(c=>c.Products)
                 .ToListAsync();
 
             return datas;
@@ -62,6 +63,7 @@ namespace WOLT.DAL.Repository.Concrete
         {
             Restaurant data = await _ctx.Restaurants
                 .Include(r=>r.Discounts)
+                .Include(r=>r.UserComments)
                 .FirstOrDefaultAsync(c=>c.Id==id);
 
             return data;
@@ -79,7 +81,8 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<Product> GetProductAsync(int id)
         {
-           Product data = await _ctx.Products.FirstOrDefaultAsync(c=>c.Id == id);
+           Product data = await _ctx.Products
+                .FirstOrDefaultAsync(c=>c.Id == id);
 
             return data;
         }
@@ -93,5 +96,7 @@ namespace WOLT.DAL.Repository.Concrete
 
             return datas;
         }
+
+     
     }
 }

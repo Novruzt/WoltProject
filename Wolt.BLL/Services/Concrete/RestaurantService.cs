@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wolt.BLL.DTOs.Others;
 using Wolt.BLL.DTOs.RestaurantDTOs;
 using Wolt.BLL.Services.Abstract;
 using Wolt.Entities.Entities.RestaurantEntities;
@@ -32,43 +33,108 @@ namespace Wolt.BLL.Services.Concrete
             return DTOs;
         }
 
-        public Task<List<Category>> GetAllCategoriesAsync(int id)
+        public async Task<List<GetAllCategoriesDTO>> GetAllCategoriesAsync(int id)
         {
-            throw new NotImplementedException();
+            List<Category> datas =  await _unitOfWork.RestaurantRepository.GetAllCategoriesAsync(id);
+            List<GetAllCategoriesDTO> DTOs = _mapper.Map<List<GetAllCategoriesDTO>>(datas);
+
+            int num = 0;
+
+
+            if(datas.Count > 0 && datas!=null) 
+               for(int  i = 0; i<datas.Count; i++)
+               {
+                  for(int j=0; j < datas[i].Products.Count; j++)
+                  {
+                    num++;
+                  }
+
+                  DTOs[i].Foods=num;
+                  num = 0;
+               }
+                    
+
+            return DTOs;    
+
         }
 
-        public Task<List<UserComment>> GetAllCommentsAsync(int id)
+        public async Task<List<GetAllUserCommentsForRestaurantDTO>> GetAllCommentsAsync(int id)
         {
-            throw new NotImplementedException();
+           List<UserComment> datas = await _unitOfWork.RestaurantRepository.GetAllCommentsAsync(id);
+
+            List<GetAllUserCommentsForRestaurantDTO> DTOs = _mapper.Map<List<GetAllUserCommentsForRestaurantDTO>>(datas);
+
+            return DTOs;
+
         }
 
-        public Task<List<Product>> GetAllProductsAsync(int id)
+        public async Task<List<GetAllProductsDTO>> GetAllProductsAsync(int id)
         {
-            throw new NotImplementedException();
+            List<Product> datas = await _unitOfWork.RestaurantRepository.GetAllProductsAsync(id);
+            List<GetAllProductsDTO> DTOs= _mapper.Map<List<GetAllProductsDTO>>(datas);
+
+            return DTOs;
         }
 
         public async Task<GetRestaurantDTO> GetAsync(int id)
         {
             Restaurant data  = await _unitOfWork.RestaurantRepository.GetAsync(id);
+
+            int num = 0;
+            
+            if(data != null)
+                foreach (UserComment item in data.UserComments)
+                    num++;
+                
+
+
             GetRestaurantDTO dto = _mapper.Map<GetRestaurantDTO>(data);
+
+            if(dto!= null)
+            dto.Comments = num;
 
             return dto;
 
         }
 
-        public Task<Category> GetCategoryAsync(int id)
+        public async Task<GetProductDTO> GetProductAsync(int id)
         {
-            throw new NotImplementedException();
-        }
+            Product data = await _unitOfWork.RestaurantRepository.GetProductAsync(id);
+            List<UserReview> reviews = await _unitOfWork.RestaurantRepository.GetUserReviewsAsync(id);
 
-        public Task<Product> GetProductAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+            double sum = 0;
+            int num = 0;
 
-        public Task<List<UserReview>> GetUserReviewsAsync(int id)
+            if (data != null && reviews.Count!=0)
+                foreach(UserReview item in reviews)
+                {
+                    sum+=item.Score;
+                    num++;
+                }
+
+            double avg = 0;
+
+            if (num > 0)
+                avg+=sum/num;
+            
+                    
+                
+                
+
+            GetProductDTO DTO = _mapper.Map<GetProductDTO>(data);
+
+            DTO.AverageScore = avg;
+
+            return DTO;
+
+        }
+        public async Task<List<GetAllReviewsForProductDTO>> GetUserReviewsAsync(int id)
         {
-            throw new NotImplementedException();
+            List<UserReview> datas = await _unitOfWork.RestaurantRepository.GetUserReviewsAsync(id);
+            List<GetAllReviewsForProductDTO> DTOs = _mapper.Map<List<GetAllReviewsForProductDTO>>(datas);
+
+            return DTOs;
+
         }
     }
 }

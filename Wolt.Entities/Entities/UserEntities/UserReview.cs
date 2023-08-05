@@ -13,8 +13,7 @@ namespace Wolt.Entities.Entities.UserEntities
         public int UserId { get; set; }
         public User User { get; set; }
         public double Score { get; set; }
-        public string Description { get; set; }
-        public DateTime ReviewDate { get; set; }
+        public string? Description { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }
 

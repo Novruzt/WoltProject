@@ -7,9 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\UserInteractDTOs\" />
     <Folder Include="DTOs\UserProfileDTOs\" />
-    <Folder Include="DTOs\UserAuthDTOs\" />
   </ItemGroup>
 
   <ItemGroup>
