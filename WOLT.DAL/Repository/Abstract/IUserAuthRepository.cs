@@ -10,8 +10,11 @@ namespace WOLT.DAL.Repository.Abstract
     public interface  IUserAuthRepository
     {
         Task<User> GetAsync(int id); 
+        Task<User> GetByEmailAsync(string email);
         Task RegisterUserAsync(User user); 
         Task DeleteUserAsync(int id); 
         Task ResetPasswordAsync(int id, string newPassword);
+        Task AddOldPasswordAsync(UserOldPassword oldPassword);
+
     }
 }

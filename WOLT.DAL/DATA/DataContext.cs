@@ -59,11 +59,9 @@ namespace WOLT.DAL.DATA
 
         public  override int SaveChanges()
         {
-            
-
-            foreach(var entry in ChangeTracker.Entries<BaseEntity>())
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
             {
-                if(entry.State==EntityState.Deleted)
+                if (entry.State == EntityState.Deleted)
                 {
                     entry.State = EntityState.Modified;
                     entry.Entity.DeleteTime = DateTime.Now;
@@ -82,7 +80,7 @@ namespace WOLT.DAL.DATA
             }
 
 
-            foreach(var entry in ChangeTracker.Entries<Order>())
+            foreach (var entry in ChangeTracker.Entries<Order>())
             {
                 if (entry.State == EntityState.Added)
                     entry.Entity.OrderStatus = 0;
@@ -110,6 +108,7 @@ namespace WOLT.DAL.DATA
         public DbSet<Delivery > Deliveries { get; set;}
         public DbSet<Order> Orders { get; set; }
         public DbSet<PromoCode> PromoCodes { get; set; }
+        public DbSet<UserOldPassword> UserOldPasswords { get; set; }
 
     }
 }

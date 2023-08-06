@@ -12,7 +12,7 @@ namespace Wolt.Entities.Entities.RestaurantEntities
         public int RestaurantId { get; set; }
         public Restaurant Restaurant { get; set; }
         public string DiscountName { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public double Percantage { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }

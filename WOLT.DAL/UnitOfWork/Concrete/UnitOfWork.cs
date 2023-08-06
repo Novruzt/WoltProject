@@ -32,9 +32,9 @@ namespace WOLT.DAL.UnitOfWork.Concrete
 
         }
 
-        public async Task CommitAsync()
+        public  void Commit()
         {
-            await _context.SaveChangesAsync();  
+            _context.SaveChanges(); 
         }
     }
 }

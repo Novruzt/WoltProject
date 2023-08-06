@@ -15,6 +15,11 @@ namespace Wolt.BLL.AutoMappers
         {
 
             CreateMap<User, GetUserProfileDTO>();
+
+            CreateMap<RegisterUserRequestDTO, User>();
+            CreateMap<LoginUserRequestDTO, User>();
+           
+
         }
     }
 }

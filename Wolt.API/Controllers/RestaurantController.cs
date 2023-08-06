@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Wolt.BLL.DTOs.RestaurantDTOs;
 using Wolt.BLL.Services.Abstract;
@@ -10,6 +12,7 @@ namespace Wolt.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;

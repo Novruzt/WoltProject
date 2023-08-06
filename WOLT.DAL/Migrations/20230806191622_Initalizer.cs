@@ -24,8 +24,8 @@ namespace WOLT.DAL.Migrations
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WorkStatus = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -42,16 +42,16 @@ namespace WOLT.DAL.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VerificationToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ResetExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -67,8 +67,8 @@ namespace WOLT.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -90,8 +90,8 @@ namespace WOLT.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -113,8 +113,8 @@ namespace WOLT.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -122,6 +122,30 @@ namespace WOLT.DAL.Migrations
                     table.PrimaryKey("PK_UserHistories", x => x.Id);
                     table.ForeignKey(
                         name: "FK_UserHistories_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserOldPasswords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OldPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserOldPasswords", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserOldPasswords_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -139,8 +163,8 @@ namespace WOLT.DAL.Migrations
                     CCV = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExpireTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -165,8 +189,8 @@ namespace WOLT.DAL.Migrations
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -192,8 +216,8 @@ namespace WOLT.DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FavoriteRestaurantId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -221,8 +245,8 @@ namespace WOLT.DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserHistoryId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -261,8 +285,8 @@ namespace WOLT.DAL.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RestaurantId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -284,13 +308,13 @@ namespace WOLT.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<int>(type: "int", nullable: false),
                     DiscountName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Percantage = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -314,8 +338,8 @@ namespace WOLT.DAL.Migrations
                     Details = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     RestaurantId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -346,8 +370,8 @@ namespace WOLT.DAL.Migrations
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DayofWeek = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -371,8 +395,8 @@ namespace WOLT.DAL.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     DeliveryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -405,8 +429,8 @@ namespace WOLT.DAL.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -433,9 +457,9 @@ namespace WOLT.DAL.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
-                    PromoCodeId = table.Column<int>(type: "int", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PromoCodeId = table.Column<int>(type: "int", nullable: true),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -445,8 +469,7 @@ namespace WOLT.DAL.Migrations
                         name: "FK_Baskets_PromoCodes_PromoCodeId",
                         column: x => x.PromoCodeId,
                         principalTable: "PromoCodes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Baskets_Users_UserId",
                         column: x => x.UserId,
@@ -470,8 +493,8 @@ namespace WOLT.DAL.Migrations
                     FavoriteFoodId = table.Column<int>(type: "int", nullable: true),
                     OrderId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -511,8 +534,8 @@ namespace WOLT.DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -535,34 +558,34 @@ namespace WOLT.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Restaurants",
                 columns: new[] { "Id", "BaseAddress", "CreationTime", "DeleteTime", "Description", "FavoriteRestaurantId", "IsDeleted", "Name", "Phone", "UpdateTime" },
-                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9542), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Sumgayitin 1nomreli parki", null, false, "GoyercinPark", "051 123 00 12", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(276), null, "Sumgayitin 1nomreli parki", null, false, "GoyercinPark", "051 123 00 12", null });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "CreationTime", "DeleteTime", "Email", "IsDeleted", "Name", "Password", "PasswordResetToken", "Phone", "ProfilePicture", "ResetExpirationDate", "Surname", "UpdateTime", "VerificationToken", "VerifiedAt" },
-                values: new object[] { 1, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9298), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "asdad@gmaik.com", false, "Novruz", "salam", null, "12313", null, null, "Tarverdiyev", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9312) });
+                columns: new[] { "Id", "CreationTime", "DeleteTime", "Email", "IsDeleted", "Name", "Password", "PasswordResetToken", "Phone", "ProfilePicture", "ResetExpirationDate", "Surname", "Token", "UpdateTime", "VerifiedAt" },
+                values: new object[] { 1, new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9887), null, "asdad@gmaik.com", false, "Novruz", "salam", null, "12313", null, null, "Tarverdiyev", null, null, new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9904) });
 
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "IsDeleted", "Name", "RestaurantId", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9575), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Ickiler", 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9576), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Suplar", 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(312), null, false, "Ickiler", 1, null },
+                    { 2, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(314), null, false, "Suplar", 1, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "UserComments",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Details", "IsDeleted", "RestaurantId", "UpdateTime", "UserId" },
-                values: new object[] { 1, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9559), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "sadad", false, 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 });
+                values: new object[] { 1, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(295), null, "sadad", false, 1, null, 1 });
 
             migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "BasketId", "CategoryId", "CreationTime", "DeleteTime", "Description", "FavoriteFoodId", "IsDeleted", "Name", "OrderId", "Picture", "Price", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, null, 1, new DateTime(2023, 8, 5, 15, 34, 59, 268, DateTimeKind.Utc).AddTicks(9591), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Adi Su", null, false, "Su", null, null, 0.5m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, null, 2, new DateTime(2023, 8, 5, 15, 34, 59, 268, DateTimeKind.Utc).AddTicks(9592), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Leziz Sup", null, false, "Mercimek", null, null, 5m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, null, 1, new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(328), null, "Adi Su", null, false, "Su", null, null, 0.5m, null },
+                    { 2, null, 2, new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(330), null, "Leziz Sup", null, false, "Mercimek", null, null, 5m, null }
                 });
 
             migrationBuilder.InsertData(
@@ -570,9 +593,9 @@ namespace WOLT.DAL.Migrations
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Description", "IsDeleted", "ProductId", "Score", "UpdateTime", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9612), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Test", false, 1, 9m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 2, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9613), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Test2", false, 1, 1m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 3, new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9614), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Test3", false, 2, 10m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1 }
+                    { 1, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(378), null, "Test", false, 1, 9m, null, 1 },
+                    { 2, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(381), null, "Test2", false, 1, 1m, null, 1 },
+                    { 3, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(382), null, "Test3", false, 2, 10m, null, 1 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -687,6 +710,11 @@ namespace WOLT.DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserOldPasswords_UserId",
+                table: "UserOldPasswords",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserPayments_UserId",
                 table: "UserPayments",
                 column: "UserId");
@@ -723,6 +751,9 @@ namespace WOLT.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserComments");
+
+            migrationBuilder.DropTable(
+                name: "UserOldPasswords");
 
             migrationBuilder.DropTable(
                 name: "UserReviews");

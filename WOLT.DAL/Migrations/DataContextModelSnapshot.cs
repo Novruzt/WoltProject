@@ -33,7 +33,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
@@ -46,7 +46,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -59,22 +59,18 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9575),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(312),
                             IsDeleted = false,
                             Name = "Ickiler",
-                            RestaurantId = 1,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            RestaurantId = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9576),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(314),
                             IsDeleted = false,
                             Name = "Suplar",
-                            RestaurantId = 1,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            RestaurantId = 1
                         });
                 });
 
@@ -89,11 +85,10 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DiscountName")
@@ -115,7 +110,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -142,7 +137,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -167,7 +162,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -187,25 +182,21 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreationTime = new DateTime(2023, 8, 5, 15, 34, 59, 268, DateTimeKind.Utc).AddTicks(9591),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(328),
                             Description = "Adi Su",
                             IsDeleted = false,
                             Name = "Su",
-                            Price = 0.5m,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Price = 0.5m
                         },
                         new
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreationTime = new DateTime(2023, 8, 5, 15, 34, 59, 268, DateTimeKind.Utc).AddTicks(9592),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(330),
                             Description = "Leziz Sup",
                             IsDeleted = false,
                             Name = "Mercimek",
-                            Price = 5m,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Price = 5m
                         });
                 });
 
@@ -224,7 +215,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -246,7 +237,7 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -260,13 +251,11 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             BaseAddress = "Mehelle 765",
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9542),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(276),
                             Description = "Sumgayitin 1nomreli parki",
                             IsDeleted = false,
                             Name = "GoyercinPark",
-                            Phone = "051 123 00 12",
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Phone = "051 123 00 12"
                         });
                 });
 
@@ -285,7 +274,7 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("EndTime")
@@ -300,7 +289,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -321,13 +310,13 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -351,13 +340,13 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -381,7 +370,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
@@ -416,11 +405,11 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("VerificationToken")
+                    b.Property<string>("Token")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("VerifiedAt")
                         .HasColumnType("datetime2");
@@ -433,16 +422,14 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9298),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9887),
                             Email = "asdad@gmaik.com",
                             IsDeleted = false,
                             Name = "Novruz",
                             Password = "salam",
                             Phone = "12313",
                             Surname = "Tarverdiyev",
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VerifiedAt = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9312)
+                            VerifiedAt = new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9904)
                         });
                 });
 
@@ -465,7 +452,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
@@ -475,7 +462,7 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -499,7 +486,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Details")
@@ -512,7 +499,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -530,12 +517,10 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9559),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(295),
                             Details = "sadad",
                             IsDeleted = false,
                             RestaurantId = 1,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
                         });
                 });
@@ -551,13 +536,13 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -568,6 +553,40 @@ namespace WOLT.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserHistories");
+                });
+
+            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserOldPassword", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OldPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserOldPasswords");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserPayment", b =>
@@ -589,7 +608,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ExpireTime")
@@ -599,7 +618,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -623,7 +642,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -638,7 +657,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<decimal>("Score")
                         .HasColumnType("decimal(2,0)");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -656,37 +675,31 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9612),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(378),
                             Description = "Test",
                             IsDeleted = false,
                             ProductId = 1,
                             Score = 9m,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9613),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(381),
                             Description = "Test2",
                             IsDeleted = false,
                             ProductId = 1,
                             Score = 1m,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
                         },
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 8, 5, 19, 34, 59, 268, DateTimeKind.Local).AddTicks(9614),
-                            DeleteTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(382),
                             Description = "Test3",
                             IsDeleted = false,
                             ProductId = 2,
                             Score = 10m,
-                            UpdateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserId = 1
                         });
                 });
@@ -702,19 +715,19 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PromoCodeId")
+                    b.Property<int?>("PromoCodeId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -740,7 +753,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
@@ -758,7 +771,7 @@ namespace WOLT.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("WorkStatus")
@@ -783,7 +796,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DeliveryTime")
@@ -795,7 +808,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -818,7 +831,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -837,7 +850,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(12,2)");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("UserAddressId")
@@ -878,7 +891,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeleteTime")
+                    b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
@@ -900,7 +913,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime>("PromoStartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("UpdateTime")
+                    b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("UserId")
@@ -1041,6 +1054,17 @@ namespace WOLT.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserOldPassword", b =>
+                {
+                    b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
+                        .WithMany("OldPasswords")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserPayment", b =>
                 {
                     b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
@@ -1075,9 +1099,7 @@ namespace WOLT.DAL.Migrations
                 {
                     b.HasOne("Wolt.Entities.Entities.WoltEntities.PromoCode", "PromoCode")
                         .WithMany()
-                        .HasForeignKey("PromoCodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PromoCodeId");
 
                     b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
                         .WithMany("Basket")
@@ -1182,6 +1204,8 @@ namespace WOLT.DAL.Migrations
                     b.Navigation("FavoriteFoods");
 
                     b.Navigation("FavoriteRestaurants");
+
+                    b.Navigation("OldPasswords");
 
                     b.Navigation("Orders");
 

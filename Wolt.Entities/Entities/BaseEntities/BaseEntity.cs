@@ -10,8 +10,8 @@ namespace Wolt.Entities.Entities.BaseEntities
     {
         public int Id { get; set; }
         public DateTime CreationTime { get; set; }
-        public DateTime UpdateTime { get; set; }    
-        public DateTime DeleteTime { get; set; }
+        public DateTime? UpdateTime { get; set; }    
+        public DateTime? DeleteTime { get; set; }
         public bool IsDeleted { get; set; }
 
     }
