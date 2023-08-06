@@ -12,6 +12,13 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using WOLT.DAL.Repository.Concrete;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Newtonsoft.Json;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Identity;
+using Wolt.BLL.Configurations;
 
 namespace Wolt.API
 {
@@ -25,11 +32,37 @@ namespace Wolt.API
             builder.Services.AddControllers();
            
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c=>c.EnableAnnotations());
 
             builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
+            builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(key: "JwtConfig"));
+
+         
+            builder.Services.AddAuthentication(options =>
+            {
+
+                options.DefaultAuthenticateScheme= JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme= JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme= JwtBearerDefaults.AuthenticationScheme;
+
+            }
+            ).AddJwtBearer(jwt =>
+            {
+                var key = Encoding.ASCII.GetBytes(builder.Configuration.GetSection("JwtConfig:Secret").Value);
+                jwt.SaveToken = true;
+                jwt.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey=true,
+                    IssuerSigningKey=  new SymmetricSecurityKey(key),
+                    ValidateIssuer=false,
+                    ValidateAudience=false,
+                    RequireExpirationTime=false,
+                    ValidateLifetime=false,
+
+                };
+            });
 
             builder.Services.ConfigureRepository();
             builder.Services.ConfigureServices();
@@ -48,6 +81,7 @@ namespace Wolt.API
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

@@ -13,17 +13,17 @@ namespace Wolt.BLL.Services.Abstract
     public interface IUserInteractService
     {
         Task AddCommentAsync(AddUserCommentDTO comment);
-        Task<List<GetAllUserCommentsDTO>> GetAllCommentsAsync(int id);
-        Task<GetUserCommentDTO> GetCommentAsync(int id, int commId);
-        Task UpdateCommentAsync(int id, int commId, string desc);
-        Task DeleteComment(int id, int CommId);
-        Task ReturnOrderAsync(int id, int OrderId, string reason);
-        Task<List<UserReview>> GetAllUserReviewsAsync(int id);
+        Task<List<GetAllUserCommentsDTO>> GetAllCommentsAsync(string token);
+        Task<GetUserCommentDTO> GetCommentAsync(string token, int commId);
+        Task UpdateCommentAsync(string token, int commId, string desc);
+        Task DeleteComment(string token, int CommId);
+        Task ReturnOrderAsync(string token, int OrderId, string reason);
+        Task<List<UserReview>> GetAllUserReviewsAsync(string token);
         Task<UserReview> GetUserReviewAsync(int id, int revId);
-        Task UpdateUserReviewAsync(int id, int RevId, int? score, string desc);
+        Task UpdateUserReviewAsync(string token, int RevId, int? score, string desc);
         Task AddUserReviewAsync(UserReview userReview);
         Task AddUserBasketAsync(Basket basket);
-        Task DeleteUserBasket(int id);
-        Task UpdateUserBasketAsync(int id, List<Product> products, int? PromodoCodeId);
+        Task DeleteUserBasket(string token);
+        Task UpdateUserBasketAsync(string token, List<Product> products, int? PromodoCodeId);
     }
 }

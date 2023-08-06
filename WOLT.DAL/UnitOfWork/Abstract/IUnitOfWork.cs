@@ -15,6 +15,6 @@ namespace WOLT.DAL.UnitOfWork.Abstract
         public IUserInteractRepository UserInteractRepository { get; }
         public IUserProfileRepository UserProfileRepository { get; }
         public IThingsRepository ThingsRepository { get; }
-        public Task CommitAsync();
+        public void Commit();
     }
 }

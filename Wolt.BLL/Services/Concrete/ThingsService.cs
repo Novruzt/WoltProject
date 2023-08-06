@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wolt.BLL.DTOs.Others;
+using Wolt.BLL.Configurations;
 using Wolt.BLL.Services.Abstract;
+using Wolt.BLL.Things;
 using Wolt.Entities.Entities.UserEntities;
 using WOLT.DAL.Repository.Concrete;
 using WOLT.DAL.UnitOfWork.Abstract;
@@ -24,19 +25,58 @@ namespace Wolt.BLL.Services.Concrete
             _unitOfWork = unitOfWork;
             
         }
-        public async Task<UserCommentDTO> GetUserCommentAsync(int userId, int restId)
+
+        public async Task<bool> GetUserAsync(string email)
+        {
+            bool Checker = await _unitOfWork.ThingsRepository.GetUserAsync(email);
+
+            if (Checker) 
+                return true;
+
+
+            return false;
+                
+                    
+        }
+
+        public async Task<bool> GetUserByToken(string token)
+        {
+           
+
+            int UserId =  JwtService.GetIdFromToken(token);
+
+            bool Checker = await _unitOfWork.ThingsRepository.GetUserByIdAsync(UserId);
+
+            if (Checker)
+                return true;
+
+
+            return false;
+
+
+        }
+
+        public async Task<bool> GetUserCommentAsync(int userId, int restId)
         {
 
-            UserComment comment = await _unitOfWork.ThingsRepository.GetUserCommentAsync(userId, restId);
+            bool Checker = await _unitOfWork.ThingsRepository.GetUserCommentAsync(userId, restId);
+
+            if (Checker)
+                return true;
+            
+
+            return false;
+        }
+
+        public async Task<bool> LoginUserAsync(string email, string password)
+        {
+            bool Checker = await _unitOfWork.ThingsRepository.LoginUserAsync(email, password);
+
+            if (Checker) 
+                return true;
 
 
-            if (comment != null)
-            {
-                UserCommentDTO dto = _mapper.Map<UserCommentDTO>(comment);
-                return dto;
-            }
-
-            return null;
+            return false;
         }
     }
 }

@@ -36,9 +36,9 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task<User> GetAsync(int id)
+        public async Task<User> GetByEmailAsync(string email)
         {
-            User user = await _ctx.Users.FirstOrDefaultAsync(c => c.Id == id);
+            User user = await _ctx.Users.FirstOrDefaultAsync(c => c.Email == email);
 
             return user;
 
@@ -47,7 +47,20 @@ namespace WOLT.DAL.Repository.Concrete
         public async Task RegisterUserAsync(User user)
         {
            await  _ctx.Users.AddAsync(user);
+          
         }
 
+        public async Task<User> GetAsync(int id)
+        {
+            User user = await _ctx.Users.FirstOrDefaultAsync(c => c.Id == id);
+
+            return user;
+
+        }
+
+        public async Task AddOldPasswordAsync(UserOldPassword userOld)
+        {
+            await _ctx.AddAsync(userOld);
+        }
     }
 }

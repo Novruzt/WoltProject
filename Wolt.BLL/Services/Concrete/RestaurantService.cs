@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wolt.BLL.DTOs.Others;
 using Wolt.BLL.DTOs.RestaurantDTOs;
 using Wolt.BLL.Services.Abstract;
 using Wolt.Entities.Entities.RestaurantEntities;
