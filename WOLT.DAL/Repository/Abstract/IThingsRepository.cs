@@ -14,5 +14,6 @@ namespace WOLT.DAL.Repository.Abstract
         Task<bool> LoginUserAsync(string email, string password);
         Task<bool> GetUserByIdAsync(int Id);
         Task<bool> GetUserOldPassword(int id, string password);
+        Task<bool> GetUserCurrentPassword(int id, string password);
     }
 }

@@ -14,7 +14,7 @@ namespace Wolt.BLL.DTOs.UserInteractDTOs
 {
     public record AddUserCommentDTO
     {
-        [SwaggerSchema(ReadOnly = true)]
+       [SwaggerSchema(ReadOnly = true)]
         public int UserId { get; set; }
         public string Details { get; set; }
         public int RestaurantId { get; set; }

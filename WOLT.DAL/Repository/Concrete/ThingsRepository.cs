@@ -75,5 +75,17 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
 
         }
+
+        public async Task<bool> GetUserCurrentPassword(int id, string password)
+        {
+            User user = await  _ctx.Users.FirstOrDefaultAsync(u=>u.Id==id && u.Password==password);
+
+                if( user != null ) 
+                    return true;
+
+
+            return false;
+            
+        }
     }
 }

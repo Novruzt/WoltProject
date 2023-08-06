@@ -59,14 +59,14 @@ namespace Wolt.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("ResetPasswords")]
+        [HttpPost("ResetPassword")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> ResetPasswords([FromBody] ResetPasswordRequestDTO requestDTO)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDTO requestDTO)
         {
 
             string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            int UserId = JwtService.GetIdFromToken(token);
+            requestDTO.UserId=JwtService.GetIdFromToken(token);
 
             if (string.IsNullOrEmpty(token))
                 return Unauthorized("Token not provided");
@@ -75,7 +75,7 @@ namespace Wolt.API.Controllers
              if (Checker = false)
                 return BadRequest("Invalid token");
 
-             string result = await _UserAuthService.ResetPasswordAsync(UserId, requestDTO);
+             string result = await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);
 
             return Ok(result);
         }

@@ -14,7 +14,7 @@ namespace Wolt.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+   [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserInteractController : ControllerBase
     {
         private readonly IUserInteractService _UserInteractService;
@@ -32,6 +32,7 @@ namespace Wolt.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment([FromBody] AddUserCommentDTO dto)
         {
+            
 
             string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
@@ -44,6 +45,8 @@ namespace Wolt.API.Controllers
 
             if (Checker = false)
                 return BadRequest("Invalid token");
+
+            
 
             if (await _thingsService.GetUserCommentAsync(dto.UserId, dto.RestaurantId))
             {

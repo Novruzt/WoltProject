@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace Wolt.BLL.Services.Concrete
         public async Task<GetUserProfileDTO> GetAsync(int id)
         {
 
-            User user = await  _unitOfWork.UserAuthRepository.GetAsync(id);
+            User user = await _unitOfWork.UserAuthRepository.GetAsync(id);
             GetUserProfileDTO dto = _mapper.Map<GetUserProfileDTO>(user);
 
             return dto;
@@ -52,7 +53,7 @@ namespace Wolt.BLL.Services.Concrete
 
             LoginUserResponseDTO response = new LoginUserResponseDTO();
 
-            if(isUser) 
+            if (isUser)
             {
 
                 User user = await _unitOfWork.UserAuthRepository.GetByEmailAsync(dto.Email);
@@ -64,15 +65,15 @@ namespace Wolt.BLL.Services.Concrete
 
                 bool IsToken = await _unitOfWork.ThingsRepository.GetUserByIdAsync(UserId);
 
-                if (!IsToken) 
+                if (!IsToken)
                 {
 
                     response.Token = JwtService.CreateToken(user);
-                    user.Token= response.Token;
+                    user.Token = response.Token;
 
                     _unitOfWork.Commit();
                 }
-                    
+
 
             }
 
@@ -88,16 +89,18 @@ namespace Wolt.BLL.Services.Concrete
 
                 Token = JwtService.CreateToken(user),
                 Result = true
-                
+
             };
 
             user.Token = response.Token;
 
             await _unitOfWork.UserAuthRepository.RegisterUserAsync(user);
 
+            _unitOfWork.Commit();
+
             UserOldPassword oldPassword = new UserOldPassword() {
-                OldPassword=user.Password,
-                UserId=user.Id
+                OldPassword = user.Password,
+                UserId = user.Id
             };
 
             await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
@@ -107,7 +110,7 @@ namespace Wolt.BLL.Services.Concrete
             return response;
         }
 
-        public async Task<string> ResetPasswordAsync(int id,ResetPasswordRequestDTO dto)
+        public async Task<string> ResetPasswordAsync(int id, ResetPasswordRequestDTO dto)
         {
            
 
@@ -122,7 +125,13 @@ namespace Wolt.BLL.Services.Concrete
             if (CheckOldPassword)
                 return "New Password cannot be same as old passwords.";
 
+            bool CheckCurrent=  await _unitOfWork.ThingsRepository.GetUserCurrentPassword(id, dto.Password);
+            if (!CheckCurrent)
+                return "Enter Current Password";
+            
             await _unitOfWork.UserAuthRepository.ResetPasswordAsync(id, dto.newPassword);
+
+            _unitOfWork.Commit();
                 return "You changed password succesfully!";
 
          
