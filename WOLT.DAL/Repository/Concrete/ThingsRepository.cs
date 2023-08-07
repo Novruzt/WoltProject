@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wolt.Entities.Entities.UserEntities;
+using Wolt.Entities.Entities.WoltEntities;
 using WOLT.DAL.DATA;
 using WOLT.DAL.Repository.Abstract;
 
@@ -18,7 +19,7 @@ namespace WOLT.DAL.Repository.Concrete
             _ctx = context;
         }
 
-        public async Task<bool> GetUserCommentAsync(int userId, int restId)
+        public async Task<bool> CheckUserCommentForRestaurantAsync(int userId, int restId)
         {
             UserComment comment = await _ctx.UserComments
                .FirstOrDefaultAsync(c => c.UserId == userId && c.RestaurantId==restId);
@@ -31,7 +32,7 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
         }
 
-        public async Task<bool> GetUserAsync(string email)
+        public async Task<bool> CheckUserForEmailAsync(string email)
         {
             User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Email == email);
 
@@ -41,7 +42,7 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
         }
 
-        public async Task<bool> LoginUserAsync(string email, string password)
+        public async Task<bool> CheckLoginUserAsync(string email, string password)
         {
             User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
 
@@ -52,7 +53,7 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task<bool> GetUserByIdAsync(int Id)
+        public async Task<bool> CheckUserByIdAsync(int Id)
         {
             User user = await _ctx.Users.FirstOrDefaultAsync(u=>u.Id==Id);
 
@@ -64,7 +65,7 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task<bool> GetUserOldPassword(int id, string password)
+        public async Task<bool> CheckUserOldPassword(int id, string password)
         {
             UserOldPassword old  = await _ctx.UserOldPasswords.FirstOrDefaultAsync(u => u.UserId == id && u.OldPassword == password);
 
@@ -76,7 +77,7 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task<bool> GetUserCurrentPassword(int id, string password)
+        public async Task<bool> CheckUserCurrentPassword(int id, string password)
         {
             User user = await  _ctx.Users.FirstOrDefaultAsync(u=>u.Id==id && u.Password==password);
 
@@ -86,6 +87,41 @@ namespace WOLT.DAL.Repository.Concrete
 
             return false;
             
+        }
+
+        public async Task<bool> CheckUserCommentAsync(int id, int commId)
+        {
+            UserComment comment = await _ctx.UserComments.FirstOrDefaultAsync(c=>c.UserId==id && c.Id==commId);
+
+            if(comment != null) 
+                return true;
+
+
+            return false;
+        }
+
+        public async Task<bool> CheckUserOrderAsync(int id, int orderId)
+        {
+            Order order  = await _ctx.Orders.FirstOrDefaultAsync(o=> o.Id==orderId && o.UserId==id);
+
+            if(order!= null)
+                return true;
+
+
+            return false;
+
+        }
+
+        public async Task<bool> CheckUserReviewAsync(int userId, int revId)
+        {
+            UserReview review = await _ctx.UserReviews.FirstOrDefaultAsync(r=>r.Id==revId && r.UserId==userId);
+
+            if(review != null) 
+                return true;
+
+
+            return false;
+
         }
     }
 }

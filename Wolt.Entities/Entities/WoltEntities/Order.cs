@@ -21,7 +21,7 @@ namespace Wolt.Entities.Entities.WoltEntities
         public UserAddress UserAddress { get; set; }
         public int UserPaymentId { get; set; }
         public UserPayment UserPayment { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public ICollection<Product> Products { get; set; }
         public ICollection<PromoCode> PromoCodes { get; set; }
 

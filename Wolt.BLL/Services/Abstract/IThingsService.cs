@@ -2,9 +2,9 @@
 {
     public interface IThingsService
     {
-        Task<bool> GetUserCommentAsync(int UserId, int RestId);
-        Task<bool> GetUserAsync(string email);
-        Task<bool> LoginUserAsync(string email, string password);
-        Task<bool> GetUserByToken(string token);
+        Task<bool> CheckUserCommentForRestaurantAsync(int UserId, int RestId);
+        Task<bool> CheckUserForEmailAsync(string email);
+        Task<bool> CheckLoginUserAsync(string email, string password);
+        Task<bool> CheckUserByToken(string token);
     }
 }

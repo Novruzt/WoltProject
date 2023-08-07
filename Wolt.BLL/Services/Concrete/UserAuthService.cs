@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Wolt.BLL.Configurations;
 using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserAuthDTOs;
+using Wolt.BLL.Enums;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
 using Wolt.Entities.Entities.UserEntities;
@@ -27,6 +28,43 @@ namespace Wolt.BLL.Services.Concrete
         public Task DeleteUserAsync(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<BaseResultDTO> ForgotPasswordAsync(int id, ForgotPasswordRequestDTO dto)
+        {
+            BaseResultDTO result = new BaseResultDTO();
+             User user  =await  _unitOfWork.UserAuthRepository.GetAsync(id);
+
+            if (user.Email != dto.Email)
+            {
+                result.Status=RequestStatus.Failed;
+                result.Message = "Wrong email";
+
+                return result;
+            }
+               
+
+            bool CheckOldPassword = await _unitOfWork.ThingsRepository.CheckUserOldPassword(id, dto.newPassword);
+
+            if (CheckOldPassword)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "New Password cannot be same as old passwords.";
+
+                return result;
+            }
+               
+
+
+            //Not Finished Do later.
+
+
+            
+            result.Status = RequestStatus.Success;
+            result.Message = "Done!";
+
+            return result;
+
         }
 
         public async Task<GetUserProfileDTO> GetAsync(int id)
@@ -49,7 +87,7 @@ namespace Wolt.BLL.Services.Concrete
         public async Task<LoginUserResponseDTO> LoginUserAsync(LoginUserRequestDTO dto)
         {
 
-            bool isUser = await _unitOfWork.ThingsRepository.LoginUserAsync(dto.Email, dto.Password);
+            bool isUser = await _unitOfWork.ThingsRepository.CheckLoginUserAsync(dto.Email, dto.Password);
 
             LoginUserResponseDTO response = new LoginUserResponseDTO();
 
@@ -61,9 +99,7 @@ namespace Wolt.BLL.Services.Concrete
                 response.Result = true;
                 response.Token = user.Token;
 
-                int UserId = JwtService.GetIdFromToken(user.Token);
-
-                bool IsToken = await _unitOfWork.ThingsRepository.GetUserByIdAsync(UserId);
+                bool IsToken = JwtService.ValidateToken(user.Token);
 
                 if (!IsToken)
                 {
@@ -110,31 +146,59 @@ namespace Wolt.BLL.Services.Concrete
             return response;
         }
 
-        public async Task<string> ResetPasswordAsync(int id, ResetPasswordRequestDTO dto)
+        public async Task<BaseResultDTO> ResetPasswordAsync(int id, ResetPasswordRequestDTO dto)
         {
-           
 
-            if(dto.Password==dto.newPassword) 
-               return  "New Password cannot be same as old passwords.";
+            BaseResultDTO result = new BaseResultDTO();
+
+            if(dto.Password==dto.newPassword)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "New Password cannot be same as old passwords.";
+
+                return result;
+            }
+              
 
             if (dto.newPassword != dto.PassAgain)
-               return "Passwords must be same";
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Passwords must be same";
 
-            bool CheckOldPassword = await _unitOfWork.ThingsRepository.GetUserOldPassword(id, dto.newPassword);
+                return result;
+            }
+             
+
+            bool CheckOldPassword = await _unitOfWork.ThingsRepository.CheckUserOldPassword(id, dto.newPassword);
 
             if (CheckOldPassword)
-                return "New Password cannot be same as old passwords.";
+            {
+                result.Status= RequestStatus.Failed;
+                result.Message = "New Password cannot be same as old passwords.";
 
-            bool CheckCurrent=  await _unitOfWork.ThingsRepository.GetUserCurrentPassword(id, dto.Password);
+                return result;
+            }
+                
+
+            bool CheckCurrent=  await _unitOfWork.ThingsRepository.CheckUserCurrentPassword(id, dto.Password);
             if (!CheckCurrent)
-                return "Enter Current Password";
+            {
+                result.Status=RequestStatus.Failed;
+                result.Message = "Enter Current Password";
+            }
+               
             
             await _unitOfWork.UserAuthRepository.ResetPasswordAsync(id, dto.newPassword);
 
             _unitOfWork.Commit();
-                return "You changed password succesfully!";
+
+            result.Status = RequestStatus.Success;
+            result.Message = "You changed password succesfully!";
+
+            return result;
 
          
         }
+
     }
 }

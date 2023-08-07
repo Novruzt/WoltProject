@@ -14,6 +14,7 @@ namespace Wolt.BLL.DTOs.UserAuthDTOs
         public string Name { get; set;}
         public string Surname { get; set;}
         [Required]
+        [EmailAddress]
         [RegularExpression(@"^(string@example\.com|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$", ErrorMessage = "Invalid Email adress")]
         public string Email { get; set;} = null;
         [Required]

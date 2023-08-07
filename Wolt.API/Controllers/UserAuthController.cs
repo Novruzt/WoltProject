@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserAuthDTOs;
+using Wolt.BLL.Enums;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
 using WOLT.DAL.Repository.Abstract;
@@ -33,7 +35,7 @@ namespace Wolt.API.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequestDTO requestDTO)
         {
-            if (await _thingsService.GetUserAsync(requestDTO.Email))
+            if (await _thingsService.CheckUserForEmailAsync(requestDTO.Email))
                 return BadRequest("This user already exists");
 
             if (!ModelState.IsValid)
@@ -48,7 +50,7 @@ namespace Wolt.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginUserRequestDTO requestDTO)
         {
 
-            if (!await _thingsService.LoginUserAsync(requestDTO.Email, requestDTO.Password))
+            if (!await _thingsService.CheckLoginUserAsync(requestDTO.Email, requestDTO.Password))
                 return BadRequest("Invalid email or password");
 
             if (!ModelState.IsValid)
@@ -71,13 +73,16 @@ namespace Wolt.API.Controllers
             if (string.IsNullOrEmpty(token))
                 return Unauthorized("Token not provided");
 
-            bool Checker = await _thingsService.GetUserByToken(token);
+            bool Checker = await _thingsService.CheckUserByToken(token);
              if (Checker = false)
                 return BadRequest("Invalid token");
 
-             string result = await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);
+             BaseResultDTO result = await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);
 
-            return Ok(result);
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
         }
       
     }
