@@ -99,6 +99,8 @@ namespace WOLT.DAL.Repository.Concrete
                 .Where(o => o.UserId == id && !o.IsDeleted).FirstOrDefaultAsync(o=>o.Id==OrderId);
 
             order.OrderStatus = OrderStatus.Returned;
+            order.Description = reason;
+            order.DeleteTime=DateTime.Now;
 
             UserHistory history = await _ctx.UserHistories.FirstOrDefaultAsync(h => h.UserId == id);
 
@@ -136,7 +138,7 @@ namespace WOLT.DAL.Repository.Concrete
             _ctx.Baskets.Update(basket);
         }
 
-        public async Task UpdateUserReviewAsync(int id, int RevId, int? score, string desc)
+        public async Task UpdateUserReviewAsync(int id, int RevId, double? score, string? desc)
         {
             UserReview review = await _ctx.UserReviews.Where(r=>r.UserId==id).FirstOrDefaultAsync(r=>r.Id==RevId);
 

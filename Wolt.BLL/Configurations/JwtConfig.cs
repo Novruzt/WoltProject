@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Wolt.BLL.Configurations
 {
     
-        public class JwtConfig
+        public  class JwtConfig
         {
-        public string Secret { get; set; } = "YMaImDZxzEEPnPjOwcWmiCRpkkHHljBR";
+        public static string Secret { get; set; } = "YMaImDZxzEEPnPjOwcWmiCRpkkHHljBR";
         }
     
 }

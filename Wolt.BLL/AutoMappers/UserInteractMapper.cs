@@ -17,9 +17,12 @@ namespace Wolt.BLL.AutoMappers
             CreateMap<AddUserCommentDTO, UserComment>();
 
             CreateMap<UserComment, GetUserCommentDTO>();
-            CreateMap<UserComment, GetAllUserCommentsDTO>()
-                .ForMember(dest=>dest.UserName, opt=>opt.MapFrom(src=>src.User.Name))
-                .ForMember(dest=>dest.RestaurantName, opt=>opt.MapFrom(src=>src.Restaurant.Name));
+            CreateMap<UserComment, GetAllUserCommentsDTO>();
+            CreateMap<UserReview, GetAllUserReviewsDTO>();
+            CreateMap<UserReview, GetUserReviewDTO>();
+               
+            
+
         }
     }
 }

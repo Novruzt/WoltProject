@@ -20,7 +20,7 @@ namespace WOLT.DAL.Repository.Abstract
         Task  ReturnOrderAsync(int id, int OrderId, string reason);  
         Task<List<UserReview>> GetAllUserReviewsAsync(int id); 
         Task<UserReview> GetUserReviewAsync(int id, int revId); 
-        Task UpdateUserReviewAsync(int id, int RevId, int? score, string desc);
+        Task UpdateUserReviewAsync(int id, int RevId, double? score, string? desc);
         Task AddUserReviewAsync(UserReview userReview); 
         Task AddUserBasketAsync(Basket basket); 
         Task DeleteUserBasket(int id); 

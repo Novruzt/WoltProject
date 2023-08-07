@@ -26,55 +26,51 @@ namespace Wolt.BLL.Services.Concrete
             
         }
 
-        public async Task<bool> GetUserAsync(string email)
+        public async Task<bool> CheckUserForEmailAsync(string email)
         {
-            bool Checker = await _unitOfWork.ThingsRepository.GetUserAsync(email);
+            bool Checker = await _unitOfWork.ThingsRepository.CheckUserForEmailAsync(email);
 
             if (Checker) 
                 return true;
-
 
             return false;
                 
                     
         }
 
-        public async Task<bool> GetUserByToken(string token)
+        public async Task<bool> CheckUserByToken(string token)
         {
            
 
             int UserId =  JwtService.GetIdFromToken(token);
 
-            bool Checker = await _unitOfWork.ThingsRepository.GetUserByIdAsync(UserId);
+            bool Checker = await _unitOfWork.ThingsRepository.CheckUserByIdAsync(UserId);
 
             if (Checker)
                 return true;
-
 
             return false;
 
 
         }
 
-        public async Task<bool> GetUserCommentAsync(int userId, int restId)
+        public async Task<bool> CheckUserCommentForRestaurantAsync(int userId, int restId)
         {
 
-            bool Checker = await _unitOfWork.ThingsRepository.GetUserCommentAsync(userId, restId);
+            bool Checker = await _unitOfWork.ThingsRepository.CheckUserCommentForRestaurantAsync(userId, restId);
 
             if (Checker)
-                return true;
-            
+                return true; 
 
             return false;
         }
 
-        public async Task<bool> LoginUserAsync(string email, string password)
+        public async Task<bool> CheckLoginUserAsync(string email, string password)
         {
-            bool Checker = await _unitOfWork.ThingsRepository.LoginUserAsync(email, password);
+            bool Checker = await _unitOfWork.ThingsRepository.CheckLoginUserAsync(email, password);
 
             if (Checker) 
                 return true;
-
 
             return false;
         }
