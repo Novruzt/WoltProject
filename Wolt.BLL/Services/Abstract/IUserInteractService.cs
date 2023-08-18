@@ -13,7 +13,7 @@ namespace Wolt.BLL.Services.Abstract
 {
     public interface IUserInteractService
     {
-        Task AddCommentAsync(AddUserCommentDTO comment);
+        Task<BaseResultDTO> AddCommentAsync(string token, AddUserCommentDTO comment);
         Task<List<GetAllUserCommentsDTO>> GetAllCommentsAsync(string token);
         Task<GetUserCommentDTO> GetCommentAsync(string token, int commId);
         Task<BaseResultDTO> UpdateCommentAsync(string token, UpdateCommentDTO dto);
@@ -22,9 +22,9 @@ namespace Wolt.BLL.Services.Abstract
         Task<List<GetAllUserReviewsDTO>> GetAllReviewsAsync(string token);
         Task<GetUserReviewDTO> GetUserReviewAsync(string token, int revId);
         Task<BaseResultDTO> UpdateUserReviewAsync(string token, UpdateReviewDTO dto);
-        Task AddUserReviewAsync(UserReview userReview);
-        Task AddUserBasketAsync(Basket basket);
-        Task DeleteUserBasket(string token);
-        Task UpdateUserBasketAsync(string token, List<Product> products, int? PromodoCodeId);
+        Task<BaseResultDTO> AddUserReviewAsync(string token, AddUserReviewDTO dto);
+        Task<BaseResultDTO> AddUserBasketAsync(string token, AddUserBasketDTO dto); //bunu yazram indi // xetalar var. 
+        Task<BaseResultDTO> DeleteUserBasketAsync(string token); 
+        Task<BaseResultDTO> UpdateUserBasketAsync(string token, List<Product> products, int? PromodoCodeId); //AddUserbAsketAsync ile eyni problem yasanacag.
     }
 }

@@ -10,10 +10,9 @@ namespace Wolt.Entities.Entities.UserEntities
 {
     public class FavoriteFood:BaseEntity
     {
-        public int UserId { get; set; } 
-        public User User { get; set; }
-        public ICollection<Product> Products { get; set; }
-
-        // Food and FoodId
+        public int UserId { get; set; }
+        public User User { get; set; } 
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
     }
 }

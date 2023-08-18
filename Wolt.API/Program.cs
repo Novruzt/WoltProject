@@ -19,6 +19,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Identity;
 using Wolt.BLL.Configurations;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 
 namespace Wolt.API
 {
@@ -32,7 +34,35 @@ namespace Wolt.API
             builder.Services.AddControllers();
            
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c=>c.EnableAnnotations());
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                     new OpenApiSecurityScheme
+                     {
+                       Reference = new OpenApiReference
+                      {
+                       Type = ReferenceType.SecurityScheme,
+                       Id = "Bearer"
+                      }
+                      },
+                      new string[] { }
+                    }
+                });
+
+                opt.EnableAnnotations();
+            });
 
             builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -68,7 +98,14 @@ namespace Wolt.API
             builder.Services.ConfigureServices();
 
             builder.Services.AddDbContext<DataContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+            {
+
+             options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+            
+
+            });
+            
+
 
             var app = builder.Build();
 

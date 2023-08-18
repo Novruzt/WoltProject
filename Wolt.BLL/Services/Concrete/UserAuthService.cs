@@ -25,47 +25,6 @@ namespace Wolt.BLL.Services.Concrete
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public Task DeleteUserAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<BaseResultDTO> ForgotPasswordAsync(int id, ForgotPasswordRequestDTO dto)
-        {
-            BaseResultDTO result = new BaseResultDTO();
-             User user  =await  _unitOfWork.UserAuthRepository.GetAsync(id);
-
-            if (user.Email != dto.Email)
-            {
-                result.Status=RequestStatus.Failed;
-                result.Message = "Wrong email";
-
-                return result;
-            }
-               
-
-            bool CheckOldPassword = await _unitOfWork.ThingsRepository.CheckUserOldPassword(id, dto.newPassword);
-
-            if (CheckOldPassword)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "New Password cannot be same as old passwords.";
-
-                return result;
-            }
-               
-
-
-            //Not Finished Do later.
-
-
-            
-            result.Status = RequestStatus.Success;
-            result.Message = "Done!";
-
-            return result;
-
-        }
 
         public async Task<GetUserProfileDTO> GetAsync(int id)
         {

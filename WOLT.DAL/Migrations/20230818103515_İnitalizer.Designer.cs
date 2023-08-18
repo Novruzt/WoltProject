@@ -12,8 +12,8 @@ using WOLT.DAL.DATA;
 namespace WOLT.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230806191622_Initalizer")]
-    partial class Initalizer
+    [Migration("20230818103515_İnitalizer")]
+    partial class İnitalizer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,7 +62,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(312),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(390),
                             IsDeleted = false,
                             Name = "Ickiler",
                             RestaurantId = 1
@@ -70,7 +70,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(314),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(391),
                             IsDeleted = false,
                             Name = "Suplar",
                             RestaurantId = 1
@@ -146,9 +146,6 @@ namespace WOLT.DAL.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FavoriteFoodId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -174,8 +171,6 @@ namespace WOLT.DAL.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("FavoriteFoodId");
-
                     b.HasIndex("OrderId");
 
                     b.ToTable("Products");
@@ -185,7 +180,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreationTime = new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(328),
+                            CreationTime = new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(407),
                             Description = "Adi Su",
                             IsDeleted = false,
                             Name = "Su",
@@ -195,7 +190,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreationTime = new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(330),
+                            CreationTime = new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(409),
                             Description = "Leziz Sup",
                             IsDeleted = false,
                             Name = "Mercimek",
@@ -226,9 +221,6 @@ namespace WOLT.DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("FavoriteRestaurantId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -245,8 +237,6 @@ namespace WOLT.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FavoriteRestaurantId");
-
                     b.ToTable("Restaurants");
 
                     b.HasData(
@@ -254,7 +244,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             BaseAddress = "Mehelle 765",
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(276),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(358),
                             Description = "Sumgayitin 1nomreli parki",
                             IsDeleted = false,
                             Name = "GoyercinPark",
@@ -304,11 +294,11 @@ namespace WOLT.DAL.Migrations
 
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.FavoriteFood", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -316,29 +306,29 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.HasKey("UserId", "ProductId");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("FavoriteFoods");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.FavoriteRestaurant", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -346,18 +336,18 @@ namespace WOLT.DAL.Migrations
                     b.Property<DateTime?>("DeleteTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.HasKey("UserId", "RestaurantId");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("RestaurantId");
 
                     b.ToTable("FavoriteRestaurants");
                 });
@@ -425,14 +415,14 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9887),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(117),
                             Email = "asdad@gmaik.com",
                             IsDeleted = false,
                             Name = "Novruz",
                             Password = "salam",
                             Phone = "12313",
                             Surname = "Tarverdiyev",
-                            VerifiedAt = new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9904)
+                            VerifiedAt = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(130)
                         });
                 });
 
@@ -520,7 +510,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(295),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(375),
                             Details = "sadad",
                             IsDeleted = false,
                             RestaurantId = 1,
@@ -678,7 +668,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(378),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(427),
                             Description = "Test",
                             IsDeleted = false,
                             ProductId = 1,
@@ -688,7 +678,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(381),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(429),
                             Description = "Test2",
                             IsDeleted = false,
                             ProductId = 1,
@@ -698,7 +688,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(382),
+                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(430),
                             Description = "Test3",
                             IsDeleted = false,
                             ProductId = 2,
@@ -838,7 +828,6 @@ namespace WOLT.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
@@ -903,7 +892,7 @@ namespace WOLT.DAL.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<double>("PromoDisCount")
+                    b.Property<double>("PromoDiscount")
                         .HasColumnType("float");
 
                     b.Property<DateTime>("PromoEndTime")
@@ -965,22 +954,11 @@ namespace WOLT.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Wolt.Entities.Entities.UserEntities.FavoriteFood", null)
-                        .WithMany("Products")
-                        .HasForeignKey("FavoriteFoodId");
-
                     b.HasOne("Wolt.Entities.Entities.WoltEntities.Order", null)
                         .WithMany("Products")
                         .HasForeignKey("OrderId");
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Wolt.Entities.Entities.RestaurantEntities.Restaurant", b =>
-                {
-                    b.HasOne("Wolt.Entities.Entities.UserEntities.FavoriteRestaurant", null)
-                        .WithMany("Restaurants")
-                        .HasForeignKey("FavoriteRestaurantId");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.RestaurantEntities.WorkHours", b =>
@@ -996,22 +974,38 @@ namespace WOLT.DAL.Migrations
 
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.FavoriteFood", b =>
                 {
+                    b.HasOne("Wolt.Entities.Entities.RestaurantEntities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
                         .WithMany("FavoriteFoods")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Product");
+
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.FavoriteRestaurant", b =>
                 {
+                    b.HasOne("Wolt.Entities.Entities.RestaurantEntities.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
                         .WithMany("FavoriteRestaurants")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Restaurant");
 
                     b.Navigation("User");
                 });
@@ -1188,16 +1182,6 @@ namespace WOLT.DAL.Migrations
                     b.Navigation("Discounts");
 
                     b.Navigation("UserComments");
-                });
-
-            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.FavoriteFood", b =>
-                {
-                    b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.FavoriteRestaurant", b =>
-                {
-                    b.Navigation("Restaurants");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.User", b =>

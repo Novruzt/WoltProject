@@ -29,6 +29,10 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task AddUserBasketAsync(Basket basket)
         {
+
+            basket.TotalAmount = CalculateTotalAmount(basket.Products, basket.PromoCodeId);
+            
+
             await _ctx.Baskets.AddAsync(basket);
         }
 
@@ -150,5 +154,23 @@ namespace WOLT.DAL.Repository.Concrete
             _ctx.UserReviews.Update(review);
 
         }
+
+        private double CalculateTotalAmount(ICollection<Product> products, int? promoCodeId)
+        {
+            double totalAmount = products.Sum(p => p.Price);
+
+            if (promoCodeId.HasValue && promoCodeId.Value>0)
+            {
+                var promoCode = _ctx.PromoCodes.FirstOrDefault(p => p.Id == promoCodeId.Value);
+                if (promoCode != null)
+                {
+                    totalAmount = totalAmount - (totalAmount * promoCode.PromoDiscount / 100);
+                }
+            }
+
+            return totalAmount;
+        }
+
+       
     }
 }

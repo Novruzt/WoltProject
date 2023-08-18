@@ -67,9 +67,19 @@ namespace Wolt.BLL.Things
             try
             {
                 var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-                int userId = int.Parse(principal.FindFirstValue("Id"));
 
-                return userId;
+                string idValue = principal.FindFirstValue("Id");
+
+                if (int.TryParse(idValue, out int userId))
+                {
+                    return userId;
+                }
+                else
+                {
+                    return -1;
+                }
+
+                
             }
 
             catch (SecurityTokenException ex) 
