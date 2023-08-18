@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wolt.Entities.Entities.BaseEntities;
+using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.WoltEntities;
 
 namespace Wolt.Entities.Entities.UserEntities

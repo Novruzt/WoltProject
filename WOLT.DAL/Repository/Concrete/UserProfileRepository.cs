@@ -76,7 +76,11 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<FavoriteFood> GetFavoriteFoodAsync(int id, int favId)
         {
-            FavoriteFood data = await _ctx.FavoriteFoods.Where(c => c.UserId == id).FirstOrDefaultAsync(c=>c.Id==favId);
+            FavoriteFood data = await _ctx.FavoriteFoods.Where(c => c.UserId == id)
+                .Include(f=>f.Product)
+                .ThenInclude(p=>p.Category)
+                .ThenInclude(c=>c.Restaurant)
+                .FirstOrDefaultAsync(c=>c.Id==favId);
 
             return data;
         }

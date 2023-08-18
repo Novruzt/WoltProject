@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
 using WOLT.DAL.DATA;
@@ -122,6 +123,36 @@ namespace WOLT.DAL.Repository.Concrete
 
             return false;
 
+        }
+
+        public async Task<bool> CheckUserReviewForProductAsync(int userId, int productId)
+        {
+            UserReview review = await _ctx.UserReviews.FirstOrDefaultAsync(r=>r.UserId==userId && r.ProductId==productId);
+
+            if(review != null) 
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckUserBasketAsync(int UserId)
+        {
+            Basket basket = await _ctx.Baskets.FirstOrDefaultAsync(b=>b.UserId==UserId);
+
+            if(basket != null) 
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckProductAsync(int id)
+        {
+            Product product = await _ctx.Products.FirstOrDefaultAsync(p=>p.Id==id);
+
+            if(product != null)
+                return true;
+
+            return false;
         }
     }
 }

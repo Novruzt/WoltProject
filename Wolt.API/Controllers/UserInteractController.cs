@@ -31,14 +31,11 @@ namespace Wolt.API.Controllers
 
         }
 
-        [HttpPost]
+        [HttpPost("addComment")]
         public async Task<IActionResult> AddComment([FromBody] AddUserCommentDTO dto)
         {
             
-
             string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            dto.UserId = JwtService.GetIdFromToken(token);
 
             if (string.IsNullOrEmpty(token))
                 return Unauthorized("Token not provided");
@@ -48,17 +45,38 @@ namespace Wolt.API.Controllers
             if (Checker = false)
                 return BadRequest("Invalid token");
 
-            
 
-            if (await _thingsService.CheckUserCommentForRestaurantAsync(dto.UserId, dto.RestaurantId))
-            {
-                return BadRequest("You already have commented for this restaurant");
-            }
+           BaseResultDTO result = await _UserInteractService.AddCommentAsync(token, dto);
 
-            await _UserInteractService.AddCommentAsync(dto);
+            if(result.Status==RequestStatus.Failed) 
+                return BadRequest(result.Message);
 
 
-            return Ok(dto);
+            return Ok(result.Message);
+        }
+
+        [HttpPost("addReview")]
+        public async Task<IActionResult> AddReview([FromBody] AddUserReviewDTO dto)
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (Checker = false)
+                return BadRequest("Invalid token");
+
+
+            BaseResultDTO result = await _UserInteractService.AddUserReviewAsync(token, dto);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+
         }
 
         [HttpGet("allComments")]
@@ -230,8 +248,51 @@ namespace Wolt.API.Controllers
             return Ok(result.Message);
         }
 
-       
+        [HttpPost("createBasket")] //Alinmadi 
+        public async Task<IActionResult> CreateBasket([FromBody] AddUserBasketDTO dto)
+        {
 
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (Checker = false)
+                return BadRequest("Invalid token");
+
+
+            BaseResultDTO result = await _UserInteractService.AddUserBasketAsync(token, dto);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+        }
+
+        [HttpDelete("DeleteBasket")]
+        public async Task<IActionResult> DeleteBasket()
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (Checker = false)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.DeleteUserBasketAsync(token);
+
+            if (result.Status == RequestStatus.Failed) 
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+        }
 
     }
 }
