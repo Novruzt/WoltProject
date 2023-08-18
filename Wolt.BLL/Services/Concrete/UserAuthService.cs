@@ -12,6 +12,7 @@ using Wolt.BLL.Enums;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
 using Wolt.Entities.Entities.UserEntities;
+using WOLT.DAL.Repository.Concrete;
 using WOLT.DAL.UnitOfWork.Abstract;
 
 namespace Wolt.BLL.Services.Concrete
@@ -79,6 +80,9 @@ namespace Wolt.BLL.Services.Concrete
         {
             User user = _mapper.Map<User>(newUser);
 
+            await _unitOfWork.UserAuthRepository.RegisterUserAsync(user);
+            _unitOfWork.Commit();
+
             RegisterUserResponseDTO response = new RegisterUserResponseDTO()
             {
 
@@ -89,9 +93,9 @@ namespace Wolt.BLL.Services.Concrete
 
             user.Token = response.Token;
 
-            await _unitOfWork.UserAuthRepository.RegisterUserAsync(user);
+           
 
-            _unitOfWork.Commit();
+          
 
             UserOldPassword oldPassword = new UserOldPassword() {
                 OldPassword = user.Password,
