@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,25 +30,201 @@ namespace Wolt.BLL.Services.Concrete
             _UnitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task AddCommentAsync(AddUserCommentDTO comment)
+        public async Task<BaseResultDTO> AddCommentAsync(string token,AddUserCommentDTO comment)
         {
+
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            comment.UserId = JwtService.GetIdFromToken(token);
+
+            if (comment.UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsComment = await _UnitOfWork.ThingsRepository.CheckUserCommentForRestaurantAsync(comment.UserId,comment.RestaurantId);
+
+            if (IsComment)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "You already have commented for this restuanrant";
+
+                return result;
+            }
+
+            try
+            {
+                UserComment data = _mapper.Map<UserComment>(comment);
+
+                await _UnitOfWork.UserInteractRepository.AddCommentAsync(data);
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "You added comment succesfully!";
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+            }
+
+        }
+
+        public async Task<BaseResultDTO> AddUserBasketAsync(string token, AddUserBasketDTO dto)
+        {
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            dto.UserId = JwtService.GetIdFromToken(token);
+
+            if (dto.UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsBasket = await _UnitOfWork.ThingsRepository.CheckUserBasketAsync(dto.UserId);
+
+            if(IsBasket) 
+            {
+                result.Status= RequestStatus.Failed;
+                result.Message = "You already have created basket";
+
+                return result;
+            }
+
+            try
+            {
+                Basket basket = _mapper.Map<Basket>(dto);
+
+
+
+                Product product = await _UnitOfWork.RestaurantRepository.GetProductAsync(dto.ProductId);
+
+                if (product == null) 
+                {
+
+                    result.Status = RequestStatus.Failed;
+                    result.Message = "No Food found!";
+
+                    return result;
+
+                }
+
+                for(int i = 0; i<dto.Quantity; i++)
+                {
+                    basket.Products.Add(product);
+                }
+
+                basket.TotalAmount *= dto.Quantity * product.Price;
+
+                await _UnitOfWork.UserInteractRepository.AddUserBasketAsync(basket);
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = $"You created basket succesfully! You total amount is {basket.TotalAmount}";
+
+
+                return result;
+            }
+
+            catch(Exception ex) 
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message=ex.Message;
+
+                return result;
+            }
+
             
-
-           UserComment data =_mapper.Map<UserComment>(comment);
-          
-           await  _UnitOfWork.UserInteractRepository.AddCommentAsync(data);
-           _UnitOfWork.Commit();
-
         }
 
-        public Task AddUserBasketAsync(Basket basket)
+        public async Task<BaseResultDTO> AddUserReviewAsync(string token, AddUserReviewDTO dto)
         {
-            throw new NotImplementedException();
-        }
+            BaseResultDTO result = new BaseResultDTO();
 
-        public Task AddUserReviewAsync(UserReview userReview)
-        {
-            throw new NotImplementedException();
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            dto.UserId = JwtService.GetIdFromToken(token);
+
+            if (dto.UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsReview = await _UnitOfWork.ThingsRepository.CheckUserReviewForProductAsync(dto.UserId, dto.ProductId);
+
+            if (IsReview)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "You already have reviewed for this product";
+
+                return result;
+            }
+
+            try
+            {
+               UserReview review = _mapper.Map<UserReview>(dto);
+
+                await _UnitOfWork.UserInteractRepository.AddUserReviewAsync(review);
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "You added review succesfully!";
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+            }
         }
 
         public async Task<BaseResultDTO> DeleteCommentAsync(string token, int CommId)
@@ -108,9 +285,67 @@ namespace Wolt.BLL.Services.Concrete
 
         }
 
-        public Task DeleteUserBasket(string token)
+        public async Task<BaseResultDTO> DeleteUserBasketAsync(string token)
         {
-            throw new NotImplementedException();
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+           int userId = JwtService.GetIdFromToken(token);
+
+            if (userId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsBasket = await _UnitOfWork.ThingsRepository.CheckUserBasketAsync(userId);
+
+            if (!IsBasket)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "No Basket Found";
+
+                return result;
+            }
+
+            try
+            {
+
+                await _UnitOfWork.UserInteractRepository.DeleteUserBasket(userId);
+
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "You deleted Basket succesfully!";
+
+                return result;
+
+            }
+
+            catch (Exception ex) 
+            {
+
+                result.Status= RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+
+            }
+
+
+            
         }
 
         public async Task<List<GetAllUserCommentsDTO>> GetAllCommentsAsync(string token)
@@ -274,7 +509,7 @@ namespace Wolt.BLL.Services.Concrete
            
         }
 
-        public Task UpdateUserBasketAsync(string token, List<Product> products, int? PromodoCodeId)
+        public Task<BaseResultDTO> UpdateUserBasketAsync(string token, List<Product> products, int? PromodoCodeId)
         {
             throw new NotImplementedException();
         }
@@ -334,5 +569,7 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
             }
         }
+
+
     }
 }

@@ -18,5 +18,8 @@ namespace WOLT.DAL.Repository.Abstract
         Task<bool> CheckUserCommentAsync(int userId, int commId);
         Task<bool> CheckUserOrderAsync(int userId, int orderId);
         Task<bool> CheckUserReviewAsync(int userId, int revId);
+        Task<bool> CheckUserReviewForProductAsync(int userId, int productId);
+        Task<bool> CheckUserBasketAsync(int userId);
+        Task<bool> CheckProductAsync(int id);
     }
 }

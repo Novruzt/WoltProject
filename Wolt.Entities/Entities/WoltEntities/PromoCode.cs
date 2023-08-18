@@ -13,6 +13,6 @@ namespace Wolt.Entities.Entities.WoltEntities
         public string PromoName { get; set; } 
         public DateTime PromoStartTime { get; set; }
         public DateTime PromoEndTime { get; set;}
-        public double PromoDisCount { get; set; }
+        public double PromoDiscount { get; set; }
     }
 }

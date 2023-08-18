@@ -42,6 +42,7 @@ namespace WOLT.DAL.DATA
             UserReviewAPI.Fluent(modelBuilder);
             BasketAPI.Fluent(modelBuilder);
             OrderAPI.Fluent(modelBuilder);
+            FavoriteEntityAPI.Fluent(modelBuilder);
 
             UserData.Seed(modelBuilder);
             RestaurantData.Seed(modelBuilder);
@@ -63,9 +64,18 @@ namespace WOLT.DAL.DATA
             {
                 if (entry.State == EntityState.Deleted)
                 {
-                    entry.State = EntityState.Modified;
-                    entry.Entity.DeleteTime = DateTime.Now;
-                    entry.Entity.IsDeleted = true;
+
+                    if (entry.Entity is Basket)
+                    {
+                        entry.State = EntityState.Deleted;
+                    }
+                    else
+                    {
+                        entry.State = EntityState.Modified;
+                        entry.Entity.DeleteTime = DateTime.Now;
+                        entry.Entity.IsDeleted = true;
+                    }
+                    
                 }
 
                 else

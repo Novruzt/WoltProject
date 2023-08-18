@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WOLT.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Initalizer : Migration
+    public partial class İnitalizer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,6 +31,26 @@ namespace WOLT.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Couriers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Restaurants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BaseAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Restaurants", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,12 +80,13 @@ namespace WOLT.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FavoriteFoods",
+                name: "Categories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -73,11 +94,65 @@ namespace WOLT.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FavoriteFoods", x => x.Id);
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FavoriteFoods_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
+                        name: "FK_Categories_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Discounts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false),
+                    DiscountName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Percantage = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Discounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Discounts_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkHours",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DayofWeek = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkHours", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WorkHours_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -86,9 +161,9 @@ namespace WOLT.DAL.Migrations
                 name: "FavoriteRestaurants",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -96,9 +171,46 @@ namespace WOLT.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FavoriteRestaurants", x => x.Id);
+                    table.PrimaryKey("PK_FavoriteRestaurants", x => new { x.UserId, x.RestaurantId });
+                    table.ForeignKey(
+                        name: "FK_FavoriteRestaurants_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FavoriteRestaurants_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserComments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserComments_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserComments_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -205,32 +317,6 @@ namespace WOLT.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Restaurants",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BaseAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    FavoriteRestaurantId = table.Column<int>(type: "int", nullable: true),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Restaurants", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Restaurants_FavoriteRestaurants_FavoriteRestaurantId",
-                        column: x => x.FavoriteRestaurantId,
-                        principalTable: "FavoriteRestaurants",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -242,7 +328,7 @@ namespace WOLT.DAL.Migrations
                     TotalPrice = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
                     UserAddressId = table.Column<int>(type: "int", nullable: false),
                     UserPaymentId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserHistoryId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -274,115 +360,6 @@ namespace WOLT.DAL.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RestaurantId = table.Column<int>(type: "int", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Categories_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Discounts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RestaurantId = table.Column<int>(type: "int", nullable: false),
-                    DiscountName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Percantage = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Discounts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Discounts_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserComments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    RestaurantId = table.Column<int>(type: "int", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserComments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserComments_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserComments_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WorkHours",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RestaurantId = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DayofWeek = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WorkHours", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WorkHours_Restaurants_RestaurantId",
-                        column: x => x.RestaurantId,
-                        principalTable: "Restaurants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -425,7 +402,7 @@ namespace WOLT.DAL.Migrations
                     PromoName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PromoStartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PromoEndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PromoDisCount = table.Column<double>(type: "float", nullable: false),
+                    PromoDiscount = table.Column<double>(type: "float", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -490,7 +467,6 @@ namespace WOLT.DAL.Migrations
                     Picture = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     BasketId = table.Column<int>(type: "int", nullable: true),
-                    FavoriteFoodId = table.Column<int>(type: "int", nullable: true),
                     OrderId = table.Column<int>(type: "int", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -512,15 +488,39 @@ namespace WOLT.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Products_FavoriteFoods_FavoriteFoodId",
-                        column: x => x.FavoriteFoodId,
-                        principalTable: "FavoriteFoods",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Products_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FavoriteFoods",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FavoriteFoods", x => new { x.UserId, x.ProductId });
+                    table.ForeignKey(
+                        name: "FK_FavoriteFoods_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FavoriteFoods_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -557,35 +557,35 @@ namespace WOLT.DAL.Migrations
 
             migrationBuilder.InsertData(
                 table: "Restaurants",
-                columns: new[] { "Id", "BaseAddress", "CreationTime", "DeleteTime", "Description", "FavoriteRestaurantId", "IsDeleted", "Name", "Phone", "UpdateTime" },
-                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(276), null, "Sumgayitin 1nomreli parki", null, false, "GoyercinPark", "051 123 00 12", null });
+                columns: new[] { "Id", "BaseAddress", "CreationTime", "DeleteTime", "Description", "IsDeleted", "Name", "Phone", "UpdateTime" },
+                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(358), null, "Sumgayitin 1nomreli parki", false, "GoyercinPark", "051 123 00 12", null });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Email", "IsDeleted", "Name", "Password", "PasswordResetToken", "Phone", "ProfilePicture", "ResetExpirationDate", "Surname", "Token", "UpdateTime", "VerifiedAt" },
-                values: new object[] { 1, new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9887), null, "asdad@gmaik.com", false, "Novruz", "salam", null, "12313", null, null, "Tarverdiyev", null, null, new DateTime(2023, 8, 6, 23, 16, 21, 924, DateTimeKind.Local).AddTicks(9904) });
+                values: new object[] { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(117), null, "asdad@gmaik.com", false, "Novruz", "salam", null, "12313", null, null, "Tarverdiyev", null, null, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(130) });
 
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "IsDeleted", "Name", "RestaurantId", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(312), null, false, "Ickiler", 1, null },
-                    { 2, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(314), null, false, "Suplar", 1, null }
+                    { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(390), null, false, "Ickiler", 1, null },
+                    { 2, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(391), null, false, "Suplar", 1, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "UserComments",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Details", "IsDeleted", "RestaurantId", "UpdateTime", "UserId" },
-                values: new object[] { 1, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(295), null, "sadad", false, 1, null, 1 });
+                values: new object[] { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(375), null, "sadad", false, 1, null, 1 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "BasketId", "CategoryId", "CreationTime", "DeleteTime", "Description", "FavoriteFoodId", "IsDeleted", "Name", "OrderId", "Picture", "Price", "UpdateTime" },
+                columns: new[] { "Id", "BasketId", "CategoryId", "CreationTime", "DeleteTime", "Description", "IsDeleted", "Name", "OrderId", "Picture", "Price", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, null, 1, new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(328), null, "Adi Su", null, false, "Su", null, null, 0.5m, null },
-                    { 2, null, 2, new DateTime(2023, 8, 6, 19, 16, 21, 925, DateTimeKind.Utc).AddTicks(330), null, "Leziz Sup", null, false, "Mercimek", null, null, 5m, null }
+                    { 1, null, 1, new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(407), null, "Adi Su", false, "Su", null, null, 0.5m, null },
+                    { 2, null, 2, new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(409), null, "Leziz Sup", false, "Mercimek", null, null, 5m, null }
                 });
 
             migrationBuilder.InsertData(
@@ -593,9 +593,9 @@ namespace WOLT.DAL.Migrations
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Description", "IsDeleted", "ProductId", "Score", "UpdateTime", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(378), null, "Test", false, 1, 9m, null, 1 },
-                    { 2, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(381), null, "Test2", false, 1, 1m, null, 1 },
-                    { 3, new DateTime(2023, 8, 6, 23, 16, 21, 925, DateTimeKind.Local).AddTicks(382), null, "Test3", false, 2, 10m, null, 1 }
+                    { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(427), null, "Test", false, 1, 9m, null, 1 },
+                    { 2, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(429), null, "Test2", false, 1, 1m, null, 1 },
+                    { 3, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(430), null, "Test3", false, 2, 10m, null, 1 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -629,14 +629,14 @@ namespace WOLT.DAL.Migrations
                 column: "RestaurantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FavoriteFoods_UserId",
+                name: "IX_FavoriteFoods_ProductId",
                 table: "FavoriteFoods",
-                column: "UserId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FavoriteRestaurants_UserId",
+                name: "IX_FavoriteRestaurants_RestaurantId",
                 table: "FavoriteRestaurants",
-                column: "UserId");
+                column: "RestaurantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_UserAddressId",
@@ -670,11 +670,6 @@ namespace WOLT.DAL.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_FavoriteFoodId",
-                table: "Products",
-                column: "FavoriteFoodId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Products_OrderId",
                 table: "Products",
                 column: "OrderId");
@@ -688,11 +683,6 @@ namespace WOLT.DAL.Migrations
                 name: "IX_PromoCodes_UserId",
                 table: "PromoCodes",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Restaurants_FavoriteRestaurantId",
-                table: "Restaurants",
-                column: "FavoriteRestaurantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserComments_RestaurantId",
@@ -750,6 +740,12 @@ namespace WOLT.DAL.Migrations
                 name: "Discounts");
 
             migrationBuilder.DropTable(
+                name: "FavoriteFoods");
+
+            migrationBuilder.DropTable(
+                name: "FavoriteRestaurants");
+
+            migrationBuilder.DropTable(
                 name: "UserComments");
 
             migrationBuilder.DropTable(
@@ -774,9 +770,6 @@ namespace WOLT.DAL.Migrations
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "FavoriteFoods");
-
-            migrationBuilder.DropTable(
                 name: "PromoCodes");
 
             migrationBuilder.DropTable(
@@ -784,9 +777,6 @@ namespace WOLT.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
-
-            migrationBuilder.DropTable(
-                name: "FavoriteRestaurants");
 
             migrationBuilder.DropTable(
                 name: "UserHistories");
