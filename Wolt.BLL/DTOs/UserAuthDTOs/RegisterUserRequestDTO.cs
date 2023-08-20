@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,5 +23,7 @@ namespace Wolt.BLL.DTOs.UserAuthDTOs
         public string Password { get; set;} 
         public string? Phone { get; set; }
         public IFormFile? ProfilePic { get; set;}
+        [SwaggerSchema(ReadOnly = true)]
+        public string? ProfilePicture { get; set;}
     }
 }

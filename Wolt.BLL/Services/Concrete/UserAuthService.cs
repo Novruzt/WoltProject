@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,25 +22,24 @@ namespace Wolt.BLL.Services.Concrete
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         public UserAuthService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<GetUserProfileDTO> GetAsync(int id)
+        public async Task<GetUserProfileDTO> GetUserAsync(string token)
         {
+           
+            int UserId = JwtService.GetIdFromToken(token);
 
-            User user = await _unitOfWork.UserAuthRepository.GetAsync(id);
+            User user = await _unitOfWork.UserAuthRepository.GetAsync(UserId);
             GetUserProfileDTO dto = _mapper.Map<GetUserProfileDTO>(user);
 
             return dto;
         }
 
-        public Task<GetUserProfileDTO> GetAsync(string token)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<GetUserProfileDTO> GetByEmailAsync(string email)
         {
