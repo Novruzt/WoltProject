@@ -797,12 +797,9 @@ namespace Wolt.BLL.Services.Concrete
                         return result;
                     }
 
-                    if(promoCode != null) 
-                    {
-                        double promo = promoCode.PromoDiscount;
-                        double multiple = order.TotalPrice * promo;
-                        double divide = multiple / 100;
-                        order.TotalPrice = promo;
+                    if(promoCode != null)
+                    { 
+                        order.TotalPrice = order.TotalPrice - (order.TotalPrice* (promoCode.PromoDiscount/100));
                     }
 
                 }
@@ -849,7 +846,7 @@ namespace Wolt.BLL.Services.Concrete
 
                     if (promoCode != null)
                     {
-                        order.TotalPrice = (order.TotalPrice * promoCode.PromoDiscount/100);
+                        order.TotalPrice = order.TotalPrice - (order.TotalPrice * promoCode.PromoDiscount/100);
                     }
                 }
 
@@ -1287,7 +1284,6 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
             }
         }
-
 
     }
 }

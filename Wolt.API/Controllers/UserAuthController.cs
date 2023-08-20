@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.TestPlatform.Utilities.Helpers;
+using Wolt.API.Things;
 using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserAuthDTOs;
 using Wolt.BLL.Enums;
@@ -17,14 +19,16 @@ namespace Wolt.API.Controllers
     {
         private readonly IUserAuthService _UserAuthService;
         private readonly IThingsService _thingsService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UserAuthController(IUserAuthService auth, IThingsService things)
+        public UserAuthController(IUserAuthService auth, IThingsService things, IWebHostEnvironment webHostEnvironment)
         {
             _UserAuthService = auth;
             _thingsService = things;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetUserProfile")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUser()
         {
@@ -40,7 +44,14 @@ namespace Wolt.API.Controllers
             if (!Checker)
                 return BadRequest("Invalid token");
 
-            return Ok();
+            GetUserProfileDTO dto = await _UserAuthService.GetUserAsync(token);
+
+            if (dto == null)
+            {
+                return BadRequest("No user exist.");
+            }
+
+            return Ok(dto);
         }
 
         [HttpPost]
@@ -52,9 +63,25 @@ namespace Wolt.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            RegisterUserResponseDTO result =  await _UserAuthService.RegisterUserAsync(requestDTO);
+            try
+            {
+                if (requestDTO.ProfilePic != null)
+                {
+                    string currPath = _webHostEnvironment.ContentRootPath;
+                    string fullPath = FileService.SaveImage(requestDTO.ProfilePic, _webHostEnvironment);
 
-            return Ok(result);
+                    requestDTO.ProfilePicture = fullPath;
+                }
+
+                RegisterUserResponseDTO result = await _UserAuthService.RegisterUserAsync(requestDTO);
+
+                return Ok(result);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+   
         }
 
         [HttpPost("login")]

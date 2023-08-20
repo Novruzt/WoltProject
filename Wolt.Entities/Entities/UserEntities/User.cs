@@ -15,7 +15,7 @@ namespace Wolt.Entities.Entities.UserEntities
         //User properties:
         public string Name { get; set; }
         public string Surname { get; set; }
-       // public string? ProfilePicture { get; set; }
+       public string? ProfilePicture { get; set; }
         public string Phone { get; set; }
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
