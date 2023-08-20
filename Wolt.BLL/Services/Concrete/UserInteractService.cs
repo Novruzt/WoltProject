@@ -648,7 +648,10 @@ namespace Wolt.BLL.Services.Concrete
 
                     if(promoCode != null) 
                     {
-                        order.TotalPrice = order.TotalPrice - (order.TotalPrice * promoCode.PromoDiscount/100);
+                        double promo = promoCode.PromoDiscount;
+                        double multiple = order.TotalPrice * promo;
+                        double divide = multiple / 100;
+                        order.TotalPrice = promo;
                     }
 
                 }
@@ -775,6 +778,16 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
             }
 
+            bool IsAccepted = await _UnitOfWork.ThingsRepository.IsAcceptedOrderAsync(userId, dto.OrderId);
+
+            if (IsAccepted)
+            {
+                result.Status=RequestStatus.Failed;
+                result.Message = "Since this order is accepted, you cannot cancel Order.";
+
+                return result;
+            }
+
             try
             {
                 await _UnitOfWork.UserInteractRepository.ReturnOrderAsync(userId, dto.OrderId, dto.Reason);
@@ -796,9 +809,6 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
             }
 
-
-
-            return result;
         }
 
         public async Task<BaseResultDTO> UpdateCommentAsync(string token, UpdateCommentDTO dto)

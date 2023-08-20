@@ -12,6 +12,7 @@ namespace Wolt.BLL.DTOs.UserProfileDTOs
         public string OrderStatus { get; set; }
         public double OrderTotalAmount { get; set; }
         public string OrderAddress { get; set; }
+        public string? Description { get; set; }
       
     }
 }
