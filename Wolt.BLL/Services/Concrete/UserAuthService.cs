@@ -93,10 +93,6 @@ namespace Wolt.BLL.Services.Concrete
 
             user.Token = response.Token;
 
-           
-
-          
-
             UserOldPassword oldPassword = new UserOldPassword() {
                 OldPassword = user.Password,
                 UserId = user.Id

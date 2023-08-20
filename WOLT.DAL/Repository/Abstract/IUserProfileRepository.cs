@@ -21,6 +21,8 @@ namespace WOLT.DAL.Repository.Abstract
         Task AddUserPayment(UserPayment payment);    
         Task DeleteUserPaymentAsync(int id, int PaymentId); 
         Task<List<Order>> GetAllOrdersAsync(int id); 
-        Task<Order> GetOrderAsync(int id, int OrderId); 
+        Task<Order> GetOrderAsync(int id, int OrderId);
+        Task AddFavoriteFoodAsync(FavoriteFood food);
+        Task AddFavoriteRestaurantAsync(FavoriteRestaurant restaurant);
     }
 }

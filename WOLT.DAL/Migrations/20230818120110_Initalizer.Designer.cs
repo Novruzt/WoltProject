@@ -12,8 +12,8 @@ using WOLT.DAL.DATA;
 namespace WOLT.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230818103515_İnitalizer")]
-    partial class İnitalizer
+    [Migration("20230818120110_Initalizer")]
+    partial class Initalizer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,7 +62,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(390),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4460),
                             IsDeleted = false,
                             Name = "Ickiler",
                             RestaurantId = 1
@@ -70,7 +70,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(391),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4461),
                             IsDeleted = false,
                             Name = "Suplar",
                             RestaurantId = 1
@@ -180,7 +180,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(407),
+                            CreationTime = new DateTime(2023, 8, 18, 12, 1, 10, 405, DateTimeKind.Utc).AddTicks(4478),
                             Description = "Adi Su",
                             IsDeleted = false,
                             Name = "Su",
@@ -190,7 +190,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreationTime = new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(409),
+                            CreationTime = new DateTime(2023, 8, 18, 12, 1, 10, 405, DateTimeKind.Utc).AddTicks(4481),
                             Description = "Leziz Sup",
                             IsDeleted = false,
                             Name = "Mercimek",
@@ -244,7 +244,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             BaseAddress = "Mehelle 765",
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(358),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4433),
                             Description = "Sumgayitin 1nomreli parki",
                             IsDeleted = false,
                             Name = "GoyercinPark",
@@ -415,14 +415,14 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(117),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4221),
                             Email = "asdad@gmaik.com",
                             IsDeleted = false,
                             Name = "Novruz",
                             Password = "salam",
                             Phone = "12313",
                             Surname = "Tarverdiyev",
-                            VerifiedAt = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(130)
+                            VerifiedAt = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4238)
                         });
                 });
 
@@ -510,7 +510,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(375),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4447),
                             Details = "sadad",
                             IsDeleted = false,
                             RestaurantId = 1,
@@ -668,7 +668,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(427),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4498),
                             Description = "Test",
                             IsDeleted = false,
                             ProductId = 1,
@@ -678,7 +678,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(429),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4500),
                             Description = "Test2",
                             IsDeleted = false,
                             ProductId = 1,
@@ -688,7 +688,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(430),
+                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4501),
                             Description = "Test3",
                             IsDeleted = false,
                             ProductId = 2,

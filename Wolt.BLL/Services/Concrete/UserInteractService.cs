@@ -128,8 +128,6 @@ namespace Wolt.BLL.Services.Concrete
             {
                 Basket basket = _mapper.Map<Basket>(dto);
 
-
-
                 Product product = await _UnitOfWork.RestaurantRepository.GetProductAsync(dto.ProductId);
 
                 if (product == null) 
@@ -139,10 +137,11 @@ namespace Wolt.BLL.Services.Concrete
                     result.Message = "No Food found!";
 
                     return result;
-
+                
                 }
 
-                for(int i = 0; i<dto.Quantity; i++)
+
+                for (int i = 0; i<dto.Quantity; i++)
                 {
                     basket.Products.Add(product);
                 }
@@ -154,7 +153,6 @@ namespace Wolt.BLL.Services.Concrete
 
                 result.Status = RequestStatus.Success;
                 result.Message = $"You created basket succesfully! You total amount is {basket.TotalAmount}";
-
 
                 return result;
             }

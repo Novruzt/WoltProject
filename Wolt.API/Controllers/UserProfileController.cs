@@ -68,5 +68,47 @@ namespace Wolt.API.Controllers
 
         }
 
+        [HttpGet("AllFavoriteRestaurants")]
+        public async Task<IActionResult> GetAllFavoriteRestaurants()
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (Checker = false)
+                return BadRequest("Invalid token");
+
+            List<GetAllFavoriteRestaurantsDTO> list = await _profileService.GetAllFavoriteRestaurantsAsync(token);
+
+            if (list.Count == 0)
+                return BadRequest("No favorite restaurants found");
+
+            return Ok(list);
+        }
+
+        [HttpGet("FavoriteRestaurant/{favId}")]
+        public async Task<IActionResult> GetFavoriteRestaurant(int favId)
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (Checker = false)
+                return BadRequest("Invalid token");
+
+            UserFavoriteRestaurantDTO dto = await _profileService.GetFavoriteRestaurantsAsync(token, favId);
+
+            if (dto == null)
+                return BadRequest("No restaurant found!");
+
+            return Ok(dto);
+
+        }
     }
 }

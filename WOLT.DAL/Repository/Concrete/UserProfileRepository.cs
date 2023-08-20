@@ -20,6 +20,16 @@ namespace WOLT.DAL.Repository.Concrete
             _ctx = context;
         }
 
+        public async Task AddFavoriteFoodAsync(FavoriteFood food)
+        {
+            await _ctx.FavoriteFoods.AddAsync(food);
+        }
+
+        public async Task AddFavoriteRestaurantAsync(FavoriteRestaurant restaurant)
+        {
+            await _ctx.FavoriteRestaurants.AddAsync(restaurant);
+        }
+
         public async Task AddUserPayment(UserPayment payment)
         {
             await _ctx.UserPayments.AddAsync(payment);
@@ -34,14 +44,18 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<List<FavoriteFood>> GetAllFavoriteFoodAsync(int id)
         {
-            List<FavoriteFood> favorites =await  _ctx.FavoriteFoods.Where(c=>c.UserId==id).ToListAsync();
+            List<FavoriteFood> favorites =await  _ctx.FavoriteFoods.Where(c=>c.UserId==id)
+                .Include(ff=>ff.Product)
+                .ToListAsync();
             
             return favorites;
         }
 
         public async Task<List<FavoriteRestaurant>> GetAllFavoriteRestaurantsAsync(int id)
         { 
-            List<FavoriteRestaurant> favorites = await _ctx.FavoriteRestaurants.Where(c=>c.UserId== id).ToListAsync();
+            List<FavoriteRestaurant> favorites = await _ctx.FavoriteRestaurants.Where(c=>c.UserId== id)
+                .Include(fr=>fr.Restaurant)
+                .ToListAsync();
 
             return favorites;
         }
@@ -80,14 +94,22 @@ namespace WOLT.DAL.Repository.Concrete
                 .Include(f=>f.Product)
                 .ThenInclude(p=>p.Category)
                 .ThenInclude(c=>c.Restaurant)
-                .FirstOrDefaultAsync(c=>c.Id==favId);
+
+               // .Include(f=>f.Product)
+               // .ThenInclude(p=>p.Category)
+                
+           //     .Include(f=>f.Product)
+                .FirstOrDefaultAsync(c=>c.ProductId==favId);
 
             return data;
         }
 
         public async Task<FavoriteRestaurant> GetFavoriteRestaurantsAsync(int id, int favId)
         {
-            FavoriteRestaurant data = await _ctx.FavoriteRestaurants.Where(c=>c.UserId==id).FirstOrDefaultAsync(c=>c.Id==favId);
+            FavoriteRestaurant data = await _ctx.FavoriteRestaurants.Where(c=>c.UserId==id)
+                .Include(fr=>fr.Restaurant)
+                .ThenInclude(r=>r.Categories)
+                .FirstOrDefaultAsync(c=>c.RestaurantId==favId);
 
             return data;
         }

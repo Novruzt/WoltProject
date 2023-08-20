@@ -16,7 +16,7 @@ namespace Wolt.Entities.Entities.WoltEntities
         public User User { get; set; }
         public DateTime CreationTime { get; set; }    
         public double TotalAmount { get; set; }
-        public ICollection<Product>? Products { get; set; }
+        public ICollection<Product>? Products { get; set; } 
         public int? PromoCodeId { get; set; }
         public PromoCode PromoCode { get; set; }
 

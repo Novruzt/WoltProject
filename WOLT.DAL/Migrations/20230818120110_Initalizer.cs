@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WOLT.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class İnitalizer : Migration
+    public partial class Initalizer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -558,34 +558,34 @@ namespace WOLT.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Restaurants",
                 columns: new[] { "Id", "BaseAddress", "CreationTime", "DeleteTime", "Description", "IsDeleted", "Name", "Phone", "UpdateTime" },
-                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(358), null, "Sumgayitin 1nomreli parki", false, "GoyercinPark", "051 123 00 12", null });
+                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4433), null, "Sumgayitin 1nomreli parki", false, "GoyercinPark", "051 123 00 12", null });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Email", "IsDeleted", "Name", "Password", "PasswordResetToken", "Phone", "ProfilePicture", "ResetExpirationDate", "Surname", "Token", "UpdateTime", "VerifiedAt" },
-                values: new object[] { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(117), null, "asdad@gmaik.com", false, "Novruz", "salam", null, "12313", null, null, "Tarverdiyev", null, null, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(130) });
+                values: new object[] { 1, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4221), null, "asdad@gmaik.com", false, "Novruz", "salam", null, "12313", null, null, "Tarverdiyev", null, null, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4238) });
 
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "IsDeleted", "Name", "RestaurantId", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(390), null, false, "Ickiler", 1, null },
-                    { 2, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(391), null, false, "Suplar", 1, null }
+                    { 1, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4460), null, false, "Ickiler", 1, null },
+                    { 2, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4461), null, false, "Suplar", 1, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "UserComments",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Details", "IsDeleted", "RestaurantId", "UpdateTime", "UserId" },
-                values: new object[] { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(375), null, "sadad", false, 1, null, 1 });
+                values: new object[] { 1, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4447), null, "sadad", false, 1, null, 1 });
 
             migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "BasketId", "CategoryId", "CreationTime", "DeleteTime", "Description", "IsDeleted", "Name", "OrderId", "Picture", "Price", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, null, 1, new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(407), null, "Adi Su", false, "Su", null, null, 0.5m, null },
-                    { 2, null, 2, new DateTime(2023, 8, 18, 10, 35, 14, 982, DateTimeKind.Utc).AddTicks(409), null, "Leziz Sup", false, "Mercimek", null, null, 5m, null }
+                    { 1, null, 1, new DateTime(2023, 8, 18, 12, 1, 10, 405, DateTimeKind.Utc).AddTicks(4478), null, "Adi Su", false, "Su", null, null, 0.5m, null },
+                    { 2, null, 2, new DateTime(2023, 8, 18, 12, 1, 10, 405, DateTimeKind.Utc).AddTicks(4481), null, "Leziz Sup", false, "Mercimek", null, null, 5m, null }
                 });
 
             migrationBuilder.InsertData(
@@ -593,9 +593,9 @@ namespace WOLT.DAL.Migrations
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "Description", "IsDeleted", "ProductId", "Score", "UpdateTime", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(427), null, "Test", false, 1, 9m, null, 1 },
-                    { 2, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(429), null, "Test2", false, 1, 1m, null, 1 },
-                    { 3, new DateTime(2023, 8, 18, 14, 35, 14, 982, DateTimeKind.Local).AddTicks(430), null, "Test3", false, 2, 10m, null, 1 }
+                    { 1, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4498), null, "Test", false, 1, 9m, null, 1 },
+                    { 2, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4500), null, "Test2", false, 1, 1m, null, 1 },
+                    { 3, new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4501), null, "Test3", false, 2, 10m, null, 1 }
                 });
 
             migrationBuilder.CreateIndex(

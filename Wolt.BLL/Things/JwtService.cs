@@ -77,7 +77,6 @@ namespace Wolt.BLL.Things
                 {
                     return -1;
                 }
-
                 
             }
 
@@ -102,15 +101,18 @@ namespace Wolt.BLL.Things
 
             try
             {
-                SecurityToken validatedToken;
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 
-                
+                string idValue = principal.FindFirstValue("Id");
+
+                if (int.TryParse(idValue, out int userId))
+                   if(userId >=0)
+                    return true;
+
                 return true;
             }
             catch (SecurityTokenException ex)
             {
-
                 return false;
             }
         }
@@ -128,7 +130,6 @@ namespace Wolt.BLL.Things
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim("Id", user.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
 

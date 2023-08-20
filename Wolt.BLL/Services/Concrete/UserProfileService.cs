@@ -46,9 +46,15 @@ namespace Wolt.BLL.Services.Concrete
             return list;
         }
 
-        public Task<List<FavoriteRestaurant>> GetAllFavoriteRestaurantsAsync(string token)
+        public async Task<List<GetAllFavoriteRestaurantsDTO>> GetAllFavoriteRestaurantsAsync(string token)
         {
-            throw new NotImplementedException();
+            int UserId = JwtService.GetIdFromToken(token);
+
+            List<FavoriteRestaurant> datas = await _unitOfWork.UserProfileRepository.GetAllFavoriteRestaurantsAsync(UserId);
+            List<GetAllFavoriteRestaurantsDTO> list =  _mapper.Map<List<GetAllFavoriteRestaurantsDTO>>(datas);
+
+            return list;
+
         }
 
         public Task<List<UserHistory>> GetAllHistoryAsync(string token)
@@ -83,9 +89,15 @@ namespace Wolt.BLL.Services.Concrete
 
         }
 
-        public Task<FavoriteRestaurant> GetFavoriteRestaurantsAsync(string token, int favId)
+        public async Task<UserFavoriteRestaurantDTO> GetFavoriteRestaurantsAsync(string token, int favId)
         {
-            throw new NotImplementedException();
+            int UserID = JwtService.GetIdFromToken(token);
+
+            FavoriteRestaurant data= await _unitOfWork.UserProfileRepository.GetFavoriteRestaurantsAsync(UserID, favId);
+            UserFavoriteRestaurantDTO dto = _mapper.Map<UserFavoriteRestaurantDTO>(data);
+
+            return dto;
+
         }
 
         public Task<Order> GetOrderAsync(string token, int OrderId)

@@ -13,8 +13,8 @@ namespace Wolt.BLL.Services.Abstract
     {
         Task<List<GetAllUserFavoriteFoodsDTO>> GetAllFavoriteFoodAsync(string token);
         Task<UserFavoriteFoodDTO> GetFavoriteFoodAsync(string token, int favId);
-        Task<List<FavoriteRestaurant>> GetAllFavoriteRestaurantsAsync(string token);
-        Task<FavoriteRestaurant> GetFavoriteRestaurantsAsync(string token, int favId);
+        Task<List<GetAllFavoriteRestaurantsDTO>> GetAllFavoriteRestaurantsAsync(string token);
+        Task<UserFavoriteRestaurantDTO> GetFavoriteRestaurantsAsync(string token, int favId);
         Task<List<UserAddress>> GetAllUserAddressesAsync(string token);
         Task<UserAddress> GetUserAddressesAsync(string token, int addressId);
         Task<List<UserHistory>> GetAllHistoryAsync(string token);
