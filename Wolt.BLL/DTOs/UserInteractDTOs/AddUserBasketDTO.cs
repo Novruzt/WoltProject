@@ -1,6 +1,7 @@
 ﻿using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -15,8 +16,9 @@ namespace Wolt.BLL.DTOs.UserInteractDTOs
     {
         [SwaggerSchema(ReadOnly = true)]
         public int UserId { get; set; }
+        [Required]
         public int ProductId { get; set; }
+        [Required]
         public int Quantity { get; set; }
-        public int? PromoCodeId { get; set; }
     }
 }

@@ -11,6 +11,12 @@ namespace Wolt.Entities.Entities.RestaurantEntities
 {
     public class Restaurant:BaseEntity
     {
+        public Restaurant()
+        {
+            Discounts= new List<Discount>();
+            Categories= new List<Category>();
+            UserComments= new List<UserComment>();
+        }
         public string Name { get; set; }
         public string BaseAddress { get; set; }
         public string Phone { get; set; }

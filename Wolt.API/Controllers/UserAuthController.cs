@@ -25,11 +25,22 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(int id)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> GetUser()
         {
-            GetUserProfileDTO dto = await _UserAuthService.GetAsync(id);
 
-            return Ok(dto);
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            int Id = JwtService.GetIdFromToken(token);
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            return Ok();
         }
 
         [HttpPost]
@@ -74,7 +85,7 @@ namespace Wolt.API.Controllers
                 return Unauthorized("Token not provided");
 
             bool Checker = await _thingsService.CheckUserByToken(token);
-             if (Checker = false)
+             if (!Checker)
                 return BadRequest("Invalid token");
 
              BaseResultDTO result = await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);

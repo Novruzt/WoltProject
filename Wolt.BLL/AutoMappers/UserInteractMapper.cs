@@ -23,16 +23,13 @@ namespace Wolt.BLL.AutoMappers
 
             CreateMap<AddUserCommentDTO, UserComment>();
             CreateMap<AddUserReviewDTO, UserReview>();
+            CreateMap<Basket, GetUserBasketDTO>();
+            CreateMap<Product, GetProductsForBasketDTO>()
+                .ForMember(dest=>dest.Quantity, opt=>opt.Ignore());
+
             CreateMap<AddUserBasketDTO, Basket>()
-                .ForSourceMember(src=>src.Quantity, opt=>opt.DoNotValidate())
-                .ForSourceMember(src=>src.ProductId, opt=>opt.DoNotValidate());
+                .ForSourceMember(src=>src.Quantity, opt=>opt.DoNotValidate());
            
-                
-                
-
-           
-
-
             CreateMap<UserComment, GetUserCommentDTO>();
             CreateMap<UserComment, GetAllUserCommentsDTO>();
 

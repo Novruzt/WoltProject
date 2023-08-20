@@ -20,6 +20,31 @@ namespace WOLT.DAL.Repository.Concrete
         {
             _ctx = context;
         }
+
+        public async Task AddBasketQuantityAsync(int BasketId, int ProductId, int Quantity)
+        {
+            BasketProductQuantity basketProductQuantity = _ctx.BasketProductQuantities.FirstOrDefault(c=>c.BasketId==BasketId && c.ProductId==ProductId);
+
+            if(basketProductQuantity!=null) 
+            {
+                basketProductQuantity.Quantity+=Quantity;
+            }
+
+            else
+            {
+                BasketProductQuantity nEW = new BasketProductQuantity()
+                {
+                    Quantity=Quantity,
+                    BasketId=BasketId,
+                    ProductId=ProductId,
+                };
+               
+               await _ctx.BasketProductQuantities.AddAsync(nEW);
+            }
+
+        }
+
+
         public async Task AddCommentAsync(UserComment comment)
         {
 
@@ -27,12 +52,38 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task AddUserBasketAsync(Basket basket)
+        public async Task AddOrderHistoryAsync(int id, int orderId)
         {
+            UserHistory userHistory = await _ctx.UserHistories.FirstOrDefaultAsync(c=>c.UserId==id);
+            Order order = await _ctx.Orders.FirstOrDefaultAsync(c=>c.Id==orderId);
 
-            basket.TotalAmount = CalculateTotalAmount(basket.Products, basket.PromoCodeId);
-            
+            userHistory.Orders.Add(order);
+        }
 
+        public async Task AddOrderQuantityAsync(int orderId, int ProductId, int quantity)
+        {
+            OrderProductQuantity orderQuantity= await  _ctx.OrderProductQuantities.FirstOrDefaultAsync(c=>c.ProductId==ProductId && c.OrderId==orderId);
+
+            if(orderQuantity!=null) 
+            {
+                orderQuantity.Quantity+=quantity;
+            }
+
+            else
+            {
+                OrderProductQuantity nEW = new OrderProductQuantity() 
+                {
+                    Quantity= quantity,
+                    OrderId=orderId,
+                    ProductId=ProductId
+                };
+
+                await _ctx.OrderProductQuantities.AddAsync(nEW);
+            }
+        }
+
+        public async Task AddUserBasketAsync(Basket basket)
+        { 
             await _ctx.Baskets.AddAsync(basket);
         }
 
@@ -43,7 +94,17 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task DeleteComment(int id, int CommId)
+        public async Task CreateUserHistoryAsync(int id)
+        {
+            UserHistory userHistory = new UserHistory()
+            {
+                UserId=id
+            };
+
+            await _ctx.UserHistories.AddAsync(userHistory);
+        }
+
+        public async Task DeleteCommentAsync(int id, int CommId)
         {
             UserComment comment =  await _ctx.UserComments.Where(c=>c.UserId==id).FirstOrDefaultAsync(c => c.Id==CommId);
             
@@ -51,9 +112,18 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task DeleteUserBasket(int id)
+        public async Task DeleteReviewAsync(int id, int RevId)
         {
-            Basket basket = await _ctx.Baskets.FirstOrDefaultAsync(b=>b.UserId==id);
+            UserReview review = await _ctx.UserReviews.Where(c=>c.UserId==id).FirstOrDefaultAsync(c=>c.Id==RevId);
+
+            _ctx.UserReviews.Remove(review);
+        }
+
+        public async Task DeleteUserBasketAsync(int id)
+        {
+            Basket basket = await _ctx.Baskets
+                .Include(b=>b.Products)
+                .FirstOrDefaultAsync(b=>b.UserId==id);
 
             _ctx.Baskets.Remove(basket);
 
@@ -78,6 +148,13 @@ namespace WOLT.DAL.Repository.Concrete
             return reviews;
         }
 
+        public async Task<BasketProductQuantity> GetBasketQuantityAsync(int basketId, int ProductId)
+        {
+            BasketProductQuantity productQuantity = await _ctx.BasketProductQuantities.FirstOrDefaultAsync(c=>c.BasketId ==basketId && c.ProductId==ProductId);
+
+            return productQuantity;
+        }
+
         public async Task<UserComment> GetCommentAsync(int id, int commId)
         {
             UserComment comment = await _ctx.UserComments
@@ -89,6 +166,48 @@ namespace WOLT.DAL.Repository.Concrete
             return comment;
         }
 
+        public async Task<UserComment> GetDeletedCommentFromRestaurantAsync(int id, int RestId)
+        {
+            UserComment comment = await _ctx.UserComments
+               .IgnoreQueryFilters()
+              .FirstOrDefaultAsync(c => c.UserId == id && c.RestaurantId == RestId && c.IsDeleted == true);
+
+            return comment;
+        }
+
+        public async Task<UserReview> GetDeletedReviewFromProductAsync(int id, int ProductId)
+        {
+            UserReview review = await _ctx.UserReviews
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c=>c.UserId==id && c.ProductId==ProductId && c.IsDeleted==true);
+
+            return review;
+        }
+
+        public async Task<OrderProductQuantity> GetOrderQuantityAsync(int orderId, int ProductId)
+        {
+            OrderProductQuantity quantity = await _ctx.OrderProductQuantities.FirstOrDefaultAsync(q=>q.ProductId==ProductId && q.OrderId==orderId);
+
+            return quantity;
+        }
+
+        public async Task<PromoCode> GetPromoCodeAsync(int? id)
+        {
+            PromoCode promo = await _ctx.PromoCodes.FirstOrDefaultAsync(c => c.Id == id);
+
+            return promo;
+        }
+
+        public async Task<Basket> GetUserBasketAsync(int id)
+        {
+            Basket basket = await _ctx.Baskets
+                .Include(b=>b.Products)
+                .FirstOrDefaultAsync(b => b.UserId == id);
+
+            return basket;
+
+        }
+
         public async Task<UserReview> GetUserReviewAsync(int id, int RevId)
         {
             UserReview review =  await _ctx.UserReviews.Where(r=>r.UserId==id).FirstOrDefaultAsync(r=>r.Id==RevId);
@@ -96,19 +215,25 @@ namespace WOLT.DAL.Repository.Concrete
             return review;
         }
 
+        public async Task OrderBasketAsync(Order order, int userId)
+        {
+
+            await _ctx.Orders.AddAsync(order);
+
+        }
+
         public async Task ReturnOrderAsync(int id, int OrderId, string reason)
         {
             Order order = await _ctx.Orders
                 .IgnoreQueryFilters()
-                .Where(o => o.UserId == id && !o.IsDeleted).FirstOrDefaultAsync(o=>o.Id==OrderId);
+                .Where(o => o.UserId == id && !o.IsDeleted && o.OrderStatus==OrderStatus.Waiting)
+                .FirstOrDefaultAsync(o=>o.Id==OrderId);
 
             order.OrderStatus = OrderStatus.Returned;
             order.Description = reason;
             order.DeleteTime=DateTime.Now;
 
             UserHistory history = await _ctx.UserHistories.FirstOrDefaultAsync(h => h.UserId == id);
-
-            history.Orders.Add(order);
 
             User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
 
@@ -136,8 +261,7 @@ namespace WOLT.DAL.Repository.Concrete
             foreach(var item in products)
                 basket.Products.Add(item);
 
-            if(PromodoCodeId!=null && PromodoCodeId!=0 && basket.PromoCodeId!=null)
-                basket.PromoCodeId=PromodoCodeId.Value;
+            
 
             _ctx.Baskets.Update(basket);
         }
@@ -154,23 +278,6 @@ namespace WOLT.DAL.Repository.Concrete
             _ctx.UserReviews.Update(review);
 
         }
-
-        private double CalculateTotalAmount(ICollection<Product> products, int? promoCodeId)
-        {
-            double totalAmount = products.Sum(p => p.Price);
-
-            if (promoCodeId.HasValue && promoCodeId.Value>0)
-            {
-                var promoCode = _ctx.PromoCodes.FirstOrDefault(p => p.Id == promoCodeId.Value);
-                if (promoCode != null)
-                {
-                    totalAmount = totalAmount - (totalAmount * promoCode.PromoDiscount / 100);
-                }
-            }
-
-            return totalAmount;
-        }
-
        
     }
 }

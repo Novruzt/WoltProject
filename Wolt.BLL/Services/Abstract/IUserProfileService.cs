@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserProfileDTOs;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
@@ -15,13 +16,12 @@ namespace Wolt.BLL.Services.Abstract
         Task<UserFavoriteFoodDTO> GetFavoriteFoodAsync(string token, int favId);
         Task<List<GetAllFavoriteRestaurantsDTO>> GetAllFavoriteRestaurantsAsync(string token);
         Task<UserFavoriteRestaurantDTO> GetFavoriteRestaurantsAsync(string token, int favId);
-        Task<List<UserAddress>> GetAllUserAddressesAsync(string token);
-        Task<UserAddress> GetUserAddressesAsync(string token, int addressId);
-        Task<List<UserHistory>> GetAllHistoryAsync(string token);
-        Task<List<UserPayment>> GetAllUserPaymentsAsync(string token);
-        Task AddUserPayment(UserPayment payment);
-        Task DeleteUserPaymentAsync(string token, int PaymentId);
-        Task<List<Order>> GetAllOrdersAsync(string token);
-        Task<Order> GetOrderAsync(string token, int OrderId);
+        Task<List<GetAllUserAdressDTO>> GetAllUserAddressesAsync(string token);
+        Task<List<GetAllUserHistoryDTO>> GetAllHistoryAsync(string token); 
+        Task<List<GetAllUserCardDTO>> GetAllUserPaymentsAsync(string token);
+        Task<BaseResultDTO> AddUserPayment(string token, AddUserPaymentDTO dto);
+        Task<BaseResultDTO> DeleteUserPaymentAsync(string token, DeleteUserCardDTO dto);
+        Task<List<GetAllUserHistoryDTO>> GetAllActiveOrdersAsync(string token);
+        Task<GetOrderDTO> GetOrderAsync(string token, int OrderId);
     }
 }

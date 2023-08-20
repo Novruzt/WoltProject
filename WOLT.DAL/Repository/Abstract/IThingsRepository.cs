@@ -10,6 +10,8 @@ namespace WOLT.DAL.Repository.Abstract
     public interface IThingsRepository
     {
         Task<bool> CheckUserCommentForRestaurantAsync(int userId, int restId);
+        Task<bool> DeletedCommentForRestaurantAsync(int userId, int RestId);
+        Task<bool> DeletedReviewForProductAsync(int userId, int productId);
         Task<bool> CheckUserForEmailAsync(string email);
         Task<bool> CheckLoginUserAsync(string email, string password);
         Task<bool> CheckUserByIdAsync(int Id);
@@ -21,5 +23,7 @@ namespace WOLT.DAL.Repository.Abstract
         Task<bool> CheckUserReviewForProductAsync(int userId, int productId);
         Task<bool> CheckUserBasketAsync(int userId);
         Task<bool> CheckProductAsync(int id);
+        Task<bool> CheckUserPaymentAsync(int id, string number, string cvv, string Expiretime);
+        Task<bool> CheckUserCardBySensetiveInfoAsync(int userId, int cardId, string CVV, string ExpireDate); 
     }
 }

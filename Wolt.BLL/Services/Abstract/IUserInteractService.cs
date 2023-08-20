@@ -22,9 +22,13 @@ namespace Wolt.BLL.Services.Abstract
         Task<List<GetAllUserReviewsDTO>> GetAllReviewsAsync(string token);
         Task<GetUserReviewDTO> GetUserReviewAsync(string token, int revId);
         Task<BaseResultDTO> UpdateUserReviewAsync(string token, UpdateReviewDTO dto);
+        Task<BaseResultDTO> DeleteUserReviewAsync(string token, int revId);
         Task<BaseResultDTO> AddUserReviewAsync(string token, AddUserReviewDTO dto);
-        Task<BaseResultDTO> AddUserBasketAsync(string token, AddUserBasketDTO dto); //bunu yazram indi // xetalar var. 
+        Task<BaseResultDTO> AddUserBasketAsync(string token, AddUserBasketDTO dto);  
         Task<BaseResultDTO> DeleteUserBasketAsync(string token); 
-        Task<BaseResultDTO> UpdateUserBasketAsync(string token, List<Product> products, int? PromodoCodeId); //AddUserbAsketAsync ile eyni problem yasanacag.
+        Task<BaseResultDTO> UpdateUserBasketAsync(string token, AddUserBasketDTO dto); 
+        Task<GetUserBasketDTO> GetUserBasket(string token);
+        Task<BaseResultDTO> OrderBasketAsync(string token, OrderBasketDTO dto);
+
     }
 }

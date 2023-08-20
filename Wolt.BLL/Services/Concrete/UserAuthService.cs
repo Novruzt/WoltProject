@@ -36,6 +36,11 @@ namespace Wolt.BLL.Services.Concrete
             return dto;
         }
 
+        public Task<GetUserProfileDTO> GetAsync(string token)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<GetUserProfileDTO> GetByEmailAsync(string email)
         {
             User user = await _unitOfWork.UserAuthRepository.GetByEmailAsync(email);
@@ -98,6 +103,7 @@ namespace Wolt.BLL.Services.Concrete
                 UserId = user.Id
             };
 
+            await _unitOfWork.UserInteractRepository.CreateUserHistoryAsync(user.Id);
             await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
 
             _unitOfWork.Commit();

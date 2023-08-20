@@ -15,6 +15,7 @@ using Wolt.BLL.Things;
 using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
+using Wolt.Entities.Enums;
 using WOLT.DAL.UnitOfWork.Abstract;
 using WOLT.DAL.UnitOfWork.Concrete;
 
@@ -68,6 +69,27 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
+               
+
+                bool IsDeleted = await _UnitOfWork.ThingsRepository.DeletedCommentForRestaurantAsync(comment.UserId, comment.RestaurantId);
+
+                if (IsDeleted)
+                {
+                    UserComment userComment = await _UnitOfWork.UserInteractRepository.GetDeletedCommentFromRestaurantAsync(comment.UserId, comment.RestaurantId);
+
+                    userComment.Details = comment.Details;
+                    userComment.IsDeleted = false;
+                   
+
+                    _UnitOfWork.Commit();
+
+                    result.Status = RequestStatus.Success;
+                    result.Message = "You added comment succesfully!";
+
+                    return result;
+                }
+
+
                 UserComment data = _mapper.Map<UserComment>(comment);
 
                 await _UnitOfWork.UserInteractRepository.AddCommentAsync(data);
@@ -126,7 +148,10 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
-                Basket basket = _mapper.Map<Basket>(dto);
+                Basket basket = new Basket()
+                {
+                    UserId=dto.UserId
+                };
 
                 Product product = await _UnitOfWork.RestaurantRepository.GetProductAsync(dto.ProductId);
 
@@ -140,15 +165,27 @@ namespace Wolt.BLL.Services.Concrete
                 
                 }
 
+                if (dto.Quantity <= 0)
+                {
+                    result.Status=RequestStatus.Failed;
+                    result.Message = "Enter valid quantity. Quantity must be greater than 0";
 
+                    return result;
+                }
+                
                 for (int i = 0; i<dto.Quantity; i++)
                 {
                     basket.Products.Add(product);
                 }
 
-                basket.TotalAmount *= dto.Quantity * product.Price;
+                basket.TotalAmount = dto.Quantity * product.Price;
 
                 await _UnitOfWork.UserInteractRepository.AddUserBasketAsync(basket);
+                
+                _UnitOfWork.Commit();
+
+                await _UnitOfWork.UserInteractRepository.AddBasketQuantityAsync(basket.Id, dto.ProductId, dto.Quantity);
+
                 _UnitOfWork.Commit();
 
                 result.Status = RequestStatus.Success;
@@ -165,7 +202,6 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
             }
 
-            
         }
 
         public async Task<BaseResultDTO> AddUserReviewAsync(string token, AddUserReviewDTO dto)
@@ -205,7 +241,29 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
-               UserReview review = _mapper.Map<UserReview>(dto);
+
+                bool IsDeleted = await _UnitOfWork.ThingsRepository.DeletedReviewForProductAsync(dto.UserId, dto.ProductId);
+
+                if (IsDeleted) 
+                {
+
+                    UserReview userReview = await _UnitOfWork.UserInteractRepository.GetDeletedReviewFromProductAsync(dto.UserId, dto.ProductId);
+
+                    userReview.IsDeleted = false;
+                    userReview.Score = dto.Score;
+                    userReview.Description = dto.Description;
+
+                    _UnitOfWork.Commit();
+
+                    result.Status= RequestStatus.Success;
+                    result.Message = "You added review succesfully!";
+
+                    return result;
+
+                }
+
+
+                UserReview review = _mapper.Map<UserReview>(dto);
 
                 await _UnitOfWork.UserInteractRepository.AddUserReviewAsync(review);
                 _UnitOfWork.Commit();
@@ -263,7 +321,7 @@ namespace Wolt.BLL.Services.Concrete
             try
             {
 
-                await _UnitOfWork.UserInteractRepository.DeleteComment(userId, CommId);
+                await _UnitOfWork.UserInteractRepository.DeleteCommentAsync(userId, CommId);
 
                 _UnitOfWork.Commit();
 
@@ -321,7 +379,7 @@ namespace Wolt.BLL.Services.Concrete
             try
             {
 
-                await _UnitOfWork.UserInteractRepository.DeleteUserBasket(userId);
+                await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
 
                 _UnitOfWork.Commit();
 
@@ -341,9 +399,63 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
 
             }
+        }
 
+        public async Task<BaseResultDTO> DeleteUserReviewAsync(string token, int revId)
+        {
+            BaseResultDTO result = new BaseResultDTO();
 
-            
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int userId = JwtService.GetIdFromToken(token);
+
+            if (userId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsComment = await _UnitOfWork.ThingsRepository.CheckUserReviewAsync(userId, revId);
+
+            if (!IsComment)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "No Review Found!";
+
+                return result;
+            }
+
+            try
+            {
+
+                await _UnitOfWork.UserInteractRepository.DeleteReviewAsync(userId, revId);
+
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "You deleted review succesfully!";
+
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+            }
         }
 
         public async Task<List<GetAllUserCommentsDTO>> GetAllCommentsAsync(string token)
@@ -377,6 +489,41 @@ namespace Wolt.BLL.Services.Concrete
 
         }
 
+        public async Task<GetUserBasketDTO> GetUserBasket(string token)
+        {
+            int UserId = JwtService.GetIdFromToken(token);
+
+            Basket basket = await _UnitOfWork.UserInteractRepository.GetUserBasketAsync(UserId);
+            GetUserBasketDTO dto = _mapper.Map<GetUserBasketDTO>(basket);
+
+            if (dto != null)
+            {
+                var productQuantities = new List<GetProductsForBasketDTO>();
+
+                foreach (var group in basket.Products.GroupBy(p => p.Id))
+                {
+                    int productId = group.Key;
+
+                    BasketProductQuantity productQuantity = await _UnitOfWork.UserInteractRepository.GetBasketQuantityAsync(basket.Id, productId);
+
+                    productQuantities.Add(new GetProductsForBasketDTO
+                    {
+                        ProductId = productId,
+                        Quantity = productQuantity.Quantity,
+                        Name = group.First().Name,
+                        Description = group.First().Description,
+                        Price = group.First().Price,
+                        Picture = group.First().Picture,
+                       
+                    });
+                }
+
+                dto.Products = productQuantities;
+            }
+
+            return dto;
+        }
+
         public async Task<GetUserReviewDTO> GetUserReviewAsync(string token, int revId)
         {
             int userId = JwtService.GetIdFromToken(token);
@@ -385,6 +532,211 @@ namespace Wolt.BLL.Services.Concrete
             GetUserReviewDTO result = _mapper.Map<GetUserReviewDTO>(review);
 
             return result;
+        }
+
+        public  async Task<BaseResultDTO> OrderBasketAsync(string token, OrderBasketDTO dto)    
+        {
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int userId = JwtService.GetIdFromToken(token);
+
+            if (userId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsBasket = await _UnitOfWork.ThingsRepository.CheckUserBasketAsync(userId);
+
+             if (!IsBasket) 
+             {
+                result.Status= RequestStatus.Failed;
+                result.Message = "You dont have any basket. Please, create one first!";
+
+                return result;
+             }
+
+            if( dto.UserAddressId==null && dto.OrderNewAddress == null)
+            {
+
+                result.Status= RequestStatus.Failed;
+                result.Message = "Please, enter adress.";
+
+                return result;
+
+            }
+
+            Order order= new Order();    
+
+            if (dto.UserAddressId <= 0 || dto.UserAddressId == null)
+            {
+                if(dto.OrderNewAddress == null)
+                {
+                    result.Status = RequestStatus.Failed;
+                    result.Message = "Please, enter valid adress";
+
+                    return result;
+                }
+
+                UserAddress address = new UserAddress()
+                {
+                    Country=dto.OrderNewAddress.Country,
+                    City=dto.OrderNewAddress.City,
+                    Location=dto.OrderNewAddress.Location,
+                    UserId=userId   
+                };
+
+                await _UnitOfWork.UserProfileRepository.AddUserAdressAsync(address);
+                _UnitOfWork.Commit();
+                order.UserAddressId = address.Id;
+
+            }
+
+            else 
+            {
+
+                UserAddress adress = await _UnitOfWork.UserProfileRepository.GetUserAddressAsync(userId, dto.UserAddressId);
+
+                if(adress == null)
+                {
+                    result.Status= RequestStatus.Failed;
+                    result.Message = "Please, enter valid adress";
+
+                    return result;
+                }
+
+                order.UserAddressId = dto.UserAddressId;
+            }
+
+
+            Basket basket = await _UnitOfWork.UserInteractRepository.GetUserBasketAsync(userId);
+          
+            order.UserId = basket.UserId;
+
+            if(dto.PaymentType==PaymentType.WithCard) 
+            {
+                bool IsCard = await _UnitOfWork.ThingsRepository.CheckUserPaymentAsync(userId, dto.CardNumber, dto.CVV, dto.ExpireDate);
+
+                if (!IsCard)
+                {
+
+                    result.Status = RequestStatus.Failed;
+                    result.Message = "Please, enter valid card";
+
+                    return result;
+                }
+
+                order.Products = basket.Products;
+                order.TotalPrice = basket.TotalAmount;
+
+                if(dto.PromoCodeId!=null || dto.PromoCodeId >= 1)
+                {
+                    PromoCode promoCode = await _UnitOfWork.UserInteractRepository.GetPromoCodeAsync(dto.PromoCodeId);    
+
+                    if(promoCode != null) 
+                    {
+                        order.TotalPrice = order.TotalPrice - (order.TotalPrice * promoCode.PromoDiscount/100);
+                    }
+
+                }
+
+                await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order, userId);
+                _UnitOfWork.Commit();
+
+                await _UnitOfWork.UserInteractRepository.AddOrderHistoryAsync(userId, order.Id);
+                _UnitOfWork.Commit();
+
+                if (basket != null)
+                {
+                    var productQuantities = new List<GetProductsForBasketDTO>();
+
+                    foreach (var group in basket.Products.GroupBy(p => p.Id))
+                    {
+                        int productId = group.Key;
+                        BasketProductQuantity basketQuantity = await _UnitOfWork.UserInteractRepository.GetBasketQuantityAsync(basket.Id, productId);
+                        await _UnitOfWork.UserInteractRepository.AddOrderQuantityAsync(order.Id, productId, basketQuantity.Quantity);
+                       
+                    }
+
+                }
+
+                await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
+                      _UnitOfWork.Commit();
+
+                result.Status= RequestStatus.Success;
+                result.Message = $"You ordered basket succesfully! Total price is {order.TotalPrice}";
+
+                return result;
+
+            }
+
+            try
+            {
+
+                order.Products = basket.Products;
+                order.TotalPrice = basket.TotalAmount;
+
+                if (dto.PromoCodeId != null && dto.PromoCodeId >= 1)
+                {
+                    PromoCode promoCode = await _UnitOfWork.UserInteractRepository.GetPromoCodeAsync(dto.PromoCodeId);
+
+                    if (promoCode != null)
+                    {
+                        order.TotalPrice = (order.TotalPrice * promoCode.PromoDiscount/100);
+                    }
+                }
+
+                await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order, userId);
+                _UnitOfWork.Commit();
+
+                await _UnitOfWork.UserInteractRepository.AddOrderHistoryAsync(userId, order.Id);
+                _UnitOfWork.Commit();
+
+
+                if (basket != null)
+                {
+                    var productQuantities = new List<GetProductsForBasketDTO>();
+
+                    foreach (var group in basket.Products.GroupBy(p => p.Id))
+                    {
+                        int productId = group.Key;
+                        BasketProductQuantity basketQuantity = await _UnitOfWork.UserInteractRepository.GetBasketQuantityAsync(basket.Id, productId);
+                        await _UnitOfWork.UserInteractRepository.AddOrderQuantityAsync(order.Id, productId, basketQuantity.Quantity);
+                        
+                       
+                    }
+
+                }
+
+                await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
+                      _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = $"You ordered basket succesfully! Total price is {order.TotalPrice}";
+
+                return result;
+
+            }
+             catch (Exception ex) 
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+            }
         }
 
         public async Task<BaseResultDTO> ReturnOrderAsync(string token, ReturnOrderDTO dto)
@@ -507,9 +859,90 @@ namespace Wolt.BLL.Services.Concrete
            
         }
 
-        public Task<BaseResultDTO> UpdateUserBasketAsync(string token, List<Product> products, int? PromodoCodeId)
+        public async Task<BaseResultDTO> UpdateUserBasketAsync(string token, AddUserBasketDTO dto)
         {
-            throw new NotImplementedException();
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            dto.UserId = JwtService.GetIdFromToken(token);
+
+            if (dto.UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsBasket = await _UnitOfWork.ThingsRepository.CheckUserBasketAsync(dto.UserId);
+
+            if (!IsBasket)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "You dont have basket. Please, create basket first!";
+
+                return result;
+            }
+
+            try
+            {
+                Basket basket = await _UnitOfWork.UserInteractRepository.GetUserBasketAsync(dto.UserId);
+                Product product = await _UnitOfWork.RestaurantRepository.GetProductAsync(dto.ProductId);
+
+                if (product == null)
+                {
+
+                    result.Status = RequestStatus.Failed;
+                    result.Message = "No Food found!";
+
+                    return result;
+
+                }
+
+                if (dto.Quantity <= 0)
+                {
+                    result.Status = RequestStatus.Failed;
+                    result.Message = "Enter valid quantity. Quantity must be greater than 0";
+
+                    return result;
+                }
+
+                for (int i = 0; i < dto.Quantity; i++)
+                {
+                    
+                    basket.Products.Add(product);
+
+                }
+
+                basket.TotalAmount += dto.Quantity * product.Price;
+                await _UnitOfWork.UserInteractRepository.AddBasketQuantityAsync(basket.Id, dto.ProductId, dto.Quantity);
+
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = $"You updated basket succesfully! You total amount is {basket.TotalAmount}";
+
+                return result;
+            }
+
+            catch (Exception ex)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+            }
+
         }
 
         public async Task<BaseResultDTO> UpdateUserReviewAsync(string token, UpdateReviewDTO dto)

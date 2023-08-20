@@ -28,7 +28,7 @@ namespace Wolt.Entities.Entities.UserEntities
         public ICollection<FavoriteFood>? FavoriteFoods { get; set; }
         public ICollection<FavoriteRestaurant>? FavoriteRestaurants { get; set; }
         public ICollection<PromoCode>? PromoCodes { get; set; }
-        public ICollection<UserPayment>? UserPayment { get; set; }
+        public ICollection<UserCard>? UserPayment { get; set; }
         public ICollection<Order>? Orders { get; set; }
         public ICollection<Basket>? Basket { get; set; }
         public ICollection<UserAddress>? UserAddresses { get; set; }

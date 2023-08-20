@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Wolt.BLL.DTOs.RestaurantDTOs;
 using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserInteractDTOs;
@@ -42,7 +43,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
 
@@ -65,7 +66,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
 
@@ -89,7 +90,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             
@@ -112,7 +113,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             List<GetAllUserReviewsDTO> list = await _UserInteractService.GetAllReviewsAsync(token);
@@ -134,7 +135,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             GetUserCommentDTO result = await _UserInteractService.GetCommentAsync(token, commId);
@@ -153,7 +154,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             GetUserReviewDTO result = await _UserInteractService.GetUserReviewAsync(token, revId);
@@ -172,7 +173,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             BaseResultDTO result = await _UserInteractService.UpdateCommentAsync(token, dto);
@@ -193,7 +194,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             BaseResultDTO result = await _UserInteractService.UpdateUserReviewAsync(token, dto);
@@ -204,7 +205,7 @@ namespace Wolt.API.Controllers
             return Ok(result.Message);
         }
 
-        [HttpDelete("deletecomment{commId}")]
+        [HttpDelete("DeleteComment/{commId}")]
         public async Task<IActionResult> DeleteComment(int commId)
         {
             string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
@@ -214,7 +215,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             BaseResultDTO result= await _UserInteractService.DeleteCommentAsync(token, commId);
@@ -222,6 +223,26 @@ namespace Wolt.API.Controllers
             if (result.Status == RequestStatus.Failed)
                 return BadRequest(result.Message);
 
+
+            return Ok(result.Message);
+        }
+        [HttpDelete("DeleteReview/{revId}")]
+        public async Task<IActionResult> DeleteReview(int revId)
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.DeleteUserReviewAsync(token, revId);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
 
             return Ok(result.Message);
         }
@@ -236,7 +257,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             BaseResultDTO result = await _UserInteractService.ReturnOrderAsync(token, dto);
@@ -248,7 +269,7 @@ namespace Wolt.API.Controllers
             return Ok(result.Message);
         }
 
-        [HttpPost("createBasket")] //Alinmadi 
+        [HttpPost("createBasket")] 
         public async Task<IActionResult> CreateBasket([FromBody] AddUserBasketDTO dto)
         {
 
@@ -259,7 +280,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
 
@@ -272,6 +293,54 @@ namespace Wolt.API.Controllers
             return Ok(result.Message);
         }
 
+        [HttpPut("UpdateBasket")]
+        public async Task<IActionResult> UpdateBasket([FromBody] AddUserBasketDTO dto)
+        {
+
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.UpdateUserBasketAsync(token, dto);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+        }
+
+        [HttpGet("GetBasket")]
+        public async Task<IActionResult> GetBasket()
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            GetUserBasketDTO dto = await _UserInteractService.GetUserBasket(token);
+
+            if (dto == null)
+                return BadRequest("No Basket Found!");
+
+            if (dto.Products.Count <= 0)
+                return BadRequest("There is no any food to see. Please, add some food to your basket.");
+
+            return Ok(dto);
+             
+        }
+
         [HttpDelete("DeleteBasket")]
         public async Task<IActionResult> DeleteBasket()
         {
@@ -282,7 +351,7 @@ namespace Wolt.API.Controllers
 
             bool Checker = await _thingsService.CheckUserByToken(token);
 
-            if (Checker = false)
+            if (!Checker)
                 return BadRequest("Invalid token");
 
             BaseResultDTO result = await _UserInteractService.DeleteUserBasketAsync(token);
@@ -294,5 +363,26 @@ namespace Wolt.API.Controllers
             return Ok(result.Message);
         }
 
+        [HttpPost("OrderBasket")]
+        public async Task<IActionResult> OrderBasket(OrderBasketDTO dto)
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.OrderBasketAsync(token, dto);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+
+        }
     }
 }

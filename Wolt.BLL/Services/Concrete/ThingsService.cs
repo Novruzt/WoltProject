@@ -40,18 +40,15 @@ namespace Wolt.BLL.Services.Concrete
 
         public async Task<bool> CheckUserByToken(string token)
         {
-           
-
+ 
             int UserId =  JwtService.GetIdFromToken(token);
 
-            bool Checker = await _unitOfWork.ThingsRepository.CheckUserByIdAsync(UserId);
-
-            if (Checker)
-                return true;
-
-            return false;
-
-
+                if (UserId > 0)
+                 if(JwtService.ValidateToken(token))
+                    return true;
+                     
+               
+                return false;
         }
 
         public async Task<bool> CheckUserCommentForRestaurantAsync(int userId, int restId)
