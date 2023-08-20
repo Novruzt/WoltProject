@@ -43,6 +43,8 @@ namespace WOLT.DAL.DATA
             BasketAPI.Fluent(modelBuilder);
             OrderAPI.Fluent(modelBuilder);
             FavoriteEntityAPI.Fluent(modelBuilder);
+            BasketProductQuantityAPI.Fluent(modelBuilder);
+            OrderProductQuantityAPI.Fluent(modelBuilder);
 
             UserData.Seed(modelBuilder);
             RestaurantData.Seed(modelBuilder);
@@ -58,48 +60,61 @@ namespace WOLT.DAL.DATA
 
         }
 
-        public  override int SaveChanges()
-        {
-            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            public override int SaveChanges()
             {
-                if (entry.State == EntityState.Deleted)
+                foreach (var entry in ChangeTracker.Entries<BaseEntity>())
                 {
-
-                    if (entry.Entity is Basket)
+                    if (entry.State == EntityState.Deleted)
                     {
-                        entry.State = EntityState.Deleted;
+                        if (entry.Entity is Basket)
+                        {
+                            entry.State = EntityState.Deleted;
+                        }
+                        else
+                        {
+                            entry.State = EntityState.Modified;
+                            entry.Entity.DeleteTime = DateTime.Now;
+                            entry.Entity.IsDeleted = true;
+
+                            if (entry.Entity.IsDeleted == false && entry.OriginalValues["IsDeleted"] as bool? == true)
+                            {
+                                entry.Entity.UpdateTime = null;
+                                entry.Entity.CreationTime = DateTime.Now;
+                                entry.Entity.DeleteTime = null;
+                            }
+                        }
                     }
                     else
                     {
-                        entry.State = EntityState.Modified;
-                        entry.Entity.DeleteTime = DateTime.Now;
-                        entry.Entity.IsDeleted = true;
-                    }
                     
+                        _ = entry.State switch
+                        {
+                            EntityState.Added => entry.Entity.CreationTime = DateTime.Now,
+                            EntityState.Modified => entry.Entity.UpdateTime = DateTime.Now,
+                            _ => DateTime.Now
+                        };
+
+                        if (entry.State == EntityState.Modified)
+                        {
+                            if (entry.Entity.IsDeleted == false && entry.OriginalValues["IsDeleted"] as bool? == true)
+                            {
+                                entry.Entity.UpdateTime = null;
+                                entry.Entity.CreationTime = DateTime.Now;
+                                entry.Entity.DeleteTime = null;
+                            }
+                        }
+                    }
                 }
 
-                else
+                foreach (var entry in ChangeTracker.Entries<Order>())
                 {
-                    _ = entry.State switch
-                    {
-                        EntityState.Added => entry.Entity.CreationTime = DateTime.Now,
-                        EntityState.Modified => entry.Entity.UpdateTime = DateTime.Now,
-                        _ => DateTime.Now
-                    };
+                    if (entry.State == EntityState.Added)
+                        entry.Entity.OrderStatus = 0;
                 }
+
+                return base.SaveChanges();
             }
 
-
-            foreach (var entry in ChangeTracker.Entries<Order>())
-            {
-                if (entry.State == EntityState.Added)
-                    entry.Entity.OrderStatus = 0;
-            }
-
-            return base.SaveChanges();
-        }
-
-       
         public DbSet<Category> Categories { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -111,7 +126,7 @@ namespace WOLT.DAL.DATA
         public DbSet<UserAddress> UsersAddress { get; set; }
         public DbSet<UserComment> UserComments { get; set; }
         public DbSet<UserHistory> UserHistories { get; set; }
-        public DbSet<UserPayment> UserPayments { get; set; }
+        public DbSet<UserCard> UserPayments { get; set; }
         public DbSet<UserReview> UserReviews { get; set; }
         public DbSet<Basket>  Baskets { get; set; }
         public DbSet<Courier> Couriers { get; set; }
@@ -119,6 +134,8 @@ namespace WOLT.DAL.DATA
         public DbSet<Order> Orders { get; set; }
         public DbSet<PromoCode> PromoCodes { get; set; }
         public DbSet<UserOldPassword> UserOldPasswords { get; set; }
+        public DbSet<BasketProductQuantity> BasketProductQuantities { get; set; }
+        public DbSet<OrderProductQuantity> OrderProductQuantities { get; set;}
 
     }
 }

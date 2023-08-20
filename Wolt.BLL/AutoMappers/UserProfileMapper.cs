@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Wolt.BLL.DTOs.UserProfileDTOs;
 using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
+using Wolt.Entities.Entities.WoltEntities;
 
 namespace Wolt.BLL.AutoMappers
 {
@@ -17,6 +18,27 @@ namespace Wolt.BLL.AutoMappers
 
             CreateMap<FavoriteFood, GetAllUserFavoriteFoodsDTO>();
             CreateMap<FavoriteRestaurant, GetAllFavoriteRestaurantsDTO>();
+            CreateMap<UserAddress, GetAllUserAdressDTO>();
+            CreateMap<UserCard, GetAllUserCardDTO>();
+            CreateMap<AddUserPaymentDTO, UserCard>();
+
+            CreateMap<Order, GetOrderDTO>()
+                .ForMember(dest => dest.Products, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
+                .ForMember(dest => dest.UserLocation, opt => opt.MapFrom(src => src.UserAddress.City + ": " + src.UserAddress.Location));
+
+            CreateMap<Product, GetOrderProductsDTO>()
+                .ForMember(dest => dest.Quantity, opt => opt.Ignore())
+                .ForMember(dest=>dest.CategoryName, opt=>opt.MapFrom(src=>src.Category.Name))
+                .ForMember(dest=>dest.Name, opt=>opt.MapFrom(src=>src.Name))
+                .ForMember(dest=>dest.Price, opt=>opt.MapFrom(src=>src.Price));
+
+            CreateMap<Order, GetAllUserHistoryDTO>()
+                .ForMember(dest=>dest.OrderAddress, opt=>opt.MapFrom((src=>src.UserAddress.City+ ": "+ src.UserAddress.Location)))
+                .ForMember(dest=>dest.OrderStatus, opt=>opt.MapFrom(src=>src.OrderStatus.ToString()))
+                .ForMember(dest=>dest.OrderTime, opt=>opt.MapFrom(src=>src.CreationTime))
+                .ForMember(dest=>dest.OrderTotalAmount, opt=>opt.MapFrom(src=>src.TotalPrice));
+
             CreateMap<FavoriteRestaurant, UserFavoriteRestaurantDTO>()
                 .ForMember(dest=>dest.Categories, opt=>opt.MapFrom(dest=>dest.Restaurant.Categories.Count))
                 .ForMember(dest=>dest.Name, opt=>opt.MapFrom(dest=>dest.Restaurant.Name))
@@ -31,7 +53,6 @@ namespace Wolt.BLL.AutoMappers
                 .ForMember(dest=>dest.Picture, opt=>opt.MapFrom(src=>src.Product.Picture))
                 .ForMember(dest=>dest.CategoryName, opt=>opt.MapFrom(src=>src.Product.Category.Name))
                 .ForMember(dest=>dest.Price, opt=>opt.MapFrom(src=>src.Product.Price));
-
 
         }
     }

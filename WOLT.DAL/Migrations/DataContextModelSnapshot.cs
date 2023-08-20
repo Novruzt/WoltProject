@@ -59,7 +59,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4460),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(4112),
                             IsDeleted = false,
                             Name = "Ickiler",
                             RestaurantId = 1
@@ -67,7 +67,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4461),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(4114),
                             IsDeleted = false,
                             Name = "Suplar",
                             RestaurantId = 1
@@ -177,7 +177,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 12, 1, 10, 405, DateTimeKind.Utc).AddTicks(4478),
+                            CreationTime = new DateTime(2023, 8, 20, 12, 7, 25, 260, DateTimeKind.Utc).AddTicks(4127),
                             Description = "Adi Su",
                             IsDeleted = false,
                             Name = "Su",
@@ -187,7 +187,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreationTime = new DateTime(2023, 8, 18, 12, 1, 10, 405, DateTimeKind.Utc).AddTicks(4481),
+                            CreationTime = new DateTime(2023, 8, 20, 12, 7, 25, 260, DateTimeKind.Utc).AddTicks(4128),
                             Description = "Leziz Sup",
                             IsDeleted = false,
                             Name = "Mercimek",
@@ -241,7 +241,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             BaseAddress = "Mehelle 765",
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4433),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(4075),
                             Description = "Sumgayitin 1nomreli parki",
                             IsDeleted = false,
                             Name = "GoyercinPark",
@@ -412,14 +412,14 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4221),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(3877),
                             Email = "asdad@gmaik.com",
                             IsDeleted = false,
                             Name = "Novruz",
                             Password = "salam",
                             Phone = "12313",
                             Surname = "Tarverdiyev",
-                            VerifiedAt = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4238)
+                            VerifiedAt = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(3889)
                         });
                 });
 
@@ -465,6 +465,48 @@ namespace WOLT.DAL.Migrations
                     b.ToTable("UsersAddress");
                 });
 
+            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CVV")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExpireTime")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPayments");
+                });
+
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserComment", b =>
                 {
                     b.Property<int>("Id")
@@ -507,7 +549,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4447),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(4090),
                             Details = "sadad",
                             IsDeleted = false,
                             RestaurantId = 1,
@@ -579,48 +621,6 @@ namespace WOLT.DAL.Migrations
                     b.ToTable("UserOldPasswords");
                 });
 
-            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserPayment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CCV")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CardNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeleteTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ExpireTime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserPayments");
-                });
-
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserReview", b =>
                 {
                     b.Property<int>("Id")
@@ -665,7 +665,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4498),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(4146),
                             Description = "Test",
                             IsDeleted = false,
                             ProductId = 1,
@@ -675,7 +675,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4500),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(4148),
                             Description = "Test2",
                             IsDeleted = false,
                             ProductId = 1,
@@ -685,7 +685,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 8, 18, 16, 1, 10, 405, DateTimeKind.Local).AddTicks(4501),
+                            CreationTime = new DateTime(2023, 8, 20, 16, 7, 25, 260, DateTimeKind.Local).AddTicks(4149),
                             Description = "Test3",
                             IsDeleted = false,
                             ProductId = 2,
@@ -711,9 +711,6 @@ namespace WOLT.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PromoCodeId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(12,2)");
 
@@ -725,11 +722,42 @@ namespace WOLT.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PromoCodeId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Baskets");
+                });
+
+            modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.BasketProductQuantity", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BasketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ProductId", "BasketId");
+
+                    b.HasIndex("BasketId");
+
+                    b.ToTable("BasketProductQuantities");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.Courier", b =>
@@ -843,7 +871,6 @@ namespace WOLT.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("UserAddressId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("UserHistoryId")
@@ -852,13 +879,14 @@ namespace WOLT.DAL.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserPaymentId")
+                    b.Property<int?>("UserPaymentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserAddressId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserAddressId] IS NOT NULL");
 
                     b.HasIndex("UserHistoryId");
 
@@ -867,6 +895,39 @@ namespace WOLT.DAL.Migrations
                     b.HasIndex("UserPaymentId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.OrderProductQuantity", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ProductId", "OrderId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderProductQuantities");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.PromoCode", b =>
@@ -1018,6 +1079,17 @@ namespace WOLT.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserCard", b =>
+                {
+                    b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
+                        .WithMany("UserPayment")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserComment", b =>
                 {
                     b.HasOne("Wolt.Entities.Entities.RestaurantEntities.Restaurant", "Restaurant")
@@ -1059,17 +1131,6 @@ namespace WOLT.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserPayment", b =>
-                {
-                    b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
-                        .WithMany("UserPayment")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Wolt.Entities.Entities.UserEntities.UserReview", b =>
                 {
                     b.HasOne("Wolt.Entities.Entities.RestaurantEntities.Product", "Product")
@@ -1091,19 +1152,32 @@ namespace WOLT.DAL.Migrations
 
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.Basket", b =>
                 {
-                    b.HasOne("Wolt.Entities.Entities.WoltEntities.PromoCode", "PromoCode")
-                        .WithMany()
-                        .HasForeignKey("PromoCodeId");
-
                     b.HasOne("Wolt.Entities.Entities.UserEntities.User", "User")
                         .WithMany("Basket")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PromoCode");
-
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.BasketProductQuantity", b =>
+                {
+                    b.HasOne("Wolt.Entities.Entities.WoltEntities.Basket", "Basket")
+                        .WithMany()
+                        .HasForeignKey("BasketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Wolt.Entities.Entities.RestaurantEntities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Basket");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.Delivery", b =>
@@ -1130,8 +1204,7 @@ namespace WOLT.DAL.Migrations
                     b.HasOne("Wolt.Entities.Entities.UserEntities.UserAddress", "UserAddress")
                         .WithOne()
                         .HasForeignKey("Wolt.Entities.Entities.WoltEntities.Order", "UserAddressId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Wolt.Entities.Entities.UserEntities.UserHistory", null)
                         .WithMany("Orders")
@@ -1143,17 +1216,34 @@ namespace WOLT.DAL.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Wolt.Entities.Entities.UserEntities.UserPayment", "UserPayment")
+                    b.HasOne("Wolt.Entities.Entities.UserEntities.UserCard", "UserPayment")
                         .WithMany()
-                        .HasForeignKey("UserPaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserPaymentId");
 
                     b.Navigation("User");
 
                     b.Navigation("UserAddress");
 
                     b.Navigation("UserPayment");
+                });
+
+            modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.OrderProductQuantity", b =>
+                {
+                    b.HasOne("Wolt.Entities.Entities.WoltEntities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Wolt.Entities.Entities.RestaurantEntities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.PromoCode", b =>

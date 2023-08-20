@@ -9,6 +9,7 @@ using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
 using WOLT.DAL.DATA;
 using WOLT.DAL.Repository.Abstract;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WOLT.DAL.Repository.Concrete
 {
@@ -29,6 +30,18 @@ namespace WOLT.DAL.Repository.Concrete
                 return true;
             
             
+
+            return false;
+        }
+
+        public async Task<bool> DeletedCommentForRestaurantAsync(int userId, int RestId)
+        {
+            UserComment comment = await _ctx.UserComments
+                .IgnoreQueryFilters()
+               .FirstOrDefaultAsync(c => c.UserId == userId && c.RestaurantId == RestId && c.IsDeleted==true);
+
+            if (comment != null)
+                return true;
 
             return false;
         }
@@ -135,6 +148,16 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
         }
 
+        public async Task<bool> DeletedReviewForProductAsync(int userId, int productId)
+        {
+            UserReview review = await _ctx.UserReviews.IgnoreQueryFilters()
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.ProductId == productId && r.IsDeleted==true);
+
+            if (review != null)
+                return true;
+
+            return false;
+        }
         public async Task<bool> CheckUserBasketAsync(int UserId)
         {
             Basket basket = await _ctx.Baskets.FirstOrDefaultAsync(b=>b.UserId==UserId);
@@ -154,5 +177,32 @@ namespace WOLT.DAL.Repository.Concrete
 
             return false;
         }
+
+        public  async Task<bool> CheckUserPaymentAsync(int id, string number, string cvv, string Expiretime)
+        {
+            UserCard userCard = await _ctx.UserPayments.FirstOrDefaultAsync(
+                c => c.UserId == id &&c.CardNumber == number &&
+                c.CVV==cvv &&c.ExpireTime==Expiretime);
+
+            if (userCard != null)
+                return true;
+
+            return false;
+             
+        }
+
+        public async Task<bool> CheckUserCardBySensetiveInfoAsync(int userId, int CardId, string CVV, string ExpireDate)
+        {
+            UserCard userCard = await _ctx.UserPayments.FirstOrDefaultAsync(
+                c => c.UserId == userId && c.Id==CardId && c.CVV==CVV && c.ExpireTime==ExpireDate);
+
+            if (userCard != null)
+                return true;
+
+            return false;
+
+        }
+
+       
     }
 }

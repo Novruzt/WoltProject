@@ -1,15 +1,24 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Math;
+using FluentValidation;
+using Microsoft.Identity.Client;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserInteractDTOs;
 using Wolt.BLL.DTOs.UserProfileDTOs;
+using Wolt.BLL.Enums;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
+using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
+using WOLT.DAL.Repository.Abstract;
 using WOLT.DAL.UnitOfWork.Abstract;
 using WOLT.DAL.UnitOfWork.Concrete;
 
@@ -20,20 +29,138 @@ namespace Wolt.BLL.Services.Concrete
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IValidator<AddUserPaymentDTO> _cardvalidator;
 
-        public UserProfileService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserProfileService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<AddUserPaymentDTO> cardValidator)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _cardvalidator = cardValidator;
         }
-        public Task AddUserPayment(UserPayment payment)
+        public async Task<BaseResultDTO> AddUserPayment(string token, AddUserPaymentDTO dto)
         {
-            throw new NotImplementedException();
+            BaseResultDTO  result =  new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+            }
+
+            dto.UserId = JwtService.GetIdFromToken(token);
+
+            if (dto.UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            var Validator = _cardvalidator.Validate(dto);
+            if (!Validator.IsValid)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = Validator.GetErrorMessages();
+
+                return result;
+            }
+
+            bool IsCard = await _unitOfWork.ThingsRepository.CheckUserPaymentAsync(dto.UserId, dto.CardNumber, dto.CVV, dto.ExpireTime);
+
+            if (IsCard) 
+            {
+                result.Status= RequestStatus.Failed;
+                result.Message = "You already have added this card.";
+
+                return result;
+            }
+
+            try
+            {
+                UserCard card= _mapper.Map<UserCard>(dto);
+                
+                await _unitOfWork.UserProfileRepository.AddUserPayment(card);
+                _unitOfWork.Commit();
+
+                result.Status=RequestStatus.Success;
+                result.Message = "You added card succesfully!";
+
+                return result;
+            }
+            catch(Exception ex) 
+            {
+                result.Status=RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+            }
+
+           
         }
 
-        public Task DeleteUserPaymentAsync(string token, int PaymentId)
+        public async Task<BaseResultDTO> DeleteUserPaymentAsync(string token, DeleteUserCardDTO dto)
         {
-            throw new NotImplementedException();
+            BaseResultDTO result = new BaseResultDTO();
+
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int userId = JwtService.GetIdFromToken(token);
+
+            if (userId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsCard = await _unitOfWork.ThingsRepository.CheckUserCardBySensetiveInfoAsync(userId, dto.CardID, dto.CVV, dto.ExpireDate);
+
+            if(!IsCard) 
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Enter valid card details";
+
+                return result;
+            }
+
+            try
+            {
+
+                await _unitOfWork.UserProfileRepository.DeleteUserPaymentAsync(userId, dto.CardID);
+                _unitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "You deleted card succesfully!";
+
+                return result;
+
+            }
+
+            catch(Exception ex) 
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message=ex.Message;
+
+                return result;
+            }
+
+            return result;
         }
 
         public async Task<List<GetAllUserFavoriteFoodsDTO>> GetAllFavoriteFoodAsync(string token)
@@ -57,25 +184,58 @@ namespace Wolt.BLL.Services.Concrete
 
         }
 
-        public Task<List<UserHistory>> GetAllHistoryAsync(string token)
+        public async Task<List<GetAllUserHistoryDTO>> GetAllHistoryAsync(string token)
         {
-            throw new NotImplementedException();
+
+            int UserId= JwtService.GetIdFromToken(token);
+
+            List<Order> datas = await _unitOfWork.UserProfileRepository.GetAllHistoryAsync(UserId);
+            List<GetAllUserHistoryDTO> list = _mapper.Map<List<GetAllUserHistoryDTO>>(datas);
+
+            return list;
         }
 
-        public Task<List<Order>> GetAllOrdersAsync(string token)
+        public async Task<List<GetAllUserHistoryDTO>> GetAllActiveOrdersAsync(string token)
         {
-            throw new NotImplementedException();
+            int UserId = JwtService.GetIdFromToken(token);
+
+            List<Order> datas = await _unitOfWork.UserProfileRepository.GetAllOrdersAsync(UserId);
+            List<GetAllUserHistoryDTO> list = _mapper.Map<List<GetAllUserHistoryDTO>>(datas);
+
+            return list;
         }
 
-        public Task<List<UserAddress>> GetAllUserAddressesAsync(string token)
+        public async Task<List<GetAllUserAdressDTO>> GetAllUserAddressesAsync(string token)
         {
-            throw new NotImplementedException();
+            int userId = JwtService.GetIdFromToken(token);
+
+            List<UserAddress> datas= await _unitOfWork.UserProfileRepository.GetAllUserAddressesAsync(userId);
+            List<GetAllUserAdressDTO> list =  _mapper.Map<List<GetAllUserAdressDTO>>(datas);
+
+            return list;
+
+
         }
 
-        public Task<List<UserPayment>> GetAllUserPaymentsAsync(string token)
+        public async Task<List<GetAllUserCardDTO>> GetAllUserPaymentsAsync(string token)
         {
-            throw new NotImplementedException();
-        }
+            
+            int userID = JwtService.GetIdFromToken(token);
+
+            List<UserCard> userCards = await _unitOfWork.UserProfileRepository.GetAllUserPaymentsAsync(userID);
+
+            List<GetAllUserCardDTO> list = _mapper.Map<List<GetAllUserCardDTO>>(userCards); 
+
+            foreach(GetAllUserCardDTO item in list)
+            {
+                item.CardNumber = BankCardService.MaskCardNumber(item.CardNumber);
+                item.CVV = BankCardService.MaskSensitiveInfo("***", item.CVV.Length);
+                item.ExpireTime = BankCardService.MaskSensitiveInfo("***", item.ExpireTime.Length);
+            }
+
+
+            return list;
+        }   
 
         public async Task<UserFavoriteFoodDTO> GetFavoriteFoodAsync(string token, int favId)
         {
@@ -100,9 +260,39 @@ namespace Wolt.BLL.Services.Concrete
 
         }
 
-        public Task<Order> GetOrderAsync(string token, int OrderId)
+        public async Task<GetOrderDTO> GetOrderAsync(string token, int OrderId)
         {
-            throw new NotImplementedException();
+            int UserId = JwtService.GetIdFromToken(token);
+
+            Order order = await _unitOfWork.UserProfileRepository.GetOrderAsync(UserId, OrderId);
+            GetOrderDTO dto = _mapper.Map<GetOrderDTO>(order);
+
+            if (dto != null)
+            {
+                var productQuantities = new List<GetOrderProductsDTO>();
+
+                foreach (var group in order.Products.GroupBy(p => p.Id))
+                {
+                    int productId = group.Key;
+
+                    OrderProductQuantity productQuantity = await _unitOfWork.UserInteractRepository.GetOrderQuantityAsync(order.Id, productId);
+
+                    productQuantities.Add(new GetOrderProductsDTO
+                    {
+                        ProductId = productId,
+                        Quantity = productQuantity.Quantity,
+                        Name = group.First().Name,
+                        Description = group.First().Description,
+                        Price = group.First().Price,
+                        Picture = group.First().Picture,
+
+                    });
+                }
+
+                dto.Products = productQuantities;
+            }
+
+            return dto;
         }
 
         public Task<UserAddress> GetUserAddressesAsync(string token, int addressId)

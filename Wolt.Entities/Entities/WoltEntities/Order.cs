@@ -18,12 +18,12 @@ namespace Wolt.Entities.Entities.WoltEntities
         public DateTime OrderDate { get; set; }
         public double TotalPrice { get; set; }
         public int? UserAddressId { get; set; }
-        public UserAddress UserAddress { get; set; }
-        public int UserPaymentId { get; set; }
-        public UserPayment UserPayment { get; set; }
+        public UserAddress? UserAddress { get; set; }
+        public int? UserPaymentId { get; set; }
+        public UserCard? UserPayment { get; set; }
         public string? Description { get; set; }
         public ICollection<Product> Products { get; set; }
-        public ICollection<PromoCode> PromoCodes { get; set; }
+        public ICollection<PromoCode>? PromoCodes { get; set; }
 
     }
 }

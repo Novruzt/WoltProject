@@ -15,14 +15,16 @@ namespace WOLT.DAL.Repository.Abstract
         Task<List<FavoriteRestaurant>> GetAllFavoriteRestaurantsAsync(int id); 
         Task<FavoriteRestaurant> GetFavoriteRestaurantsAsync(int id, int favId);
         Task<List<UserAddress>> GetAllUserAddressesAsync(int id); 
-        Task<UserAddress> GetUserAddressesAsync(int id, int addressId); 
-        Task<List<UserHistory>> GetAllHistoryAsync(int id); 
-        Task<List<UserPayment>> GetAllUserPaymentsAsync(int id); 
-        Task AddUserPayment(UserPayment payment);    
+        Task<List<Order>> GetAllHistoryAsync(int id); 
+        Task<UserHistory> GetUserHistory(int id);
+        Task<List<UserCard>> GetAllUserPaymentsAsync(int id); 
+        Task AddUserPayment(UserCard payment);    
         Task DeleteUserPaymentAsync(int id, int PaymentId); 
         Task<List<Order>> GetAllOrdersAsync(int id); 
         Task<Order> GetOrderAsync(int id, int OrderId);
         Task AddFavoriteFoodAsync(FavoriteFood food);
         Task AddFavoriteRestaurantAsync(FavoriteRestaurant restaurant);
+        Task<UserAddress> GetUserAddressAsync(int id, int? adressId);
+        Task AddUserAdressAsync(UserAddress address);
     }
 }

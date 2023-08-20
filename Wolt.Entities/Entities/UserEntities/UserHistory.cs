@@ -10,6 +10,10 @@ namespace Wolt.Entities.Entities.UserEntities
 {
     public class UserHistory:BaseEntity
     {
+        public UserHistory()
+        {
+            Orders= new List<Order>();
+        }
         public int UserId { get; set; }
         public User User { get; set; }
         public ICollection<Order> Orders { get; set; }

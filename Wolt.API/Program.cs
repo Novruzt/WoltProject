@@ -5,7 +5,6 @@ using WOLT.DAL.DATA;
 using WOLT.DAL.Repository;
 using WOLT.DAL.UnitOfWork.Abstract;
 using WOLT.DAL.UnitOfWork.Concrete;
-using Wolt.BLL.Services;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Services.Concrete;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -21,6 +20,10 @@ using Microsoft.AspNetCore.Identity;
 using Wolt.BLL.Configurations;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Options;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using Wolt.BLL.DTOs.UserProfileDTOs;
+using Wolt.BLL.Registrations;
 
 namespace Wolt.API
 {
@@ -32,7 +35,12 @@ namespace Wolt.API
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
-           
+
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddFluentValidationClientsideAdapters();
+            builder.Services.RegisterValidators();
+
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(opt =>
             {
@@ -104,7 +112,9 @@ namespace Wolt.API
             
 
             });
-            
+
+
+
 
 
             var app = builder.Build();

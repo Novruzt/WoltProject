@@ -11,7 +11,7 @@ using Wolt.BLL.Services.Concrete;
 using AutoMapper;
 using WOLT.DAL.Repository.Concrete;
 
-namespace Wolt.BLL.Services
+namespace Wolt.BLL.Registrations
 {
     public static class ServiceRegistration
     {

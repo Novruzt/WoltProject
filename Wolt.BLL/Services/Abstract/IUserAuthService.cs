@@ -12,7 +12,7 @@ namespace Wolt.BLL.Services.Abstract
     public interface IUserAuthService
     {
         Task<GetUserProfileDTO> GetByEmailAsync(string email);
-        Task<GetUserProfileDTO> GetAsync(int id);
+        Task<GetUserProfileDTO> GetAsync(string token); //qalib hele de
         Task<RegisterUserResponseDTO> RegisterUserAsync(RegisterUserRequestDTO dto);
         Task<BaseResultDTO> ResetPasswordAsync(int id, ResetPasswordRequestDTO dto);
         Task<LoginUserResponseDTO> LoginUserAsync(LoginUserRequestDTO dto);

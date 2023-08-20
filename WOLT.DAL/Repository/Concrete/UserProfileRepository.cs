@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
+using Wolt.Entities.Enums;
 using WOLT.DAL.DATA;
 using WOLT.DAL.Repository.Abstract;
 
@@ -30,14 +32,19 @@ namespace WOLT.DAL.Repository.Concrete
             await _ctx.FavoriteRestaurants.AddAsync(restaurant);
         }
 
-        public async Task AddUserPayment(UserPayment payment)
+        public async Task AddUserAdressAsync(UserAddress address)
+        {
+            await _ctx.UsersAddress.AddAsync(address);
+        }
+
+        public async Task AddUserPayment(UserCard payment)
         {
             await _ctx.UserPayments.AddAsync(payment);
         }
 
         public async Task DeleteUserPaymentAsync(int id, int PaymentId)
         {
-            UserPayment payment = await _ctx.UserPayments.Where(p =>p.UserId == id).FirstOrDefaultAsync(p=>p.Id==PaymentId);
+            UserCard payment = await _ctx.UserPayments.Where(p =>p.UserId == id).FirstOrDefaultAsync(p=>p.Id==PaymentId);
 
             _ctx.UserPayments.Remove(payment);
         }
@@ -60,16 +67,25 @@ namespace WOLT.DAL.Repository.Concrete
             return favorites;
         }
 
-        public async Task<List<UserHistory>> GetAllHistoryAsync(int id)
+        public async Task<List<Order>> GetAllHistoryAsync(int id)
         {
-            List<UserHistory> histories = await _ctx.UserHistories.Where(c=>c.UserId== id).ToListAsync();  
 
-            return histories;
+            List<Order> orders = await _ctx.Orders.Where(o=>o.UserId==id)
+                .IgnoreQueryFilters()
+                .Where(o=>o.IsDeleted==false)
+                .Include(o=>o.UserAddress)
+                .ToListAsync();
+
+            return orders;
         }
 
         public async Task<List<Order>> GetAllOrdersAsync(int id)
         {
-            List<Order> orders = await _ctx.Orders.Where(c=>c.UserId == id).ToListAsync();
+            List<Order> orders = await _ctx.Orders.Where(c=>c.UserId == id && c.IsDeleted == false)
+                .IgnoreQueryFilters()
+                .Where(o=>o.OrderStatus==OrderStatus.Waiting || o.OrderStatus==OrderStatus.Accepted) 
+                .Include(o=>o.UserAddress)
+                .ToListAsync();
 
             return orders;
         }
@@ -81,9 +97,9 @@ namespace WOLT.DAL.Repository.Concrete
             return datas;
         }
 
-        public async Task<List<UserPayment>> GetAllUserPaymentsAsync(int id)
+        public async Task<List<UserCard>> GetAllUserPaymentsAsync(int id)
         {
-            List<UserPayment> datas =  await _ctx.UserPayments.Where(c=>c.UserId==id).ToListAsync();
+            List<UserCard> datas =  await _ctx.UserPayments.Where(c=>c.UserId==id).ToListAsync();
 
             return datas;
         }
@@ -94,11 +110,6 @@ namespace WOLT.DAL.Repository.Concrete
                 .Include(f=>f.Product)
                 .ThenInclude(p=>p.Category)
                 .ThenInclude(c=>c.Restaurant)
-
-               // .Include(f=>f.Product)
-               // .ThenInclude(p=>p.Category)
-                
-           //     .Include(f=>f.Product)
                 .FirstOrDefaultAsync(c=>c.ProductId==favId);
 
             return data;
@@ -116,17 +127,40 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<Order> GetOrderAsync(int id, int OrderId)
         {
-            Order order = await _ctx.Orders.Where(c => c.UserId == id).FirstOrDefaultAsync(c=>c.Id==id);
+            Order order = await _ctx.Orders.Where(c => c.UserId == id)
+                .Include(o=>o.Products)
+                .ThenInclude(p=>p.Category)
+                .Include(o=>o.UserAddress)
+                .FirstOrDefaultAsync(c=>c.Id==OrderId);
 
             return order;
         }
 
-        public async Task<UserAddress> GetUserAddressesAsync(int id, int addressId)
+        public async Task<UserAddress> GetUserAddressAsync(int id, int? adressId)
         {
-            UserAddress data = await _ctx.UsersAddress.Where(c=>c.UserId==id).FirstOrDefaultAsync(c=>c.Id==addressId);
+            UserAddress adress= await _ctx.UsersAddress.FirstOrDefaultAsync(a=>a.UserId==id && a.Id==adressId);
 
+            return adress;
+        }
 
-            return data;
+        public async Task<UserHistory> GetUserHistory(int id)
+        {
+            var userHistory = await _ctx.UserHistories
+                .AsNoTracking()
+                .Where(h => h.IsDeleted == false)
+                .FirstOrDefaultAsync(h => h.UserId == id);
+
+            if (userHistory != null)
+            {
+               
+                _ctx.Entry(userHistory)
+                    .Collection(uh => uh.Orders)
+                    .Query()
+                    .IgnoreQueryFilters()
+                    .Load();
+            }
+
+            return userHistory;
         }
     }
 }

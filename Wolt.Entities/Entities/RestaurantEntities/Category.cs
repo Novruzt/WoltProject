@@ -9,6 +9,10 @@ namespace Wolt.Entities.Entities.RestaurantEntities
 {
     public class Category:BaseEntity
     {
+        public Category()
+        {
+            Products = new List<Product>();
+        }
         public string Name { get; set; }
         public int RestaurantId { get; set; }
         public Restaurant Restaurant { get; set; }  
