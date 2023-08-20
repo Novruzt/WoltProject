@@ -37,7 +37,8 @@ namespace Wolt.BLL.AutoMappers
                 .ForMember(dest=>dest.OrderAddress, opt=>opt.MapFrom((src=>src.UserAddress.City+ ": "+ src.UserAddress.Location)))
                 .ForMember(dest=>dest.OrderStatus, opt=>opt.MapFrom(src=>src.OrderStatus.ToString()))
                 .ForMember(dest=>dest.OrderTime, opt=>opt.MapFrom(src=>src.CreationTime))
-                .ForMember(dest=>dest.OrderTotalAmount, opt=>opt.MapFrom(src=>src.TotalPrice));
+                .ForMember(dest=>dest.OrderTotalAmount, opt=>opt.MapFrom(src=>src.TotalPrice))
+                .ForMember(dest=>dest.Description, opt=>opt.MapFrom(src=>src.Description));
 
             CreateMap<FavoriteRestaurant, UserFavoriteRestaurantDTO>()
                 .ForMember(dest=>dest.Categories, opt=>opt.MapFrom(dest=>dest.Restaurant.Categories.Count))

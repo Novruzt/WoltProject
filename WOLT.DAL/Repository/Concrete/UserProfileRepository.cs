@@ -72,7 +72,6 @@ namespace WOLT.DAL.Repository.Concrete
 
             List<Order> orders = await _ctx.Orders.Where(o=>o.UserId==id)
                 .IgnoreQueryFilters()
-                .Where(o=>o.IsDeleted==false)
                 .Include(o=>o.UserAddress)
                 .ToListAsync();
 

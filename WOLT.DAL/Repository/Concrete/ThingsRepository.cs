@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
 using Wolt.Entities.Entities.WoltEntities;
+using Wolt.Entities.Enums;
 using WOLT.DAL.DATA;
 using WOLT.DAL.Repository.Abstract;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -203,6 +204,16 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-       
+        public async Task<bool> IsAcceptedOrderAsync(int userId, int orderId)
+        {
+           Order order = await _ctx.Orders
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(o=>o.Id==orderId && o.UserId==userId && o.IsDeleted==false && o.OrderStatus==OrderStatus.Accepted);
+
+            if (order != null) 
+                return true;
+
+            return false;
+        }
     }
 }

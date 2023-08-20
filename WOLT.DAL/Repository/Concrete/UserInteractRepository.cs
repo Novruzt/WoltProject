@@ -231,15 +231,15 @@ namespace WOLT.DAL.Repository.Concrete
 
             order.OrderStatus = OrderStatus.Returned;
             order.Description = reason;
-            order.DeleteTime=DateTime.Now;
 
             UserHistory history = await _ctx.UserHistories.FirstOrDefaultAsync(h => h.UserId == id);
 
             User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
 
             _ctx.Users.Update(user);
-            _ctx.Orders.Update(order);
+            _ctx.Orders.Remove(order);
             _ctx.UserHistories.Update(history);
+            
             
      
         }
