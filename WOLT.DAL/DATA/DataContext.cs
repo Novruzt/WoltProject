@@ -69,6 +69,16 @@ namespace WOLT.DAL.DATA
                         {
                             entry.State = EntityState.Deleted;
                         }
+
+                        else if(entry.Entity is FavoriteFood)
+                        {
+                            entry.State = EntityState.Deleted;
+                        }
+
+                        else if(entry.Entity is FavoriteRestaurant)
+                        {
+                            entry.State = EntityState.Deleted;
+                        }
                         else
                         {
                             entry.State = EntityState.Modified;

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -71,7 +72,7 @@ namespace Wolt.BLL.Services.Concrete
             {
                
 
-                bool IsDeleted = await _UnitOfWork.ThingsRepository.DeletedCommentForRestaurantAsync(comment.UserId, comment.RestaurantId);
+                bool IsDeleted = await _UnitOfWork.ThingsRepository.CheckDeletedCommentForRestaurantAsync(comment.UserId, comment.RestaurantId);
 
                 if (IsDeleted)
                 {
@@ -109,6 +110,148 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
             }
 
+        }
+
+        public async Task<BaseResultDTO> AddFavoriteFoodAsync(string token, int FavId)
+        {
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int UserId = JwtService.GetIdFromToken(token);
+
+            if (UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+            bool IsFood = await _UnitOfWork.ThingsRepository.CheckProductAsync(FavId);
+
+            if(!IsFood)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This product doesnt exist!";
+
+                return result;
+            }
+
+            bool Exist = await _UnitOfWork.ThingsRepository.CheckFavoriteFoodAsync(UserId, FavId);
+
+            if(Exist) 
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This food is already in your favorites";
+
+                return result;
+            }
+
+            try
+            {
+                FavoriteFood food = new FavoriteFood()
+                {
+                    UserId=UserId,
+                    ProductId=FavId
+                };
+
+                await _UnitOfWork.UserInteractRepository.AddFavoriteFoodAsync(food);
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "Food added your favorites succesfully!";
+
+                return result;
+
+            }
+
+            catch (Exception ex) 
+            {
+                result.Status= RequestStatus.Failed;
+                result.Message=ex.Message;
+
+                return result;
+            }
+        }
+
+        public async Task<BaseResultDTO> AddFavoriteRestaurantAsync(string token, int FavId)
+        {
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int UserId = JwtService.GetIdFromToken(token);
+
+            if (UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+                return result;
+            }
+
+            bool IsRest = await _UnitOfWork.ThingsRepository.CheckRestaurantAsync(FavId);
+
+            if (!IsRest)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This restaurant doesnt exist!";
+                return result;
+            }
+
+            bool Exist = await _UnitOfWork.ThingsRepository.CheckFavoriteRestaurantAsync(UserId, FavId);
+
+            if (Exist)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This restaurant is already in your favorites";
+
+                return result;
+            }
+
+            try
+            {
+                FavoriteRestaurant fav = new FavoriteRestaurant()
+                {
+                    UserId = UserId,
+                    RestaurantId= FavId
+                };
+
+                await _UnitOfWork.UserInteractRepository.AddFavoriteRestaurantAsync(fav);
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "Restaurant added your favorites succesfully!";
+
+                return result;
+
+            }
+
+            catch (Exception ex)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+            }
         }
 
         public async Task<BaseResultDTO> AddUserBasketAsync(string token, AddUserBasketDTO dto)
@@ -242,7 +385,7 @@ namespace Wolt.BLL.Services.Concrete
             try
             {
 
-                bool IsDeleted = await _UnitOfWork.ThingsRepository.DeletedReviewForProductAsync(dto.UserId, dto.ProductId);
+                bool IsDeleted = await _UnitOfWork.ThingsRepository.CheckDeletedReviewForProductAsync(dto.UserId, dto.ProductId);
 
                 if (IsDeleted) 
                 {
@@ -489,7 +632,7 @@ namespace Wolt.BLL.Services.Concrete
 
         }
 
-        public async Task<GetUserBasketDTO> GetUserBasket(string token)
+        public async Task<GetUserBasketDTO> GetUserBasketAsync(string token)
         {
             int UserId = JwtService.GetIdFromToken(token);
 
@@ -644,7 +787,15 @@ namespace Wolt.BLL.Services.Concrete
 
                 if(dto.PromoCodeId!=null || dto.PromoCodeId >= 1)
                 {
-                    PromoCode promoCode = await _UnitOfWork.UserInteractRepository.GetPromoCodeAsync(dto.PromoCodeId);    
+                    PromoCode promoCode = await _UnitOfWork.UserInteractRepository.GetPromoCodeAsync(dto.PromoCodeId);
+
+                    if (promoCode.PromoEndTime >= promoCode.PromoStartTime)
+                    {
+                        result.Status = RequestStatus.Failed;
+                        result.Message = "Enter valid PromoCode";
+
+                        return result;
+                    }
 
                     if(promoCode != null) 
                     {
@@ -742,6 +893,132 @@ namespace Wolt.BLL.Services.Concrete
             }
         }
 
+        public async Task<BaseResultDTO> RemoveFavoriteFoodAsync(string token, int FavId)
+        {
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int UserId = JwtService.GetIdFromToken(token);
+
+            if (UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+                return result;
+            }
+
+            bool IsFood = await _UnitOfWork.ThingsRepository.CheckProductAsync(FavId);
+
+            if (!IsFood)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This food doesnt exist!";
+                return result;
+            }
+
+            bool Exist = await _UnitOfWork.ThingsRepository.CheckFavoriteFoodAsync(UserId, FavId);
+
+            if (!Exist)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This food is not in your favorites";
+
+                return result;
+            }
+
+            try
+            {
+                await _UnitOfWork.UserInteractRepository.DeleteFavFoodAsync(UserId, FavId);
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "This food deleted from your favorites succesfully!";
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
+
+                return result;
+
+            }
+        }
+
+        public async Task<BaseResultDTO> RemoveFavoriteRestaurantAsync(string token, int FavId)
+        {
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int UserId = JwtService.GetIdFromToken(token);
+
+            if (UserId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+                return result;
+            }
+
+            bool IsRest = await _UnitOfWork.ThingsRepository.CheckRestaurantAsync(FavId);
+
+            if (!IsRest)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This restaurant doesnt exist!";
+                return result;
+            }
+
+            bool Exist = await _UnitOfWork.ThingsRepository.CheckFavoriteRestaurantAsync(UserId, FavId);
+
+            if (!Exist)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "This restaurant is not in your favorites";
+
+                return result;
+            }
+
+            try
+            {
+                await _UnitOfWork.UserInteractRepository.DeleteFavRestaurantAsync(UserId, FavId);
+                _UnitOfWork.Commit();
+
+                result.Status = RequestStatus.Success;
+                result.Message = "This restaurant deleted from your favorites succesfully!";
+
+                return result;
+            }
+            catch(Exception ex) 
+            {
+                result.Status=RequestStatus.Failed;
+                result.Message=ex.Message;
+
+                return result;
+
+            }
+        }
+
         public async Task<BaseResultDTO> ReturnOrderAsync(string token, ReturnOrderDTO dto)
         {
 
@@ -778,7 +1055,7 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
             }
 
-            bool IsAccepted = await _UnitOfWork.ThingsRepository.IsAcceptedOrderAsync(userId, dto.OrderId);
+            bool IsAccepted = await _UnitOfWork.ThingsRepository.CheckAcceptedOrderAsync(userId, dto.OrderId);
 
             if (IsAccepted)
             {

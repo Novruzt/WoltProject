@@ -101,6 +101,11 @@ namespace Wolt.BLL.Services.Concrete
             Product data = await _unitOfWork.RestaurantRepository.GetProductAsync(id);
             List<UserReview> reviews = await _unitOfWork.RestaurantRepository.GetUserReviewsAsync(id);
 
+
+            if (reviews != null)
+            {
+
+            }
             double sum = 0;
             int num = 0;
 
@@ -122,6 +127,7 @@ namespace Wolt.BLL.Services.Concrete
 
             GetProductDTO DTO = _mapper.Map<GetProductDTO>(data);
 
+            if(DTO!=null)
             DTO.AverageScore = avg;
 
             return DTO;

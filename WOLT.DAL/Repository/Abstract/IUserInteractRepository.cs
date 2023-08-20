@@ -37,5 +37,9 @@ namespace WOLT.DAL.Repository.Abstract
         Task<PromoCode> GetPromoCodeAsync(int? id);
         Task AddOrderHistoryAsync(int id, int orderId);
         Task CreateUserHistoryAsync(int id);
+        Task AddFavoriteFoodAsync(FavoriteFood food);
+        Task AddFavoriteRestaurantAsync(FavoriteRestaurant favorite);
+        Task DeleteFavFoodAsync(int id, int  favId);
+        Task DeleteFavRestaurantAsync(int id, int favId);
     }
 }

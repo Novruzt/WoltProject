@@ -12,5 +12,6 @@ namespace Wolt.BLL.DTOs.UserInteractDTOs
         public string UserName { get; set; }
         public string RestaurantName { get; set; }
         public string Details { get; set; }
+        public DateTime CreationTime { get; set; }
     }
 }

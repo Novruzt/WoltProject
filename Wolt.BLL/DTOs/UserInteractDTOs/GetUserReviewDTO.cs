@@ -14,5 +14,6 @@ namespace Wolt.BLL.DTOs.UserInteractDTOs
         public double Score { get; set; }
         public string? Description { get; set; }
         public string ProductName { get; set; }
+        public string CreationTime { get; set; }
     }
 }

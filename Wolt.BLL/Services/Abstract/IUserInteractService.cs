@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,8 +28,13 @@ namespace Wolt.BLL.Services.Abstract
         Task<BaseResultDTO> AddUserBasketAsync(string token, AddUserBasketDTO dto);  
         Task<BaseResultDTO> DeleteUserBasketAsync(string token); 
         Task<BaseResultDTO> UpdateUserBasketAsync(string token, AddUserBasketDTO dto); 
-        Task<GetUserBasketDTO> GetUserBasket(string token);
+        Task<GetUserBasketDTO> GetUserBasketAsync(string token);
         Task<BaseResultDTO> OrderBasketAsync(string token, OrderBasketDTO dto);
+        Task<BaseResultDTO> AddFavoriteFoodAsync(string token, int FavId);
+        Task<BaseResultDTO> AddFavoriteRestaurantAsync(string token, int favId);
+        Task<BaseResultDTO> RemoveFavoriteFoodAsync(string token, int favId);
+        Task<BaseResultDTO> RemoveFavoriteRestaurantAsync(string token, int FavId);
+
 
     }
 }
