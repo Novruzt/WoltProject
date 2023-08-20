@@ -30,11 +30,19 @@ namespace Wolt.BLL.AutoMappers
             CreateMap<AddUserBasketDTO, Basket>()
                 .ForSourceMember(src=>src.Quantity, opt=>opt.DoNotValidate());
            
-            CreateMap<UserComment, GetUserCommentDTO>();
+            CreateMap<UserComment, GetUserCommentDTO>()
+                .ForMember(dest=>dest.CreationTime, opt=>opt.MapFrom(src=>src.CreationTime));
+
             CreateMap<UserComment, GetAllUserCommentsDTO>();
 
-            CreateMap<UserReview, GetAllUserReviewsDTO>();
-            CreateMap<UserReview, GetUserReviewDTO>();
+            CreateMap<UserReview, GetAllUserReviewsDTO>()
+                .ForMember(dest=>dest.UserName, opt=>opt.MapFrom(src=>src.User.Name))
+               .ForMember(dest=>dest.ProductName, opt=>opt.MapFrom(src=>src.Product.Name));
+
+            CreateMap<UserReview, GetUserReviewDTO>()
+                .ForMember(dest=>dest.UserName, opt=>opt.MapFrom(src=>src.User.Name))
+                .ForMember(dest=>dest.ProductName, opt=>opt.MapFrom(src=>src.Product.Name))
+                .ForMember(dest=>dest.CreationTime, opt=>opt.MapFrom(src=>src.CreationTime));
                
             
         }

@@ -44,7 +44,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequestDTO requestDTO)
+        public async Task<IActionResult> RegisterUser([FromForm] RegisterUserRequestDTO requestDTO)
         {
             if (await _thingsService.CheckUserForEmailAsync(requestDTO.Email))
                 return BadRequest("This user already exists");

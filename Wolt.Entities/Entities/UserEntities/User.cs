@@ -15,15 +15,13 @@ namespace Wolt.Entities.Entities.UserEntities
         //User properties:
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string? ProfilePicture { get; set; }
+       // public string? ProfilePicture { get; set; }
         public string Phone { get; set; }
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         public string Password { get; set; }
         public string? Token  { get; set; }
         public DateTime? VerifiedAt { get; set; }
-        public string? PasswordResetToken { get; set; }
-        public DateTime? ResetExpirationDate { get; set; } 
         public ICollection<UserOldPassword>? OldPasswords { get; set; }
         public ICollection<FavoriteFood>? FavoriteFoods { get; set; }
         public ICollection<FavoriteRestaurant>? FavoriteRestaurants { get; set; }

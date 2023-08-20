@@ -35,7 +35,7 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
         }
 
-        public async Task<bool> DeletedCommentForRestaurantAsync(int userId, int RestId)
+        public async Task<bool> CheckDeletedCommentForRestaurantAsync(int userId, int RestId)
         {
             UserComment comment = await _ctx.UserComments
                 .IgnoreQueryFilters()
@@ -149,7 +149,7 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
         }
 
-        public async Task<bool> DeletedReviewForProductAsync(int userId, int productId)
+        public async Task<bool> CheckReviewForProductAsync(int userId, int productId)
         {
             UserReview review = await _ctx.UserReviews.IgnoreQueryFilters()
                 .FirstOrDefaultAsync(r => r.UserId == userId && r.ProductId == productId && r.IsDeleted==true);
@@ -159,6 +159,7 @@ namespace WOLT.DAL.Repository.Concrete
 
             return false;
         }
+
         public async Task<bool> CheckUserBasketAsync(int UserId)
         {
             Basket basket = await _ctx.Baskets.FirstOrDefaultAsync(b=>b.UserId==UserId);
@@ -204,13 +205,66 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task<bool> IsAcceptedOrderAsync(int userId, int orderId)
+        public async Task<bool> CheckAcceptedOrderAsync(int userId, int orderId)
         {
            Order order = await _ctx.Orders
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(o=>o.Id==orderId && o.UserId==userId && o.IsDeleted==false && o.OrderStatus==OrderStatus.Accepted);
 
             if (order != null) 
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckDeletedReviewForProductAsync(int userId, int productId)
+        {
+            UserReview review = await _ctx.UserReviews
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(r=>r.UserId==userId && r.ProductId==productId);
+
+            if(review != null)
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckUserAdressAsync(int userId)
+        {
+            UserAddress userAddress = await _ctx.UsersAddress
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if(userAddress != null) 
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckFavoriteFoodAsync(int userId, int favId)
+        {
+            FavoriteFood food = await _ctx.FavoriteFoods.FirstOrDefaultAsync(f=>f.UserId==userId && f.ProductId==favId);
+
+            if(food != null) 
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckFavoriteRestaurantAsync(int userId, int favId)
+        {
+           FavoriteRestaurant fav = await _ctx.FavoriteRestaurants.FirstOrDefaultAsync(f=>f.RestaurantId==favId && f.UserId==userId);
+
+            if(fav != null) 
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckRestaurantAsync(int id)
+        {
+            Restaurant restaurant = await _ctx.Restaurants.FirstOrDefaultAsync(r=>r.Id==id);
+
+            if(restaurant != null) 
                 return true;
 
             return false;

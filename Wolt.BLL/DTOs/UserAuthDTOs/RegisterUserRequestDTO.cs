@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
@@ -20,5 +21,6 @@ namespace Wolt.BLL.DTOs.UserAuthDTOs
         [Required]
         public string Password { get; set;} 
         public string? Phone { get; set; }
+        public IFormFile? ProfilePic { get; set;}
     }
 }

@@ -93,8 +93,6 @@ namespace Wolt.API.Controllers
             if (!Checker)
                 return BadRequest("Invalid token");
 
-            
-
             List<GetAllUserCommentsDTO> list = await _UserInteractService.GetAllCommentsAsync(token);
 
             if (list.Count == 0)
@@ -140,6 +138,9 @@ namespace Wolt.API.Controllers
 
             GetUserCommentDTO result = await _UserInteractService.GetCommentAsync(token, commId);
 
+            if (result == null)
+                return BadRequest("No Comment Found!");
+
             return Ok(result);
         }
 
@@ -158,6 +159,9 @@ namespace Wolt.API.Controllers
                 return BadRequest("Invalid token");
 
             GetUserReviewDTO result = await _UserInteractService.GetUserReviewAsync(token, revId);
+
+            if (result == null)
+                return BadRequest("No review found!");
 
             return Ok(result);
         }
@@ -247,6 +251,96 @@ namespace Wolt.API.Controllers
             return Ok(result.Message);
         }
 
+        [HttpPost("AddFavoriteFood/{favId}")]
+        public async Task<IActionResult> AddFavoriteFood(int favId)
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.AddFavoriteFoodAsync(token, favId);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+        }
+
+        [HttpPost("AddFavoriteRestaurant/{favId}")]
+        public async Task<IActionResult> AddFavoriteRestaurant(int favId)
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.AddFavoriteRestaurantAsync(token, favId);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+        }
+
+        [HttpDelete("DeleteFavoriteFood/{favId}")]
+        public async Task<IActionResult> DeleteFavoriteFood(int favId)
+        {
+
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.RemoveFavoriteFoodAsync(token, favId);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+        }
+
+        [HttpDelete("DeleteFavoriteRestaurant/{favId}")]
+        public async Task<IActionResult> DeleteFavoriteRestaurant(int favId)
+        {
+
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            BaseResultDTO result = await _UserInteractService.RemoveFavoriteRestaurantAsync(token, favId);
+
+            if (result.Status == RequestStatus.Failed)
+                return BadRequest(result.Message);
+
+
+            return Ok(result.Message);
+        }
+
         [HttpDelete("ReturnOrder")]
         public async Task<IActionResult> ReturnOrder(ReturnOrderDTO dto)
         {
@@ -329,7 +423,7 @@ namespace Wolt.API.Controllers
             if (!Checker)
                 return BadRequest("Invalid token");
 
-            GetUserBasketDTO dto = await _UserInteractService.GetUserBasket(token);
+            GetUserBasketDTO dto = await _UserInteractService.GetUserBasketAsync(token);
 
             if (dto == null)
                 return BadRequest("No Basket Found!");

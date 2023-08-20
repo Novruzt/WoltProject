@@ -52,6 +52,16 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
+        public async Task AddFavoriteFoodAsync(FavoriteFood food)
+        {
+            await _ctx.FavoriteFoods.AddAsync(food);   
+        }
+
+        public async Task AddFavoriteRestaurantAsync(FavoriteRestaurant restaurant)
+        {
+            await _ctx.FavoriteRestaurants.AddAsync(restaurant);
+        }
+
         public async Task AddOrderHistoryAsync(int id, int orderId)
         {
             UserHistory userHistory = await _ctx.UserHistories.FirstOrDefaultAsync(c=>c.UserId==id);
@@ -112,6 +122,20 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
+        public async Task DeleteFavFoodAsync(int id, int favId)
+        {
+            FavoriteFood food = await _ctx.FavoriteFoods.FirstOrDefaultAsync(f=>f.UserId==id && f.ProductId==favId);
+
+            _ctx.FavoriteFoods.Remove(food);
+        }
+
+        public async Task DeleteFavRestaurantAsync(int id, int favId)
+        {
+            FavoriteRestaurant fav = await _ctx.FavoriteRestaurants.FirstOrDefaultAsync(r => r.UserId == id && r.RestaurantId == favId);
+
+            _ctx.FavoriteRestaurants.Remove(fav);
+        }
+
         public async Task DeleteReviewAsync(int id, int RevId)
         {
             UserReview review = await _ctx.UserReviews.Where(c=>c.UserId==id).FirstOrDefaultAsync(c=>c.Id==RevId);
@@ -143,7 +167,10 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<List<UserReview>> GetAllUserReviewsAsync(int id)
         {
-            List<UserReview> reviews = await _ctx.UserReviews.Where(c=>c.UserId==id).ToListAsync();
+            List<UserReview> reviews = await _ctx.UserReviews
+                 .Include(r => r.User)
+                 .Include(r => r.Product)
+                 .Where(c=>c.UserId==id).ToListAsync();
 
             return reviews;
         }
@@ -210,7 +237,10 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<UserReview> GetUserReviewAsync(int id, int RevId)
         {
-            UserReview review =  await _ctx.UserReviews.Where(r=>r.UserId==id).FirstOrDefaultAsync(r=>r.Id==RevId);
+            UserReview review =  await _ctx.UserReviews
+                .Include(r=>r.User)
+                .Include(r=>r.Product)
+                .Where(r=>r.UserId==id).FirstOrDefaultAsync(r=>r.Id==RevId);
 
             return review;
         }
