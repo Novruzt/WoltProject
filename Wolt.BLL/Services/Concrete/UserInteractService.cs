@@ -712,58 +712,7 @@ namespace Wolt.BLL.Services.Concrete
                 return result;
              }
 
-            if( dto.UserAddressId==null && dto.OrderNewAddress == null)
-            {
-
-                result.Status= RequestStatus.Failed;
-                result.Message = "Please, enter adress.";
-
-                return result;
-
-            }
-
             Order order= new Order();    
-
-            if (dto.UserAddressId <= 0 || dto.UserAddressId == null)
-            {
-                if(dto.OrderNewAddress == null)
-                {
-                    result.Status = RequestStatus.Failed;
-                    result.Message = "Please, enter valid adress";
-
-                    return result;
-                }
-
-                UserAddress address = new UserAddress()
-                {
-                    Country=dto.OrderNewAddress.Country,
-                    City=dto.OrderNewAddress.City,
-                    Location=dto.OrderNewAddress.Location,
-                    UserId=userId   
-                };
-
-                await _UnitOfWork.UserProfileRepository.AddUserAdressAsync(address);
-                _UnitOfWork.Commit();
-                order.UserAddressId = address.Id;
-
-            }
-
-            else 
-            {
-
-                UserAddress adress = await _UnitOfWork.UserProfileRepository.GetUserAddressAsync(userId, dto.UserAddressId);
-
-                if(adress == null)
-                {
-                    result.Status= RequestStatus.Failed;
-                    result.Message = "Please, enter valid adress";
-
-                    return result;
-                }
-
-                order.UserAddressId = dto.UserAddressId;
-            }
-
 
             Basket basket = await _UnitOfWork.UserInteractRepository.GetUserBasketAsync(userId);
           
@@ -804,11 +753,71 @@ namespace Wolt.BLL.Services.Concrete
 
                 }
 
+
+                if (dto.UserAddressId == null && dto.OrderNewAddress == null)
+                {
+
+                    result.Status = RequestStatus.Failed;
+                    result.Message = "Please, enter adress.";
+
+                    return result;
+
+                }
+
+
+                if (dto.UserAddressId >= 0 && dto.OrderNewAddress != null)
+                {
+                    result.Status = RequestStatus.Failed;
+                    result.Message = "Please, enter only one adress";
+
+                    return result;
+                }
+
+                if (dto.UserAddressId <= 0 || dto.UserAddressId == null)
+                {
+                    if (dto.OrderNewAddress == null)
+                    {
+                        result.Status = RequestStatus.Failed;
+                        result.Message = "Please, enter valid adress";
+
+                        return result;
+                    }
+
+                    UserAddress address = new UserAddress()
+                    {
+                        Country = dto.OrderNewAddress.Country,
+                        City = dto.OrderNewAddress.City,
+                        Location = dto.OrderNewAddress.Location,
+                        UserId = userId
+                    };
+
+                    await _UnitOfWork.UserProfileRepository.AddUserAdressAsync(address);
+                    _UnitOfWork.Commit();
+                    order.UserAddressId = address.Id;
+
+                }
+
+                else
+                {
+
+                    UserAddress adress = await _UnitOfWork.UserProfileRepository.GetUserAddressAsync(userId, dto.UserAddressId);
+
+                    if (adress == null)
+                    {
+                        result.Status = RequestStatus.Failed;
+                        result.Message = "Please, enter valid adress";
+
+                        return result;
+                    }
+
+                    order.UserAddressId = dto.UserAddressId;
+                }
+
                 await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order, userId);
                 _UnitOfWork.Commit();
 
                 await _UnitOfWork.UserInteractRepository.AddOrderHistoryAsync(userId, order.Id);
-                _UnitOfWork.Commit();
+               _UnitOfWork.Commit();
 
                 if (basket != null)
                 {

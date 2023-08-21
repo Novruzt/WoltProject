@@ -161,5 +161,15 @@ namespace WOLT.DAL.Repository.Concrete
 
             return userHistory;
         }
+
+        public async Task RemoveNewAdressAsync(int id, int adressId)
+        {
+            UserAddress adress = await _ctx.UsersAddress.FirstOrDefaultAsync(a=>a.Id==adressId && a.UserId==id);
+
+            if (adress != null)
+            {
+                _ctx.UsersAddress.Remove(adress);
+            }
+        }
     }
 }

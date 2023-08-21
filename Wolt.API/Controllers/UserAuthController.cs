@@ -67,6 +67,10 @@ namespace Wolt.API.Controllers
             {
                 if (requestDTO.ProfilePic != null)
                 {
+
+                    if (!FileService.IsImage(requestDTO.ProfilePic))
+                        return BadRequest("Upload valid image.");
+
                     string currPath = _webHostEnvironment.ContentRootPath;
                     string fullPath = FileService.SaveImage(requestDTO.ProfilePic, _webHostEnvironment);
 
