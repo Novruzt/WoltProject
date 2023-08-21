@@ -165,5 +165,51 @@ namespace Wolt.BLL.Services.Concrete
          
         }
 
+        public async Task<BaseResultDTO> ChangeProfilePictureAsync(string token, string? picture)
+        {
+            BaseResultDTO result = new BaseResultDTO();
+
+            bool IsToken = JwtService.ValidateToken(token);
+
+            if (!IsToken)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid Token!";
+
+                return result;
+
+            }
+
+            int userId = JwtService.GetIdFromToken(token);
+
+            if (userId <= 0)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Invalid user id";
+
+                return result;
+            }
+
+
+            try
+            {
+                 await _unitOfWork.UserAuthRepository.ChangeProfilePictureAsync(userId, picture);
+                _unitOfWork.Commit();
+
+                result.Status =RequestStatus.Success;
+                result.Message = "Change applied succesfully.";
+
+                return result;
+            }
+            catch(Exception ex) 
+            {
+                result.Status= RequestStatus.Failed;
+                result.Message=ex.Message;
+
+                return result;
+            }
+
+
+        }
     }
 }

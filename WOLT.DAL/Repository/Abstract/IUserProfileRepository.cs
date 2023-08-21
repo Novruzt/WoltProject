@@ -26,5 +26,6 @@ namespace WOLT.DAL.Repository.Abstract
         Task AddFavoriteRestaurantAsync(FavoriteRestaurant restaurant);
         Task<UserAddress> GetUserAddressAsync(int id, int? adressId);
         Task AddUserAdressAsync(UserAddress address);
+        Task RemoveNewAdressAsync(int id, int adressId);
     }
 }

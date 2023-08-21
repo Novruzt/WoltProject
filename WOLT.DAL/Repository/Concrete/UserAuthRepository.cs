@@ -62,5 +62,20 @@ namespace WOLT.DAL.Repository.Concrete
         {
             await _ctx.AddAsync(userOld);
         }
+
+        public  async Task ChangeProfilePictureAsync(int id, string? path)
+        {
+            User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user != null)
+            
+                if (path != null)
+                    user.ProfilePicture = path; 
+
+                else
+                    user.ProfilePicture=null;
+               
+
+        }
     }
 }
