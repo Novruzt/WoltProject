@@ -16,6 +16,7 @@ namespace Wolt.BLL.Services.Abstract
         Task<RegisterUserResponseDTO> RegisterUserAsync(RegisterUserRequestDTO dto);
         Task<BaseResultDTO> ResetPasswordAsync(int id, ResetPasswordRequestDTO dto);
         Task<LoginUserResponseDTO> LoginUserAsync(LoginUserRequestDTO dto);
+        Task<BaseResultDTO> ChangeProfilePictureAsync(string token, string? picture);
         
     }
 }

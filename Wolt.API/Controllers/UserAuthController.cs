@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestPlatform.Utilities.Helpers;
-using Wolt.API.Things;
 using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserAuthDTOs;
 using Wolt.BLL.Enums;
@@ -54,7 +53,7 @@ namespace Wolt.API.Controllers
             return Ok(dto);
         }
 
-        [HttpPost]
+        [HttpPost("Register")]
         public async Task<IActionResult> RegisterUser([FromForm] RegisterUserRequestDTO requestDTO)
         {
             if (await _thingsService.CheckUserForEmailAsync(requestDTO.Email))
@@ -86,6 +85,67 @@ namespace Wolt.API.Controllers
                 return BadRequest(ex.Message);
             }
    
+        }
+
+        [HttpPut("ChangeProfilePicture")]
+        public async Task<IActionResult> ChangeProfilePicture([FromForm] ChangeProfilePictureDTO dto)
+        {
+            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+             dto.UserId = JwtService.GetIdFromToken(token);
+
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized("Token not provided");
+
+            bool Checker = await _thingsService.CheckUserByToken(token);
+            if (!Checker)
+                return BadRequest("Invalid token");
+
+            string fullPath=null;
+
+            GetUserProfileDTO ProfileDTO = await _UserAuthService.GetUserAsync(token);
+
+            if (ProfileDTO == null)
+            {
+                return BadRequest("No user exist.");
+            }
+
+
+
+            string oldPath = ProfileDTO.ProfilePicture;
+
+            try
+            {
+                if (dto.ProfilePic != null)
+                {
+
+                    if (!FileService.IsImage(dto.ProfilePic))
+                        return BadRequest("Upload valid image.");
+
+                    string currPath = _webHostEnvironment.ContentRootPath;
+                    fullPath= FileService.SaveImage(dto.ProfilePic, _webHostEnvironment);
+
+                   
+                }
+
+                if (oldPath != null)
+                    FileService.DeleteImage(oldPath, _webHostEnvironment);
+
+                BaseResultDTO result = await _UserAuthService.ChangeProfilePictureAsync(token, fullPath);
+
+                if (result.Status == RequestStatus.Failed)
+                    return BadRequest(result.Message);
+
+                return Ok(result.Message);
+
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+          
         }
 
         [HttpPost("login")]

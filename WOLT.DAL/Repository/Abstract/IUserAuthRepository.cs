@@ -15,6 +15,7 @@ namespace WOLT.DAL.Repository.Abstract
         Task DeleteUserAsync(int id); 
         Task ResetPasswordAsync(int id, string newPassword);
         Task AddOldPasswordAsync(UserOldPassword oldPassword);
+        Task ChangeProfilePictureAsync(int id, string? path);
 
     }
 }
