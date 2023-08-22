@@ -13,9 +13,10 @@ namespace WOLT.DAL.Repository.Abstract
         Task<User> GetByEmailAsync(string email);
         Task RegisterUserAsync(User user); 
         Task DeleteUserAsync(int id); 
-        Task ResetPasswordAsync(int id, string newPassword);
+        Task ResetPasswordAsync(int id, string newPasswordHash, string newPasswordSalt);
         Task AddOldPasswordAsync(UserOldPassword oldPassword);
         Task ChangeProfilePictureAsync(int id, string? path);
+        Task<List<UserOldPassword>> GetAllUserOldPasswordsAsync(int userId);
 
     }
 }

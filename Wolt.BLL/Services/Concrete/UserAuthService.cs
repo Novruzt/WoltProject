@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -31,7 +32,7 @@ namespace Wolt.BLL.Services.Concrete
 
         public async Task<GetUserProfileDTO> GetUserAsync(string token)
         {
-           
+
             int UserId = JwtService.GetIdFromToken(token);
 
             User user = await _unitOfWork.UserAuthRepository.GetAsync(UserId);
@@ -52,14 +53,13 @@ namespace Wolt.BLL.Services.Concrete
         public async Task<LoginUserResponseDTO> LoginUserAsync(LoginUserRequestDTO dto)
         {
 
-            bool isUser = await _unitOfWork.ThingsRepository.CheckLoginUserAsync(dto.Email, dto.Password);
+            User user = await _unitOfWork.UserAuthRepository.GetByEmailAsync(dto.Email);
 
             LoginUserResponseDTO response = new LoginUserResponseDTO();
 
+            bool isUser = UserPasswordService.VerifyPassword(dto.Password, user.PasswordSalt, user.PasswordHash);
             if (isUser)
             {
-
-                User user = await _unitOfWork.UserAuthRepository.GetByEmailAsync(dto.Email);
 
                 response.Result = true;
                 response.Token = user.Token;
@@ -85,6 +85,11 @@ namespace Wolt.BLL.Services.Concrete
         {
             User user = _mapper.Map<User>(newUser);
 
+            string[] passwordTogether = UserPasswordService.CalculateSha256Hash(newUser.Password);
+
+            user.PasswordHash = passwordTogether[0];
+            user.PasswordSalt = passwordTogether[1];
+
             await _unitOfWork.UserAuthRepository.RegisterUserAsync(user);
             _unitOfWork.Commit();
 
@@ -98,8 +103,10 @@ namespace Wolt.BLL.Services.Concrete
 
             user.Token = response.Token;
 
-            UserOldPassword oldPassword = new UserOldPassword() {
-                OldPassword = user.Password,
+            UserOldPassword oldPassword = new UserOldPassword()
+            {
+                OldPasswordHash = user.PasswordHash,
+                OldPasswordSalt = user.PasswordSalt,
                 UserId = user.Id
             };
 
@@ -116,14 +123,33 @@ namespace Wolt.BLL.Services.Concrete
 
             BaseResultDTO result = new BaseResultDTO();
 
-            if(dto.Password==dto.newPassword)
+            User user = await _unitOfWork.UserAuthRepository.GetAsync(id);
+
+            if (user == null)
             {
                 result.Status = RequestStatus.Failed;
-                result.Message = "New Password cannot be same as old passwords.";
+                result.Message = "No user found!";
 
                 return result;
             }
-              
+
+            bool CheckCurrent = UserPasswordService.VerifyPassword(dto.Password, user.PasswordSalt, user.PasswordHash);
+            if (!CheckCurrent)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "Enter Current Password";
+
+                return result;
+            }
+
+            if (dto.Password == dto.newPassword)
+            {
+                result.Status = RequestStatus.Failed;
+                result.Message = "New Password cannot be same as current password.";
+
+                return result;
+            }
+
 
             if (dto.newPassword != dto.PassAgain)
             {
@@ -132,28 +158,34 @@ namespace Wolt.BLL.Services.Concrete
 
                 return result;
             }
-             
 
-            bool CheckOldPassword = await _unitOfWork.ThingsRepository.CheckUserOldPassword(id, dto.newPassword);
+            string[] passwordTogether = UserPasswordService.CalculateSha256Hash(dto.newPassword);
+
+            string newPasswordHash = passwordTogether[0];
+            string newPasswordSalt = passwordTogether[1];
+
+            List<UserOldPassword> userOldPasswords = await _unitOfWork.UserAuthRepository.GetAllUserOldPasswordsAsync(id);
+
+            bool CheckOldPassword = UserPasswordService.CheckOldPassword(dto.newPassword, userOldPasswords);
 
             if (CheckOldPassword)
             {
-                result.Status= RequestStatus.Failed;
+                result.Status = RequestStatus.Failed;
                 result.Message = "New Password cannot be same as old passwords.";
 
                 return result;
             }
-                
 
-            bool CheckCurrent=  await _unitOfWork.ThingsRepository.CheckUserCurrentPassword(id, dto.Password);
-            if (!CheckCurrent)
+            await _unitOfWork.UserAuthRepository.ResetPasswordAsync(id, newPasswordHash, newPasswordSalt);
+
+            UserOldPassword oldPassword = new UserOldPassword()
             {
-                result.Status=RequestStatus.Failed;
-                result.Message = "Enter Current Password";
-            }
-               
-            
-            await _unitOfWork.UserAuthRepository.ResetPasswordAsync(id, dto.newPassword);
+                UserId=user.Id,
+                OldPasswordHash=newPasswordHash,
+                OldPasswordSalt=newPasswordSalt,
+            };
+
+            await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
 
             _unitOfWork.Commit();
 
@@ -162,7 +194,7 @@ namespace Wolt.BLL.Services.Concrete
 
             return result;
 
-         
+
         }
 
         public async Task<BaseResultDTO> ChangeProfilePictureAsync(string token, string? picture)
@@ -193,18 +225,18 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
-                 await _unitOfWork.UserAuthRepository.ChangeProfilePictureAsync(userId, picture);
+                await _unitOfWork.UserAuthRepository.ChangeProfilePictureAsync(userId, picture);
                 _unitOfWork.Commit();
 
-                result.Status =RequestStatus.Success;
+                result.Status = RequestStatus.Success;
                 result.Message = "Change applied succesfully.";
 
                 return result;
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                result.Status= RequestStatus.Failed;
-                result.Message=ex.Message;
+                result.Status = RequestStatus.Failed;
+                result.Message = ex.Message;
 
                 return result;
             }

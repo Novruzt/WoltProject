@@ -57,9 +57,9 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
         }
 
-        public async Task<bool> CheckLoginUserAsync(string email, string password)
+        public async Task<bool> CheckLoginUserAsync(string email, string passwordHash, string passwordSalt)
         {
-            User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+            User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Email == email && u.PasswordHash == passwordHash && u.PasswordSalt==passwordSalt);
 
             if(user != null)
                 return true;
@@ -80,9 +80,9 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task<bool> CheckUserOldPassword(int id, string password)
+        public async Task<bool> CheckUserOldPassword(int id, string passwordHash, string passwordSalt)
         {
-            UserOldPassword old  = await _ctx.UserOldPasswords.FirstOrDefaultAsync(u => u.UserId == id && u.OldPassword == password);
+            UserOldPassword old  = await _ctx.UserOldPasswords.FirstOrDefaultAsync(u => u.UserId == id && u.OldPasswordHash == passwordHash && u.OldPasswordSalt== passwordSalt);
 
             if(old != null) 
                 return true;
@@ -94,7 +94,7 @@ namespace WOLT.DAL.Repository.Concrete
 
         public async Task<bool> CheckUserCurrentPassword(int id, string password)
         {
-            User user = await  _ctx.Users.FirstOrDefaultAsync(u=>u.Id==id && u.Password==password);
+            User user = await  _ctx.Users.FirstOrDefaultAsync(u=>u.Id==id);
 
                 if( user != null ) 
                     return true;
