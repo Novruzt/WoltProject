@@ -9,7 +9,8 @@ namespace Wolt.Entities.Entities.UserEntities
 {
     public class UserOldPassword:BaseEntity
     {
-        public string OldPassword { get; set; }
+        public string OldPasswordHash { get; set; }
+        public string OldPasswordSalt { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
     }

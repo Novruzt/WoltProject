@@ -35,7 +35,7 @@ namespace Wolt.BLL.Things
 
             if (!checker)
             {
-                context.Result = new BadRequestObjectResult("Invalid token");
+                context.Result = new BadRequestObjectResult("No user found");
                 return; 
             }
 

@@ -13,9 +13,9 @@ namespace WOLT.DAL.Repository.Abstract
         Task<bool> CheckDeletedCommentForRestaurantAsync(int userId, int RestId);
         Task<bool> CheckDeletedReviewForProductAsync(int userId, int productId);
         Task<bool> CheckUserForEmailAsync(string email);
-        Task<bool> CheckLoginUserAsync(string email, string password);
+        Task<bool> CheckLoginUserAsync(string email, string passwordHash, string passwordSalt);
         Task<bool> CheckUserByIdAsync(int Id);
-        Task<bool> CheckUserOldPassword(int id, string password);
+        Task<bool> CheckUserOldPassword(int id, string passwordHash, string passwordSalt);
         Task<bool> CheckUserCurrentPassword(int id, string password);
         Task<bool> CheckUserCommentAsync(int userId, int commId);
         Task<bool> CheckUserOrderAsync(int userId, int orderId);

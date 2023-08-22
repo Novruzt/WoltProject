@@ -26,16 +26,6 @@ namespace WOLT.DAL.Repository.Concrete
 
         }
 
-        public async Task ResetPasswordAsync(int id, string newPassword)
-        {
-            User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
-
-            user.Password=newPassword;
-
-            _ctx.Users.Update(user);
-
-        }
-
         public async Task<User> GetByEmailAsync(string email)
         {
             User user = await _ctx.Users.FirstOrDefaultAsync(c => c.Email == email);
@@ -76,6 +66,23 @@ namespace WOLT.DAL.Repository.Concrete
                     user.ProfilePicture=null;
                
 
+        }
+
+        public async Task ResetPasswordAsync(int id, string newPasswordHash, string newPasswordSalt)
+        {
+            User user = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            user.PasswordHash = newPasswordHash;
+            user.PasswordSalt = newPasswordSalt;
+
+            _ctx.Users.Update(user);
+        }
+
+        public async Task<List<UserOldPassword>> GetAllUserOldPasswordsAsync(int userId)
+        {
+            List<UserOldPassword> list = await _ctx.UserOldPasswords.Where(u=>u.UserId==userId).ToListAsync();
+
+            return list;
         }
     }
 }

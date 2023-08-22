@@ -68,10 +68,18 @@ namespace Wolt.BLL.Services.Concrete
 
             return false;
         }
+        
 
         public async Task<bool> CheckLoginUserAsync(string email, string password)
         {
-            bool Checker = await _unitOfWork.ThingsRepository.CheckLoginUserAsync(email, password);
+            User user = await _unitOfWork.UserAuthRepository.GetByEmailAsync(email);
+
+              if(user==null)
+                 return false;
+
+            bool Checker = UserPasswordService.VerifyPassword(password, user.PasswordSalt, user.PasswordHash);
+
+           // bool Checker = await _unitOfWork.ThingsRepository.CheckLoginUserAsync(email);
 
             if (Checker) 
                 return true;
