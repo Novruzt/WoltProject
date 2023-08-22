@@ -1,9 +1,0 @@
- JwtConfig config = new JwtConfig();
-            JwtService creator = new JwtService(config);
-
-            RegisterUserResponseDTO respone = new RegisterUserResponseDTO()
-            {
-                Token = creator.CreateToken(user),
-                Result = true
-                
-            };

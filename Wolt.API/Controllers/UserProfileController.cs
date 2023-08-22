@@ -9,6 +9,7 @@ using Wolt.BLL.DTOs.UserProfileDTOs;
 using Wolt.BLL.Enums;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Services.Concrete;
+using Wolt.BLL.Things;
 
 namespace Wolt.API.Controllers
 {
@@ -28,17 +29,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("AllFavoriteFoods")]
+        [CustomAuth]
         public async Task<IActionResult> GetAllFavoriteFoods()
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             List<GetAllUserFavoriteFoodsDTO> list = await _profileService.GetAllFavoriteFoodAsync(token);
 
@@ -49,17 +43,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("FavoriteFood/{favId}")]
+        [CustomAuth]
         public async Task<IActionResult> GetFavoriteFood(int favId)
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             UserFavoriteFoodDTO dto = await _profileService.GetFavoriteFoodAsync(token, favId);
 
@@ -71,17 +58,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("AllFavoriteRestaurants")]
+        [CustomAuth]
         public async Task<IActionResult> GetAllFavoriteRestaurants()
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             List<GetAllFavoriteRestaurantsDTO> list = await _profileService.GetAllFavoriteRestaurantsAsync(token);
 
@@ -92,17 +72,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("FavoriteRestaurant/{favId}")]
+        [CustomAuth]
         public async Task<IActionResult> GetFavoriteRestaurant(int favId)
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             UserFavoriteRestaurantDTO dto = await _profileService.GetFavoriteRestaurantsAsync(token, favId);
 
@@ -114,17 +87,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("AllUserAdress")]
+        [CustomAuth]
         public async Task<IActionResult> GetAllUserAddress()
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             List<GetAllUserAdressDTO> list = await _profileService.GetAllUserAddressesAsync(token);
 
@@ -135,17 +101,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("UserHistory")]
+        [CustomAuth]
         public async Task<IActionResult> GetAllUserHistory()
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             List<GetAllUserHistoryDTO> list = await _profileService.GetAllHistoryAsync(token);
 
@@ -156,17 +115,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("UserPayments")]
+        [CustomAuth]
         public async Task<IActionResult> GetAllUSerPayments()
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             List<GetAllUserCardDTO> list = await _profileService.GetAllUserPaymentsAsync(token);
 
@@ -178,17 +130,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpPost("AddUserCard")]
+        [CustomAuth]
         public async Task<IActionResult> AddUserCard(AddUserPaymentDTO dto)
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             BaseResultDTO result = await _profileService.AddUserPayment(token, dto);
 
@@ -200,17 +145,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpDelete("DeleteCard")]
+        [CustomAuth]
         public async Task<IActionResult> DeleteUserCard(DeleteUserCardDTO dto)
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             BaseResultDTO result = await _profileService.DeleteUserPaymentAsync(token, dto);
 
@@ -222,17 +160,10 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("ActiveOrders")]
+        [CustomAuth]
         public async Task<IActionResult> GetAllActiveOrders()
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             List<GetAllUserHistoryDTO> list = await _profileService.GetAllActiveOrdersAsync(token);
 
@@ -244,18 +175,11 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("GetOrder/{orderId}")]
+        [CustomAuth]
         public async Task<IActionResult> GetOrder(int orderId)
         {
 
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-
-            if (!Checker)
-                return BadRequest("Invalid token");
+             string token = JwtService.GetToken(Request.Headers);
 
             GetOrderDTO dto = await _profileService.GetOrderAsync(token, orderId);
 

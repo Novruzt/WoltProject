@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Wolt.BLL.DTOs.RestaurantDTOs;
 using Wolt.BLL.Services.Abstract;
+using Wolt.BLL.Services.Concrete;
+using Wolt.BLL.Things;
 using Wolt.Entities.Entities.RestaurantEntities;
 using WOLT.DAL.Repository.Abstract;
 using WOLT.DAL.UnitOfWork.Abstract;
@@ -13,23 +16,27 @@ namespace Wolt.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    [CustomAuth]
+
+
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
 
-        public RestaurantController(IRestaurantService service)
+        public RestaurantController(IRestaurantService service, IThingsService thingsService)
         {
             _restaurantService = service;
            
         }
 
-        [HttpGet]
+        [HttpGet]      
         public async Task<IActionResult> GetAll()
         {
+
             List<GetAllRestaurantsDTO> list = await _restaurantService.GetAllAsync();
 
             return Ok(list);
-        }
+        } 
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
@@ -76,7 +83,7 @@ namespace Wolt.API.Controllers
             return Ok(list);
         }
 
-        [HttpGet("product/{id}")]
+        [HttpGet("product/{id}")]       
         public async Task<IActionResult> GetProduct(int id)
         {
             GetProductDTO dto = await _restaurantService.GetProductAsync(id);

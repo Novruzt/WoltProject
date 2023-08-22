@@ -62,7 +62,6 @@ namespace WOLT.DAL.Repository.Concrete
         public async Task<Restaurant> GetAsync(int id)
         {
             Restaurant data = await _ctx.Restaurants
-                .Include(r=>r.Discounts)
                 .Include(r=>r.UserComments)
                 .FirstOrDefaultAsync(c=>c.Id==id);
 

@@ -37,7 +37,7 @@ namespace WOLT.DAL.DATA
             modelBuilder.ActiveOrders(); //Global Query Filter for only Active/Waiting Orders
 
             
-            DiscountAPI.Fluent(modelBuilder);
+            
             ProductAPI.Fluent(modelBuilder);
             UserReviewAPI.Fluent(modelBuilder);
             BasketAPI.Fluent(modelBuilder);
@@ -50,13 +50,8 @@ namespace WOLT.DAL.DATA
             RestaurantData.Seed(modelBuilder);
             CategoryData.Seed(modelBuilder);
             ProductData.Seed(modelBuilder);
-           
-            
-            
-            
-
-
-
+            PromoCodeData.Seed(modelBuilder);
+ 
         }
 
             public override int SaveChanges()
@@ -125,10 +120,8 @@ namespace WOLT.DAL.DATA
             }
 
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Discount> Discounts { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Restaurant> Restaurants { get; set; }
-        public DbSet<WorkHours> WorkHours { get; set; }
         public DbSet<FavoriteFood> FavoriteFoods { get; set; }
         public DbSet<FavoriteRestaurant> FavoriteRestaurants { get; set; } 
         public DbSet<User> Users { get; set; }
@@ -138,8 +131,6 @@ namespace WOLT.DAL.DATA
         public DbSet<UserCard> UserPayments { get; set; }
         public DbSet<UserReview> UserReviews { get; set; }
         public DbSet<Basket>  Baskets { get; set; }
-        public DbSet<Courier> Couriers { get; set; }
-        public DbSet<Delivery > Deliveries { get; set;}
         public DbSet<Order> Orders { get; set; }
         public DbSet<PromoCode> PromoCodes { get; set; }
         public DbSet<UserOldPassword> UserOldPasswords { get; set; }

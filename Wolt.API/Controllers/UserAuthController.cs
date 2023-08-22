@@ -29,19 +29,11 @@ namespace Wolt.API.Controllers
 
         [HttpGet("GetUserProfile")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CustomAuth]
         public async Task<IActionResult> GetUser()
         {
 
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-
-            int Id = JwtService.GetIdFromToken(token);
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-            if (!Checker)
-                return BadRequest("Invalid token");
+            string token = JwtService.GetToken(Request.Headers);
 
             GetUserProfileDTO dto = await _UserAuthService.GetUserAsync(token);
 
@@ -88,18 +80,12 @@ namespace Wolt.API.Controllers
         }
 
         [HttpPut("ChangeProfilePicture")]
+        [CustomAuth]
         public async Task<IActionResult> ChangeProfilePicture([FromForm] ChangeProfilePictureDTO dto)
         {
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string token = JwtService.GetToken(Request.Headers);
 
-             dto.UserId = JwtService.GetIdFromToken(token);
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-            if (!Checker)
-                return BadRequest("Invalid token");
+            dto.UserId = JwtService.GetIdFromToken(token);
 
             string fullPath=null;
 
@@ -165,19 +151,13 @@ namespace Wolt.API.Controllers
 
         [HttpPost("ResetPassword")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CustomAuth]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDTO requestDTO)
         {
 
-            string token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string token = JwtService.GetToken(Request.Headers);
 
             requestDTO.UserId=JwtService.GetIdFromToken(token);
-
-            if (string.IsNullOrEmpty(token))
-                return Unauthorized("Token not provided");
-
-            bool Checker = await _thingsService.CheckUserByToken(token);
-             if (!Checker)
-                return BadRequest("Invalid token");
 
              BaseResultDTO result = await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);
 

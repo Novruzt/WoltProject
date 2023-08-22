@@ -44,11 +44,18 @@ namespace Wolt.BLL.Services.Concrete
             int UserId =  JwtService.GetIdFromToken(token);
 
                 if (UserId > 0)
-                 if(JwtService.ValidateToken(token))
-                    return true;
-                     
-               
-                return false;
+                if (JwtService.ValidateToken(token))
+                {
+                    User user = await _unitOfWork.UserAuthRepository.GetAsync(UserId);
+
+                       if(user != null)
+                        return true;
+
+                }
+                    
+
+
+            return false;
         }
 
         public async Task<bool> CheckUserCommentForRestaurantAsync(int userId, int restId)

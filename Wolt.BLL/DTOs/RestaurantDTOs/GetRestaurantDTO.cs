@@ -14,7 +14,6 @@ namespace Wolt.BLL.DTOs.RestaurantDTOs
         public string BaseAddress { get; set; }
         public string Phone { get; set; }
         public string Description { get; set; }
-        public ICollection<GetAllDiscountsDTO> Discounts { get; set; }
         public int Comments { get; set; }
     }
 }

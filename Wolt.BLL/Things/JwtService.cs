@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -145,6 +146,12 @@ namespace Wolt.BLL.Things
 
             return JwtToken;
         }
+        public static string GetToken(IHeaderDictionary headers)
+        {
 
+            string token = headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            return token;
+
+        }
     }
 }

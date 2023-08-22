@@ -18,8 +18,7 @@ namespace Wolt.BLL.AutoMappers
             CreateMap<Restaurant, GetAllRestaurantsDTO>();
             CreateMap<Restaurant, GetRestaurantDTO>();
 
-            CreateMap<Discount, GetAllDiscountsDTO>();
-            CreateMap<WorkHours, WorkHoursDTO>();
+           
             CreateMap<UserComment, GetAllUserCommentsForRestaurantDTO>()
                 .ForMember(dest=> dest.UserName, opt => opt.MapFrom(src=>src.User.Name))
                 .ForMember(dest=>dest.CommentDate, opt=>opt.MapFrom(src=>src.CreationTime));

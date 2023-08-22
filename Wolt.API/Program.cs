@@ -24,6 +24,8 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Wolt.BLL.DTOs.UserProfileDTOs;
 using Wolt.BLL.Registrations;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Wolt.BLL.Things;
 
 namespace Wolt.API
 {
@@ -102,6 +104,7 @@ namespace Wolt.API
                 };
             });
 
+            builder.Services.AddScoped<CustomAuthAttribute>();
             builder.Services.ConfigureRepository();
             builder.Services.ConfigureServices();
 
