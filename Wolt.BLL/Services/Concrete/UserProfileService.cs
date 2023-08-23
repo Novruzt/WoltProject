@@ -13,6 +13,7 @@ using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserInteractDTOs;
 using Wolt.BLL.DTOs.UserProfileDTOs;
 using Wolt.BLL.Enums;
+using Wolt.BLL.Exceptions;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
 using Wolt.Entities.Entities.RestaurantEntities;
@@ -37,49 +38,18 @@ namespace Wolt.BLL.Services.Concrete
             _unitOfWork = unitOfWork;
             _cardvalidator = cardValidator;
         }
-        public async Task<BaseResultDTO> AddUserPayment(string token, AddUserPaymentDTO dto)
+        public async Task AddUserPayment(string token, AddUserPaymentDTO dto)
         {
-            BaseResultDTO  result =  new BaseResultDTO();
-
-            bool IsToken = JwtService.ValidateToken(token);
-
-            if (!IsToken)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Invalid Token!";
-
-                return result;
-            }
-
             dto.UserId = JwtService.GetIdFromToken(token);
-
-            if (dto.UserId <= 0)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Invalid user id";
-
-                return result;
-            }
 
             var Validator = _cardvalidator.Validate(dto);
             if (!Validator.IsValid)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = Validator.GetErrorMessages();
-
-                return result;
-            }
+                throw new BadRequestException(Validator.GetErrorMessages());
 
             bool IsCard = await _unitOfWork.ThingsRepository.CheckUserPaymentAsync(dto.UserId, dto.CardNumber, dto.CVV, dto.ExpireTime);
 
-            if (IsCard) 
-            {
-                result.Status= RequestStatus.Failed;
-                result.Message = "You already have added this card.";
-
-                return result;
-            }
-
+            if (IsCard)
+                throw new BadRequestException("You already have added this card.");
             try
             {
                 UserCard card= _mapper.Map<UserCard>(dto);
@@ -87,57 +57,23 @@ namespace Wolt.BLL.Services.Concrete
                 await _unitOfWork.UserProfileRepository.AddUserPayment(card);
                 _unitOfWork.Commit();
 
-                result.Status=RequestStatus.Success;
-                result.Message = "You added card succesfully!";
-
-                return result;
             }
             catch(Exception ex) 
             {
-                result.Status=RequestStatus.Failed;
-                result.Message = ex.Message;
-
-                return result;
+                throw new BadRequestException(ex);
             }
 
            
         }
 
-        public async Task<BaseResultDTO> DeleteUserPaymentAsync(string token, DeleteUserCardDTO dto)
+        public async Task DeleteUserPaymentAsync(string token, DeleteUserCardDTO dto)
         {
-            BaseResultDTO result = new BaseResultDTO();
-
-
-            bool IsToken = JwtService.ValidateToken(token);
-
-            if (!IsToken)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Invalid Token!";
-
-                return result;
-
-            }
-
             int userId = JwtService.GetIdFromToken(token);
-
-            if (userId <= 0)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Invalid user id";
-
-                return result;
-            }
 
             bool IsCard = await _unitOfWork.ThingsRepository.CheckUserCardBySensetiveInfoAsync(userId, dto.CardID, dto.CVV, dto.ExpireDate);
 
-            if(!IsCard) 
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Enter valid card details";
-
-                return result;
-            }
+            if (!IsCard)
+                throw new NotFoundException("Enter valid card details");
 
             try
             {
@@ -145,22 +81,14 @@ namespace Wolt.BLL.Services.Concrete
                 await _unitOfWork.UserProfileRepository.DeleteUserPaymentAsync(userId, dto.CardID);
                 _unitOfWork.Commit();
 
-                result.Status = RequestStatus.Success;
-                result.Message = "You deleted card succesfully!";
-
-                return result;
-
             }
 
             catch(Exception ex) 
             {
-                result.Status = RequestStatus.Failed;
-                result.Message=ex.Message;
-
-                return result;
+                throw new BadRequestException(ex);
             }
 
-            return result;
+      
         }
 
         public async Task<List<GetAllUserFavoriteFoodsDTO>> GetAllFavoriteFoodAsync(string token)
@@ -295,9 +223,5 @@ namespace Wolt.BLL.Services.Concrete
             return dto;
         }
 
-        public Task<UserAddress> GetUserAddressesAsync(string token, int addressId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

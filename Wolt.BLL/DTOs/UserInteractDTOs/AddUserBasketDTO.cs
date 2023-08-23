@@ -20,5 +20,7 @@ namespace Wolt.BLL.DTOs.UserInteractDTOs
         public int ProductId { get; set; }
         [Required]
         public int Quantity { get; set; }
+        [SwaggerSchema(ReadOnly = true)]
+        public double TotalAmount { get; set; } 
     }
 }

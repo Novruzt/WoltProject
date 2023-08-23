@@ -54,29 +54,10 @@ namespace Wolt.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                if (requestDTO.ProfilePic != null)
-                {
+            RegisterUserResponseDTO result = await _UserAuthService.RegisterUserAsync(requestDTO);
 
-                    if (!FileService.IsImage(requestDTO.ProfilePic))
-                        return BadRequest("Upload valid image.");
+            return Ok(result);
 
-                    string currPath = _webHostEnvironment.ContentRootPath;
-                    string fullPath = FileService.SaveImage(requestDTO.ProfilePic, _webHostEnvironment);
-
-                    requestDTO.ProfilePicture = fullPath;
-                }
-
-                RegisterUserResponseDTO result = await _UserAuthService.RegisterUserAsync(requestDTO);
-
-                return Ok(result);
-            }
-            catch (Exception ex) 
-            {
-                return BadRequest(ex.Message);
-            }
-   
         }
 
         [HttpPut("ChangeProfilePicture")]
@@ -85,53 +66,10 @@ namespace Wolt.API.Controllers
         {
             string token = JwtService.GetToken(Request.Headers);
 
-            dto.UserId = JwtService.GetIdFromToken(token);
+            await _UserAuthService.ChangeProfilePictureAsync(token, dto);
 
-            string fullPath=null;
+            return Ok("You applied changes.");
 
-            GetUserProfileDTO ProfileDTO = await _UserAuthService.GetUserAsync(token);
-
-            if (ProfileDTO == null)
-            {
-                return BadRequest("No user exist.");
-            }
-
-
-
-            string oldPath = ProfileDTO.ProfilePicture;
-
-            try
-            {
-                if (dto.ProfilePic != null)
-                {
-
-                    if (!FileService.IsImage(dto.ProfilePic))
-                        return BadRequest("Upload valid image.");
-
-                    string currPath = _webHostEnvironment.ContentRootPath;
-                    fullPath= FileService.SaveImage(dto.ProfilePic, _webHostEnvironment);
-
-                   
-                }
-
-                if (oldPath != null)
-                    FileService.DeleteImage(oldPath, _webHostEnvironment);
-
-                BaseResultDTO result = await _UserAuthService.ChangeProfilePictureAsync(token, fullPath);
-
-                if (result.Status == RequestStatus.Failed)
-                    return BadRequest(result.Message);
-
-                return Ok(result.Message);
-
-                
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-          
         }
 
         [HttpPost("login")]
@@ -154,17 +92,16 @@ namespace Wolt.API.Controllers
         [CustomAuth]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDTO requestDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             string token = JwtService.GetToken(Request.Headers);
 
             requestDTO.UserId=JwtService.GetIdFromToken(token);
 
-             BaseResultDTO result = await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);
+             await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
+            return Ok("You changed password succesfully!");
         }
       
     }

@@ -81,7 +81,7 @@ namespace Wolt.BLL.Things
                 
             }
 
-            catch (SecurityTokenException ex) 
+            catch 
             {
                 return -1;
             }

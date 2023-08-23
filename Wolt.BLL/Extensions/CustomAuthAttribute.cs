@@ -31,13 +31,22 @@ namespace Wolt.BLL.Things
                 return;
             }
 
+            bool IsToken = JwtService.ValidateToken(token);
+            if (!IsToken) 
+            {
+                context.Result = new UnauthorizedObjectResult("Invalid token");
+                return;
+            }
+
             bool checker = await thingsService.CheckUserByToken(token);
 
             if (!checker)
             {
-                context.Result = new BadRequestObjectResult("No user found");
+                context.Result = new NotFoundObjectResult("No user found");
                 return; 
             }
+
+            
 
             await base.OnActionExecutionAsync(context, next);
         }

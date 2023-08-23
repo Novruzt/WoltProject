@@ -135,13 +135,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _profileService.AddUserPayment(token, dto);
+          await _profileService.AddUserPayment(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You added card succesfully!");
         }
 
         [HttpDelete("DeleteCard")]
@@ -150,12 +146,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _profileService.DeleteUserPaymentAsync(token, dto);
+              await _profileService.DeleteUserPaymentAsync(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
+            return Ok("You deleted card succesfully!");
 
         }
 
