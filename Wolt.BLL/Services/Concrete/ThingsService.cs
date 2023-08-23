@@ -53,8 +53,6 @@ namespace Wolt.BLL.Services.Concrete
 
                 }
                     
-
-
             return false;
         }
 

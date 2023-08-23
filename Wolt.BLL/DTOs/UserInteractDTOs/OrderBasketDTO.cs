@@ -20,5 +20,7 @@ namespace Wolt.BLL.DTOs.UserInteractDTOs
         public int? UserAddressId { get; set; }
         public OrderNewAddressDTO? OrderNewAddress { get; set; }
         public int? PromoCodeId { get; set; }
+        [SwaggerSchema(ReadOnly = true)]
+        public double OrderTotalPrice { get; set; }
     }
 }

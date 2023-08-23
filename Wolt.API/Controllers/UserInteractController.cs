@@ -12,6 +12,7 @@ using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
 using Wolt.Entities.Entities.RestaurantEntities;
 using Wolt.Entities.Entities.UserEntities;
+using Wolt.Entities.Entities.WoltEntities;
 using WOLT.DAL.DATA;
 
 namespace Wolt.API.Controllers
@@ -40,13 +41,9 @@ namespace Wolt.API.Controllers
 
             string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.AddCommentAsync(token, dto);
+            await _UserInteractService.AddCommentAsync(token, dto);
 
-            if(result.Status==RequestStatus.Failed) 
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You added comment succesfully!");
         }
 
         [HttpPost("addReview")]
@@ -54,13 +51,9 @@ namespace Wolt.API.Controllers
         {
             string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.AddUserReviewAsync(token, dto);
+            await _UserInteractService.AddUserReviewAsync(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You added review succesfully!");
 
         }
 
@@ -124,12 +117,9 @@ namespace Wolt.API.Controllers
 
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.UpdateCommentAsync(token, dto);
+             await _UserInteractService.UpdateCommentAsync(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
+            return Ok("You updated comment succesfully!");
         }
 
         [HttpPut("updateReview")]
@@ -137,12 +127,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.UpdateUserReviewAsync(token, dto);
+            await _UserInteractService.UpdateUserReviewAsync(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
+            return Ok("You updated comment succesfully!");
         }
 
         [HttpDelete("DeleteComment/{commId}")]
@@ -150,25 +137,18 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result= await _UserInteractService.DeleteCommentAsync(token, commId);
+           await _UserInteractService.DeleteCommentAsync(token, commId);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You deleted comment succesfully!");
         }
         [HttpDelete("DeleteReview/{revId}")]
         public async Task<IActionResult> DeleteReview(int revId)
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.DeleteUserReviewAsync(token, revId);
+            await _UserInteractService.DeleteUserReviewAsync(token, revId);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
+            return Ok("You deleted review succesfully!");
         }
 
         [HttpPost("AddFavoriteFood/{favId}")]
@@ -176,13 +156,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.AddFavoriteFoodAsync(token, favId);
+           await _UserInteractService.AddFavoriteFoodAsync(token, favId);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You added food to favorite succesfully!");
         }
 
         [HttpPost("AddFavoriteRestaurant/{favId}")]
@@ -190,13 +166,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.AddFavoriteRestaurantAsync(token, favId);
+            await _UserInteractService.AddFavoriteRestaurantAsync(token, favId);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You added restaurant to favorite succesfully!");
         }
 
         [HttpDelete("DeleteFavoriteFood/{favId}")]
@@ -205,28 +177,19 @@ namespace Wolt.API.Controllers
 
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.RemoveFavoriteFoodAsync(token, favId);
+             _UserInteractService.RemoveFavoriteFoodAsync(token, favId);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You deleted food from your favorites succesfully!");
         }
 
         [HttpDelete("DeleteFavoriteRestaurant/{favId}")]
         public async Task<IActionResult> DeleteFavoriteRestaurant(int favId)
         {
+            string token = JwtService.GetToken(Request.Headers);
 
-             string token = JwtService.GetToken(Request.Headers);
+            await _UserInteractService.RemoveFavoriteRestaurantAsync(token, favId);
 
-            BaseResultDTO result = await _UserInteractService.RemoveFavoriteRestaurantAsync(token, favId);
-
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You deleted restaurant from your favorites succesfully!");
         }
 
         [HttpDelete("ReturnOrder")]
@@ -234,13 +197,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.ReturnOrderAsync(token, dto);
+               await _UserInteractService.ReturnOrderAsync(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You returned order succesfully!");
         }
 
         [HttpPost("createBasket")]
@@ -249,13 +208,9 @@ namespace Wolt.API.Controllers
 
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.AddUserBasketAsync(token, dto);
-
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+             await _UserInteractService.AddUserBasketAsync(token, dto);
+            
+             return Ok($"You created basket succesfully. Total amount of basket is {dto.TotalAmount}");
         }
 
         [HttpPut("UpdateBasket")]
@@ -264,13 +219,9 @@ namespace Wolt.API.Controllers
 
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.UpdateUserBasketAsync(token, dto);
+            await _UserInteractService.UpdateUserBasketAsync(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok($"You updated basket succesfully! You total amount is {dto.TotalAmount}");
         }
 
         [HttpGet("GetBasket")]
@@ -295,13 +246,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.DeleteUserBasketAsync(token);
+           await _UserInteractService.DeleteUserBasketAsync(token);
 
-            if (result.Status == RequestStatus.Failed) 
-                return BadRequest(result.Message);
-
-
-            return Ok(result.Message);
+            return Ok("You deleted basket succesfully!");
         }
 
         [HttpPost("OrderBasket")]
@@ -309,12 +256,9 @@ namespace Wolt.API.Controllers
         {
              string token = JwtService.GetToken(Request.Headers);
 
-            BaseResultDTO result = await _UserInteractService.OrderBasketAsync(token, dto);
+           await _UserInteractService.OrderBasketAsync(token, dto);
 
-            if (result.Status == RequestStatus.Failed)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
+            return Ok($"You ordered basket succesfully! Total price is {dto.OrderTotalPrice}");
 
         }
     }

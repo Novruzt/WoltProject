@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Wolt.Entities.Entities.RestaurantEntities;
 using WOLT.DAL.DATA;
@@ -26,6 +25,7 @@ using Wolt.BLL.DTOs.UserProfileDTOs;
 using Wolt.BLL.Registrations;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Wolt.BLL.Things;
+using Wolt.BLL.Extensions;
 
 namespace Wolt.API
 {
@@ -135,6 +135,8 @@ namespace Wolt.API
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.AddGlobalErrorHandler();
 
             app.Run();
 

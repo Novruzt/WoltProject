@@ -11,6 +11,7 @@ using Wolt.BLL.Configurations;
 using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserAuthDTOs;
 using Wolt.BLL.Enums;
+using Wolt.BLL.Exceptions;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
 using Wolt.Entities.Entities.UserEntities;
@@ -24,10 +25,11 @@ namespace Wolt.BLL.Services.Concrete
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public UserAuthService(IMapper mapper, IUnitOfWork unitOfWork)
+        public UserAuthService(IMapper mapper, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<GetUserProfileDTO> GetUserAsync(string token)
@@ -85,6 +87,26 @@ namespace Wolt.BLL.Services.Concrete
         {
             User user = _mapper.Map<User>(newUser);
 
+            try
+            {
+                if (newUser.ProfilePic != null)
+                {
+
+                    if (!FileService.IsImage(newUser.ProfilePic))
+                        throw new BadRequestException("Upload valid image.");
+
+                    string currPath = _webHostEnvironment.ContentRootPath;
+                    string fullPath = FileService.SaveImage(newUser.ProfilePic, _webHostEnvironment);
+
+                    newUser.ProfilePicture = fullPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
+
+
             string[] passwordTogether = UserPasswordService.CalculateSha256Hash(newUser.Password);
 
             user.PasswordHash = passwordTogether[0];
@@ -118,46 +140,21 @@ namespace Wolt.BLL.Services.Concrete
             return response;
         }
 
-        public async Task<BaseResultDTO> ResetPasswordAsync(int id, ResetPasswordRequestDTO dto)
+        public async Task ResetPasswordAsync(int id, ResetPasswordRequestDTO dto)
         {
-
-            BaseResultDTO result = new BaseResultDTO();
 
             User user = await _unitOfWork.UserAuthRepository.GetAsync(id);
 
-            if (user == null)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "No user found!";
-
-                return result;
-            }
-
             bool CheckCurrent = UserPasswordService.VerifyPassword(dto.Password, user.PasswordSalt, user.PasswordHash);
             if (!CheckCurrent)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Enter Current Password";
-
-                return result;
-            }
+                throw new BadRequestException("Enter current password.");
 
             if (dto.Password == dto.newPassword)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "New Password cannot be same as current password.";
-
-                return result;
-            }
+                throw new BadRequestException("New Password cannot be same as current password.");
 
 
             if (dto.newPassword != dto.PassAgain)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Passwords must be same";
-
-                return result;
-            }
+                throw new BadRequestException("Passwords must be same");
 
             string[] passwordTogether = UserPasswordService.CalculateSha256Hash(dto.newPassword);
 
@@ -169,79 +166,58 @@ namespace Wolt.BLL.Services.Concrete
             bool CheckOldPassword = UserPasswordService.CheckOldPassword(dto.newPassword, userOldPasswords);
 
             if (CheckOldPassword)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "New Password cannot be same as old passwords.";
-
-                return result;
-            }
+                throw new BadRequestException("New Password cannot be same as old passwords.");
 
             await _unitOfWork.UserAuthRepository.ResetPasswordAsync(id, newPasswordHash, newPasswordSalt);
 
             UserOldPassword oldPassword = new UserOldPassword()
             {
-                UserId=user.Id,
-                OldPasswordHash=newPasswordHash,
-                OldPasswordSalt=newPasswordSalt,
+                UserId = user.Id,
+                OldPasswordHash = newPasswordHash,
+                OldPasswordSalt = newPasswordSalt,
             };
 
             await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
 
             _unitOfWork.Commit();
 
-            result.Status = RequestStatus.Success;
-            result.Message = "You changed password succesfully!";
-
-            return result;
-
-
         }
 
-        public async Task<BaseResultDTO> ChangeProfilePictureAsync(string token, string? picture)
+        public async Task ChangeProfilePictureAsync(string token, ChangeProfilePictureDTO dto)
         {
-            BaseResultDTO result = new BaseResultDTO();
-
-            bool IsToken = JwtService.ValidateToken(token);
-
-            if (!IsToken)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Invalid Token!";
-
-                return result;
-
-            }
 
             int userId = JwtService.GetIdFromToken(token);
+            User user = await _unitOfWork.UserAuthRepository.GetAsync(userId);
 
-            if (userId <= 0)
-            {
-                result.Status = RequestStatus.Failed;
-                result.Message = "Invalid user id";
-
-                return result;
-            }
-
+            string fullPath = null;
+            string oldPath = user.ProfilePicture;
 
             try
             {
-                await _unitOfWork.UserAuthRepository.ChangeProfilePictureAsync(userId, picture);
-                _unitOfWork.Commit();
+                if (dto.ProfilePic != null)
+                {
 
-                result.Status = RequestStatus.Success;
-                result.Message = "Change applied succesfully.";
+                    if (!FileService.IsImage(dto.ProfilePic))
+                        throw new BadRequestException("Upload valid image.");
 
-                return result;
+                    string currPath = _webHostEnvironment.ContentRootPath;
+                    fullPath = FileService.SaveImage(dto.ProfilePic, _webHostEnvironment);
+
+                    if (oldPath != null)
+                        FileService.DeleteImage(oldPath, _webHostEnvironment);
+
+                    
+                        await _unitOfWork.UserAuthRepository.ChangeProfilePictureAsync(userId, fullPath);
+                        _unitOfWork.Commit();
+                }
             }
             catch (Exception ex)
             {
-                result.Status = RequestStatus.Failed;
-                result.Message = ex.Message;
-
-                return result;
+                throw new BadRequestException(ex);
             }
-
-
         }
+
     }
 }
+
+

@@ -14,26 +14,26 @@ namespace Wolt.BLL.Services.Abstract
 {
     public interface IUserInteractService
     {
-        Task<BaseResultDTO> AddCommentAsync(string token, AddUserCommentDTO comment);
+        Task AddCommentAsync(string token, AddUserCommentDTO comment);
         Task<List<GetAllUserCommentsDTO>> GetAllCommentsAsync(string token);
         Task<GetUserCommentDTO> GetCommentAsync(string token, int commId);
-        Task<BaseResultDTO> UpdateCommentAsync(string token, UpdateCommentDTO dto);
-        Task<BaseResultDTO> DeleteCommentAsync(string token, int CommId);
-        Task<BaseResultDTO> ReturnOrderAsync(string token, ReturnOrderDTO dto);
+        Task UpdateCommentAsync(string token, UpdateCommentDTO dto);
+        Task DeleteCommentAsync(string token, int CommId);
+        Task ReturnOrderAsync(string token, ReturnOrderDTO dto);
         Task<List<GetAllUserReviewsDTO>> GetAllReviewsAsync(string token);
         Task<GetUserReviewDTO> GetUserReviewAsync(string token, int revId);
-        Task<BaseResultDTO> UpdateUserReviewAsync(string token, UpdateReviewDTO dto);
-        Task<BaseResultDTO> DeleteUserReviewAsync(string token, int revId);
-        Task<BaseResultDTO> AddUserReviewAsync(string token, AddUserReviewDTO dto);
-        Task<BaseResultDTO> AddUserBasketAsync(string token, AddUserBasketDTO dto);  
-        Task<BaseResultDTO> DeleteUserBasketAsync(string token); 
-        Task<BaseResultDTO> UpdateUserBasketAsync(string token, AddUserBasketDTO dto); 
+        Task UpdateUserReviewAsync(string token, UpdateReviewDTO dto);
+        Task DeleteUserReviewAsync(string token, int revId);
+        Task AddUserReviewAsync(string token, AddUserReviewDTO dto);
+        Task AddUserBasketAsync(string token, AddUserBasketDTO dto);  
+        Task DeleteUserBasketAsync(string token); 
+        Task UpdateUserBasketAsync(string token, AddUserBasketDTO dto); 
         Task<GetUserBasketDTO> GetUserBasketAsync(string token);
-        Task<BaseResultDTO> OrderBasketAsync(string token, OrderBasketDTO dto);
-        Task<BaseResultDTO> AddFavoriteFoodAsync(string token, int FavId);
-        Task<BaseResultDTO> AddFavoriteRestaurantAsync(string token, int favId);
-        Task<BaseResultDTO> RemoveFavoriteFoodAsync(string token, int favId);
-        Task<BaseResultDTO> RemoveFavoriteRestaurantAsync(string token, int FavId);
+        Task OrderBasketAsync(string token, OrderBasketDTO dto);
+        Task AddFavoriteFoodAsync(string token, int FavId);
+        Task AddFavoriteRestaurantAsync(string token, int favId);
+        Task RemoveFavoriteFoodAsync(string token, int favId);
+        Task RemoveFavoriteRestaurantAsync(string token, int FavId);
 
 
     }
