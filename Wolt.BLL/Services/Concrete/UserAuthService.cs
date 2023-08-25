@@ -43,7 +43,6 @@ namespace Wolt.BLL.Services.Concrete
             return dto;
         }
 
-
         public async Task<GetUserProfileDTO> GetByEmailAsync(string email)
         {
             User user = await _unitOfWork.UserAuthRepository.GetByEmailAsync(email);
@@ -74,10 +73,8 @@ namespace Wolt.BLL.Services.Concrete
                     response.Token = JwtService.CreateToken(user);
                     user.Token = response.Token;
 
-                    _unitOfWork.Commit();
+                    await _unitOfWork.CommitAsync();
                 }
-
-
             }
 
             return response;
@@ -87,63 +84,72 @@ namespace Wolt.BLL.Services.Concrete
         {
             User user = _mapper.Map<User>(newUser);
 
-            try
-            {
-                if (newUser.ProfilePic != null)
+            bool IsUser = await _unitOfWork.ThingsRepository.CheckUserForEmailAsync(user.Email);
+
+            if (IsUser)
+                throw new AlreadyDoneException("This email adress already registered.");
+
+               await _unitOfWork.BeginTransactionAsync();   
+                try
                 {
+                    if (newUser.ProfilePic != null)
+                    {
+                        if (!FileService.IsImage(newUser.ProfilePic))
+                            throw new BadRequestException("Upload a valid image.");
 
-                    if (!FileService.IsImage(newUser.ProfilePic))
-                        throw new BadRequestException("Upload valid image.");
+                        string currPath = _webHostEnvironment.ContentRootPath;
+                        string fullPath = FileService.SaveImage(newUser.ProfilePic, _webHostEnvironment);
 
-                    string currPath = _webHostEnvironment.ContentRootPath;
-                    string fullPath = FileService.SaveImage(newUser.ProfilePic, _webHostEnvironment);
+                        newUser.ProfilePicture = fullPath;
+                    }
 
-                    newUser.ProfilePicture = fullPath;
+                    string[] passwordTogether = UserPasswordService.CalculateSha256Hash(newUser.Password);
+
+                    user.PasswordHash = passwordTogether[0];
+                    user.PasswordSalt = passwordTogether[1];
+
+                    
+
+
+
+                   await _unitOfWork.UserAuthRepository.RegisterUserAsync(user);
+                   await _unitOfWork.CommitAsync();
+
+                   RegisterUserResponseDTO response = new RegisterUserResponseDTO()
+                   {
+                     Token = JwtService.CreateToken(user),
+                     Result = true
+                    };
+
+                 user.Token = response.Token;
+
+                UserOldPassword oldPassword = new UserOldPassword()
+                    {
+                        OldPasswordHash = user.PasswordHash,
+                        OldPasswordSalt = user.PasswordSalt,
+                        UserId = user.Id
+                    };
+
+                await _unitOfWork.UserInteractRepository.CreateUserHistoryAsync(user.Id);
+                await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
+                
+                await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitTransactionAsync();
+
+                return response;
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message);
-            }
-
-
-            string[] passwordTogether = UserPasswordService.CalculateSha256Hash(newUser.Password);
-
-            user.PasswordHash = passwordTogether[0];
-            user.PasswordSalt = passwordTogether[1];
-
-            await _unitOfWork.UserAuthRepository.RegisterUserAsync(user);
-            _unitOfWork.Commit();
-
-            RegisterUserResponseDTO response = new RegisterUserResponseDTO()
-            {
-
-                Token = JwtService.CreateToken(user),
-                Result = true
-
-            };
-
-            user.Token = response.Token;
-
-            UserOldPassword oldPassword = new UserOldPassword()
-            {
-                OldPasswordHash = user.PasswordHash,
-                OldPasswordSalt = user.PasswordSalt,
-                UserId = user.Id
-            };
-
-            await _unitOfWork.UserInteractRepository.CreateUserHistoryAsync(user.Id);
-            await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
-
-            _unitOfWork.Commit();
-
-            return response;
+                catch (Exception ex)
+                {
+                     await _unitOfWork.RollbackTransactionAsync();
+                     throw new BadRequestException(ex);
+                }
+            
         }
-
-        public async Task ResetPasswordAsync(int id, ResetPasswordRequestDTO dto)
+           
+        public async Task ResetPasswordAsync(string token, ResetPasswordRequestDTO dto)
         {
-
-            User user = await _unitOfWork.UserAuthRepository.GetAsync(id);
+            int userId = JwtService.GetIdFromToken(token);
+            User user = await _unitOfWork.UserAuthRepository.GetAsync(userId);
 
             bool CheckCurrent = UserPasswordService.VerifyPassword(dto.Password, user.PasswordSalt, user.PasswordHash);
             if (!CheckCurrent)
@@ -156,30 +162,39 @@ namespace Wolt.BLL.Services.Concrete
             if (dto.newPassword != dto.PassAgain)
                 throw new BadRequestException("Passwords must be same");
 
-            string[] passwordTogether = UserPasswordService.CalculateSha256Hash(dto.newPassword);
-
-            string newPasswordHash = passwordTogether[0];
-            string newPasswordSalt = passwordTogether[1];
-
-            List<UserOldPassword> userOldPasswords = await _unitOfWork.UserAuthRepository.GetAllUserOldPasswordsAsync(id);
-
-            bool CheckOldPassword = UserPasswordService.CheckOldPassword(dto.newPassword, userOldPasswords);
-
-            if (CheckOldPassword)
-                throw new BadRequestException("New Password cannot be same as old passwords.");
-
-            await _unitOfWork.UserAuthRepository.ResetPasswordAsync(id, newPasswordHash, newPasswordSalt);
-
-            UserOldPassword oldPassword = new UserOldPassword()
+            try
             {
-                UserId = user.Id,
-                OldPasswordHash = newPasswordHash,
-                OldPasswordSalt = newPasswordSalt,
-            };
+                string[] passwordTogether = UserPasswordService.CalculateSha256Hash(dto.newPassword);
 
-            await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
+                string newPasswordHash = passwordTogether[0];
+                string newPasswordSalt = passwordTogether[1];
 
-            _unitOfWork.Commit();
+                List<UserOldPassword> userOldPasswords = await _unitOfWork.UserAuthRepository.GetAllUserOldPasswordsAsync(userId);
+
+                bool CheckOldPassword = UserPasswordService.CheckOldPassword(dto.newPassword, userOldPasswords);
+
+                if (CheckOldPassword)
+                    throw new BadRequestException("New Password cannot be same as old passwords.");
+
+                await _unitOfWork.UserAuthRepository.ResetPasswordAsync(userId, newPasswordHash, newPasswordSalt);
+
+                UserOldPassword oldPassword = new UserOldPassword()
+                {
+                    UserId = user.Id,
+                    OldPasswordHash = newPasswordHash,
+                    OldPasswordSalt = newPasswordSalt,
+                };
+
+                await _unitOfWork.UserAuthRepository.AddOldPasswordAsync(oldPassword);
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch(Exception ex) 
+            {
+                throw new BadRequestException(ex);
+            }
+
+           
 
         }
 
@@ -208,7 +223,7 @@ namespace Wolt.BLL.Services.Concrete
 
                     
                         await _unitOfWork.UserAuthRepository.ChangeProfilePictureAsync(userId, fullPath);
-                        _unitOfWork.Commit();
+                        await  _unitOfWork.CommitAsync();
                 }
             }
             catch (Exception ex)

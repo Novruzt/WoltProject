@@ -59,7 +59,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 22, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8500),
+                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9379),
                             IsDeleted = false,
                             Name = "Ickiler",
                             RestaurantId = 1
@@ -67,7 +67,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 22, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8502),
+                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9381),
                             IsDeleted = false,
                             Name = "Suplar",
                             RestaurantId = 1
@@ -131,7 +131,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreationTime = new DateTime(2023, 8, 22, 14, 6, 37, 592, DateTimeKind.Utc).AddTicks(8519),
+                            CreationTime = new DateTime(2023, 8, 25, 10, 20, 54, 172, DateTimeKind.Utc).AddTicks(9400),
                             Description = "Adi Su",
                             IsDeleted = false,
                             Name = "Su",
@@ -141,7 +141,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreationTime = new DateTime(2023, 8, 22, 14, 6, 37, 592, DateTimeKind.Utc).AddTicks(8520),
+                            CreationTime = new DateTime(2023, 8, 25, 10, 20, 54, 172, DateTimeKind.Utc).AddTicks(9401),
                             Description = "Leziz Sup",
                             IsDeleted = false,
                             Name = "Mercimek",
@@ -195,7 +195,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             BaseAddress = "Mehelle 765",
-                            CreationTime = new DateTime(2023, 8, 22, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8283),
+                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9103),
                             Description = "Sumgayitin 1nomreli parki",
                             IsDeleted = false,
                             Name = "GoyercinPark",
@@ -297,14 +297,12 @@ namespace WOLT.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Token")
@@ -762,22 +760,22 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 22, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8537),
+                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9427),
                             IsDeleted = false,
                             PromoDiscount = 10.0,
-                            PromoEndTime = new DateTime(2023, 9, 1, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8537),
+                            PromoEndTime = new DateTime(2023, 9, 4, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9428),
                             PromoName = "WelcomeBonus",
-                            PromoStartTime = new DateTime(2023, 8, 22, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8545)
+                            PromoStartTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9434)
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 22, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8548),
+                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9477),
                             IsDeleted = false,
                             PromoDiscount = 15.0,
-                            PromoEndTime = new DateTime(2023, 9, 1, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8548),
+                            PromoEndTime = new DateTime(2023, 9, 4, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9477),
                             PromoName = "Bonus15",
-                            PromoStartTime = new DateTime(2023, 8, 22, 18, 6, 37, 592, DateTimeKind.Local).AddTicks(8549)
+                            PromoStartTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9479)
                         });
                 });
 

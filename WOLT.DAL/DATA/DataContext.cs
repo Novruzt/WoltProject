@@ -54,7 +54,9 @@ namespace WOLT.DAL.DATA
  
         }
 
-            public override int SaveChanges()
+        #region intSaveChanges()
+        /*
+       public override int SaveChanges()
             {
                 foreach (var entry in ChangeTracker.Entries<BaseEntity>())
                 {
@@ -118,6 +120,74 @@ namespace WOLT.DAL.DATA
 
                 return base.SaveChanges();
             }
+        */
+        #endregion
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                if (entry.State == EntityState.Deleted)
+                {
+                    if (entry.Entity is Basket)
+                    {
+                        entry.State = EntityState.Deleted;
+                    }
+
+                    else if (entry.Entity is FavoriteFood)
+                    {
+                        entry.State = EntityState.Deleted;
+                    }
+
+                    else if (entry.Entity is FavoriteRestaurant)
+                    {
+                        entry.State = EntityState.Deleted;
+                    }
+                    else
+                    {
+                        entry.State = EntityState.Modified;
+                        entry.Entity.DeleteTime = DateTime.Now;
+                        entry.Entity.IsDeleted = true;
+
+                        if (entry.Entity.IsDeleted == false && entry.OriginalValues["IsDeleted"] as bool? == true)
+                        {
+                            entry.Entity.UpdateTime = null;
+                            entry.Entity.CreationTime = DateTime.Now;
+                            entry.Entity.DeleteTime = null;
+                        }
+                    }
+                }
+                else
+                {
+
+                    _ = entry.State switch
+                    {
+                        EntityState.Added => entry.Entity.CreationTime = DateTime.Now,
+                        EntityState.Modified => entry.Entity.UpdateTime = DateTime.Now,
+                        _ => DateTime.Now
+                    };
+
+                    if (entry.State == EntityState.Modified)
+                    {
+                        if (entry.Entity.IsDeleted == false && entry.OriginalValues["IsDeleted"] as bool? == true)
+                        {
+                            entry.Entity.UpdateTime = null;
+                            entry.Entity.CreationTime = DateTime.Now;
+                            entry.Entity.DeleteTime = null;
+                        }
+                    }
+                }
+            }
+
+            foreach (var entry in ChangeTracker.Entries<Order>())
+            {
+                if (entry.State == EntityState.Added)
+                    entry.Entity.OrderStatus = 0;
+            }
+
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }

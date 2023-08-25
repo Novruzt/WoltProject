@@ -16,7 +16,7 @@ namespace Wolt.BLL.Exceptions
         {
             
         }
-        public UnauthorizedAccessException(Exception exception):base(exception.Message + " " + exception.InnerException.Message) 
+        public UnauthorizedAccessException(Exception exception):base(exception.Message + " " + exception.InnerException?.Message) 
         {
             
         }

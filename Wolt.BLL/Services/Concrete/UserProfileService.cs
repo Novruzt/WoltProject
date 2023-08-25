@@ -55,7 +55,7 @@ namespace Wolt.BLL.Services.Concrete
                 UserCard card= _mapper.Map<UserCard>(dto);
                 
                 await _unitOfWork.UserProfileRepository.AddUserPayment(card);
-                _unitOfWork.Commit();
+                await _unitOfWork.CommitAsync();
 
             }
             catch(Exception ex) 
@@ -79,7 +79,7 @@ namespace Wolt.BLL.Services.Concrete
             {
 
                 await _unitOfWork.UserProfileRepository.DeleteUserPaymentAsync(userId, dto.CardID);
-                _unitOfWork.Commit();
+                await _unitOfWork.CommitAsync();
 
             }
 

@@ -17,7 +17,7 @@ namespace Wolt.BLL.Exceptions
 
         }    
 
-        public NotImplementedException(Exception exception):base(exception.Message + " " + exception.InnerException.Message)
+        public NotImplementedException(Exception exception):base(exception.Message + " " + exception.InnerException?.Message)
         {
             
         }

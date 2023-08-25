@@ -16,7 +16,7 @@ namespace Wolt.BLL.Exceptions
         {
             
         }
-        public NullException(Exception exception):base(exception.Message + " " + exception.InnerException.Message)
+        public NullException(Exception exception):base(exception.Message + " " + exception.InnerException?.Message)
         {
             
         }

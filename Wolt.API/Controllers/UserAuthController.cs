@@ -37,20 +37,13 @@ namespace Wolt.API.Controllers
 
             GetUserProfileDTO dto = await _UserAuthService.GetUserAsync(token);
 
-            if (dto == null)
-            {
-                return BadRequest("No user exist.");
-            }
-
             return Ok(dto);
         }
 
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterUser([FromForm] RegisterUserRequestDTO requestDTO)
         {
-            if (await _thingsService.CheckUserForEmailAsync(requestDTO.Email))
-                return BadRequest("This user already exists");
-
+           
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -97,9 +90,7 @@ namespace Wolt.API.Controllers
 
             string token = JwtService.GetToken(Request.Headers);
 
-            requestDTO.UserId=JwtService.GetIdFromToken(token);
-
-             await _UserAuthService.ResetPasswordAsync(requestDTO.UserId, requestDTO);
+            await _UserAuthService.ResetPasswordAsync(token, requestDTO);
 
             return Ok("You changed password succesfully!");
         }

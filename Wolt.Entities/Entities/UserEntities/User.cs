@@ -13,10 +13,14 @@ namespace Wolt.Entities.Entities.UserEntities
     public class User :BaseEntity
     {
         //User properties:
+        public User()
+        {
+            OldPasswords = new List<UserOldPassword>();
+        }
         public string Name { get; set; }
-        public string Surname { get; set; }
+        public string? Surname { get; set; }
         public string? ProfilePicture { get; set; }
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         public string PasswordSalt { get; set; }
