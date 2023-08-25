@@ -23,7 +23,7 @@ namespace Wolt.API.Controllers
     {
         private readonly IRestaurantService _restaurantService;
 
-        public RestaurantController(IRestaurantService service, IThingsService thingsService)
+        public RestaurantController(IRestaurantService service)
         {
             _restaurantService = service;
            

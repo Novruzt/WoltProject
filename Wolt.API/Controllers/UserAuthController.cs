@@ -68,8 +68,9 @@ namespace Wolt.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequestDTO requestDTO)
         {
+            bool IsUser = await _thingsService.CheckLoginUserAsync(requestDTO.Email, requestDTO.Password);
 
-            if (!await _thingsService.CheckLoginUserAsync(requestDTO.Email, requestDTO.Password))
+            if (!IsUser)
                 return BadRequest("Invalid email or password");
 
             if (!ModelState.IsValid)

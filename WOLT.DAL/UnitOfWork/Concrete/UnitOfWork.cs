@@ -18,7 +18,7 @@ namespace WOLT.DAL.UnitOfWork.Concrete
         public IUserInteractRepository UserInteractRepository { get; set; }
         public IUserProfileRepository UserProfileRepository { get; set; }
         public IThingsRepository ThingsRepository { get; set; }
-        private IDbContextTransaction _CurrentTransaction { get; set; }
+        private IDbContextTransaction _CurrentTransaction;
 
         private readonly DataContext _context;
         public UnitOfWork(IUserProfileRepository profile, IUserInteractRepository interact, IUserAuthRepository auth, 

@@ -26,6 +26,10 @@ using Wolt.BLL.Registrations;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Wolt.BLL.Things;
 using Wolt.BLL.Extensions;
+using Serilog;
+using DocumentFormat.OpenXml.InkML;
+using Serilog.Context;
+using System.Security.Claims;
 
 namespace Wolt.API
 {
@@ -42,6 +46,7 @@ namespace Wolt.API
             builder.Services.AddFluentValidationClientsideAdapters();
             builder.Services.RegisterValidators();
 
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(opt =>
@@ -105,6 +110,7 @@ namespace Wolt.API
             });
 
             builder.Services.AddScoped<CustomAuthAttribute>();
+
             builder.Services.ConfigureRepository();
             builder.Services.ConfigureServices();
 
@@ -116,12 +122,15 @@ namespace Wolt.API
 
             });
 
+            Log.Logger=new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                 .Enrich.With<UserEnricher>()
+                .CreateLogger();
 
-
-
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
-
             
             if (app.Environment.IsDevelopment())
             {
@@ -130,13 +139,30 @@ namespace Wolt.API
             }
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
+   
+            app.UseSerilogRequestLogging();
+
+            app.Use(async (context, next) =>
+            {
+             //   var userId = context.User.FindFirstValue(ClaimTypes.);
+                var userEmail = context.User.FindFirstValue(ClaimTypes.Email);
+
+             //   LogContext.PushProperty("UserId", userId);
+                LogContext.PushProperty("UserEmail", userEmail);
+
+                await next();
+            });
             app.MapControllers();
 
             app.AddGlobalErrorHandler();
+
+          //  app.UseMiddleware<ApiCustomLoggingMiddleware>();
 
             app.Run();
 
