@@ -16,7 +16,7 @@ namespace Wolt.BLL.Exceptions
         {
             
         }
-        public AlreadyDoneException(Exception? exception):base(exception.Message+ " " +exception.InnerException.Message)
+        public AlreadyDoneException(Exception? exception):base(exception.Message+ " " +exception.InnerException?.Message)
         {
             
         }

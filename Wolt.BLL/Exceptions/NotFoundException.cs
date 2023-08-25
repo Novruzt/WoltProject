@@ -16,7 +16,7 @@ namespace Wolt.BLL.Exceptions
         {
             
         }
-        public NotFoundException(Exception exception):base(exception.Message + " " + exception.InnerException.Message) 
+        public NotFoundException(Exception exception):base(exception.Message + " " + exception.InnerException?.Message) 
         {
             
         }

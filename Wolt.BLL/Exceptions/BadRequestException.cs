@@ -16,7 +16,7 @@ namespace Wolt.BLL.Exceptions
         {
                 
         }
-        public BadRequestException(Exception? exception):base(exception.Message + " " + exception.InnerException.Message) 
+        public BadRequestException(Exception? exception):base(exception.Message + " " + exception.InnerException?.Message) 
         {
             
         }

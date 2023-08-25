@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using Wolt.BLL.Configurations;
 using Wolt.BLL.DTOs.ThingsDTO;
 using Wolt.BLL.DTOs.UserAuthDTOs;
@@ -52,6 +53,7 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
+                await _UnitOfWork.BeginTransactionAsync();
                 bool IsDeleted = await _UnitOfWork.ThingsRepository.CheckDeletedCommentForRestaurantAsync(comment.UserId, comment.RestaurantId);
 
                 if (IsDeleted)
@@ -61,8 +63,7 @@ namespace Wolt.BLL.Services.Concrete
                     userComment.Details = comment.Details;
                     userComment.IsDeleted = false;
 
-                    _UnitOfWork.Commit();
-
+                 
                 }
 
                 else
@@ -70,13 +71,15 @@ namespace Wolt.BLL.Services.Concrete
                     UserComment data = _mapper.Map<UserComment>(comment);
 
                     await _UnitOfWork.UserInteractRepository.AddCommentAsync(data);
-                    _UnitOfWork.Commit();
-
                 }
+
+                await _UnitOfWork.CommitAsync();
+                await _UnitOfWork.CommitTransactionAsync();
 
             }
             catch (Exception ex)
             {
+                await _UnitOfWork.RollbackTransactionAsync();
                 throw new BadRequestException(ex);
             }
 
@@ -99,6 +102,7 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
+                await _UnitOfWork.BeginTransactionAsync();
                 FavoriteFood food = new FavoriteFood()
                 {
                     UserId=UserId,
@@ -106,12 +110,15 @@ namespace Wolt.BLL.Services.Concrete
                 };
 
                 await _UnitOfWork.UserInteractRepository.AddFavoriteFoodAsync(food);
-                _UnitOfWork.Commit();
+
+                await _UnitOfWork.CommitTransactionAsync();
+                await  _UnitOfWork.CommitAsync();
 
             }
 
             catch (Exception ex) 
             {
+                await _UnitOfWork.RollbackTransactionAsync();
                 throw new BadRequestException(ex);
             }
         }
@@ -133,6 +140,7 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
+                await _UnitOfWork.BeginTransactionAsync();
                 FavoriteRestaurant fav = new FavoriteRestaurant()
                 {
                     UserId = UserId,
@@ -140,61 +148,67 @@ namespace Wolt.BLL.Services.Concrete
                 };
 
                 await _UnitOfWork.UserInteractRepository.AddFavoriteRestaurantAsync(fav);
-                _UnitOfWork.Commit();
+
+                await _UnitOfWork.CommitTransactionAsync();
+                await _UnitOfWork.CommitAsync();
 
             }
 
             catch (Exception ex)
             {
+                await _UnitOfWork.RollbackTransactionAsync();
                 throw new BadRequestException(ex.Message);
             }
         }
 
         public async Task AddUserBasketAsync(string token, AddUserBasketDTO dto)
         {
-
-            bool IsBasket = await _UnitOfWork.ThingsRepository.CheckUserBasketAsync(dto.UserId);
-
-            if (IsBasket)
-                throw new AlreadyDoneException("You already have a basket");
-
-            try
-            {
-                Basket basket = new Basket()
+           
+                try
                 {
-                    UserId=dto.UserId
-                };
+                    await _UnitOfWork.BeginTransactionAsync();
+                    bool IsBasket = await _UnitOfWork.ThingsRepository.CheckUserBasketAsync(dto.UserId);
 
-                Product product = await _UnitOfWork.RestaurantRepository.GetProductAsync(dto.ProductId);
+                    if (IsBasket)
+                        throw new AlreadyDoneException("You already have a basket");
 
-                if (product == null) 
-                  throw new NotFoundException("No fooud found");
+                    Basket basket = new Basket()
+                    {
+                        UserId = dto.UserId
+                    };
 
-                if (dto.Quantity <= 0)
-                    throw new BadRequestException("Enter valid quantity. Quantity must be greater than 0");
+                    Product product = await _UnitOfWork.RestaurantRepository.GetProductAsync(dto.ProductId);
+
+                    if (product == null)
+                        throw new NotFoundException("No food found");
+
+                    if (dto.Quantity <= 0)
+                        throw new BadRequestException("Enter a valid quantity. Quantity must be greater than 0");
+
+                    for (int i = 0; i < dto.Quantity; i++)
+                    {
+                        basket.Products.Add(product);
+                    }
+
+                    basket.TotalAmount = dto.Quantity * product.Price;
+                    dto.TotalAmount = basket.TotalAmount;
+
+                    await _UnitOfWork.UserInteractRepository.AddUserBasketAsync(basket);
+                    await _UnitOfWork.CommitAsync();
+                   
+                    await _UnitOfWork.UserInteractRepository.AddBasketQuantityAsync(basket.Id, dto.ProductId, dto.Quantity);
+
+                    await _UnitOfWork.CommitTransactionAsync();
+                    await _UnitOfWork.CommitAsync();
+
                 
-                for (int i = 0; i<dto.Quantity; i++)
-                {
-                    basket.Products.Add(product);
                 }
-
-                basket.TotalAmount = dto.Quantity * product.Price;
-                dto.TotalAmount = basket.TotalAmount;
-
-                await _UnitOfWork.UserInteractRepository.AddUserBasketAsync(basket);
-                
-                _UnitOfWork.Commit();
-
-                await _UnitOfWork.UserInteractRepository.AddBasketQuantityAsync(basket.Id, dto.ProductId, dto.Quantity);
-
-                _UnitOfWork.Commit();
-            }
-
-            catch(Exception ex) 
-            {
-                throw new BadRequestException(ex.Message);
-            }
-
+                catch (Exception ex)
+                {
+                    await _UnitOfWork.RollbackTransactionAsync();
+                    throw new BadRequestException(ex.Message);
+                }
+         
         }
 
         public async Task AddUserReviewAsync(string token, AddUserReviewDTO dto)
@@ -214,6 +228,7 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             {
+                await _UnitOfWork.BeginTransactionAsync();
 
                 bool IsDeleted = await _UnitOfWork.ThingsRepository.CheckDeletedReviewForProductAsync(dto.UserId, dto.ProductId);
 
@@ -226,7 +241,7 @@ namespace Wolt.BLL.Services.Concrete
                     userReview.Score = dto.Score;
                     userReview.Description = dto.Description;
 
-                    _UnitOfWork.Commit();
+                 
 
                 }
 
@@ -235,12 +250,16 @@ namespace Wolt.BLL.Services.Concrete
                     UserReview review = _mapper.Map<UserReview>(dto);
 
                     await _UnitOfWork.UserInteractRepository.AddUserReviewAsync(review);
-                    _UnitOfWork.Commit();
+                   
                 }
+
+                await _UnitOfWork.CommitAsync();
+                await _UnitOfWork.CommitTransactionAsync();
 
             }
             catch (Exception ex)
             {
+                await _UnitOfWork.RollbackTransactionAsync();
                 throw new BadRequestException(ex);
             }
         }
@@ -258,9 +277,9 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             { 
-                await _UnitOfWork.UserInteractRepository.DeleteCommentAsync(userId, CommId);
+                await _UnitOfWork.UserInteractRepository.DeleteCommentAsync(0, CommId);
 
-                _UnitOfWork.Commit();
+                await  _UnitOfWork.CommitAsync();
 
             }
             catch (Exception ex)
@@ -285,7 +304,7 @@ namespace Wolt.BLL.Services.Concrete
 
                 await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
 
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
             }
 
@@ -310,8 +329,8 @@ namespace Wolt.BLL.Services.Concrete
 
                 await _UnitOfWork.UserInteractRepository.DeleteReviewAsync(userId, revId);
 
-                _UnitOfWork.Commit();
-
+                await  _UnitOfWork.CommitAsync();
+ 
             }
             catch (Exception ex)
             {
@@ -397,7 +416,8 @@ namespace Wolt.BLL.Services.Concrete
 
         public  async Task OrderBasketAsync(string token, OrderBasketDTO dto)    
         {
-            
+
+            await _UnitOfWork.BeginTransactionAsync();
             int userId = JwtService.GetIdFromToken(token);
 
             bool IsBasket = await _UnitOfWork.ThingsRepository.CheckUserBasketAsync(userId);
@@ -457,7 +477,7 @@ namespace Wolt.BLL.Services.Concrete
                     };
 
                     await _UnitOfWork.UserProfileRepository.AddUserAdressAsync(address);
-                    _UnitOfWork.Commit();
+                    await  _UnitOfWork.CommitAsync();
                     order.UserAddressId = address.Id;
 
                 }
@@ -474,10 +494,10 @@ namespace Wolt.BLL.Services.Concrete
                 }
 
                 await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order, userId);
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
                 await _UnitOfWork.UserInteractRepository.AddOrderHistoryAsync(userId, order.Id);
-               _UnitOfWork.Commit();
+                await  _UnitOfWork.CommitAsync();
 
                 if (basket != null)
                 {
@@ -494,7 +514,7 @@ namespace Wolt.BLL.Services.Concrete
                 }
 
                 await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
-                      _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
             }
 
             try
@@ -514,10 +534,10 @@ namespace Wolt.BLL.Services.Concrete
                 }
 
                 await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order, userId);
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
                 await _UnitOfWork.UserInteractRepository.AddOrderHistoryAsync(userId, order.Id);
-                _UnitOfWork.Commit();
+                await  _UnitOfWork.CommitAsync();
 
 
                 if (basket != null)
@@ -535,13 +555,16 @@ namespace Wolt.BLL.Services.Concrete
                 }
 
                 await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
-                      _UnitOfWork.Commit();
+
+                await _UnitOfWork.CommitTransactionAsync();
+                await  _UnitOfWork.CommitAsync();
 
                 dto.OrderTotalPrice=order.TotalPrice;
 
             }
              catch (Exception ex) 
             {
+                await _UnitOfWork.RollbackTransactionAsync();
                 throw new BadRequestException(ex);
             }
         }
@@ -564,7 +587,7 @@ namespace Wolt.BLL.Services.Concrete
             try
             {
                 await _UnitOfWork.UserInteractRepository.DeleteFavFoodAsync(UserId, FavId);
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
             }
             catch (Exception ex)
@@ -591,7 +614,7 @@ namespace Wolt.BLL.Services.Concrete
             try
             {
                 await _UnitOfWork.UserInteractRepository.DeleteFavRestaurantAsync(UserId, FavId);
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
             }
             catch(Exception ex) 
@@ -619,7 +642,7 @@ namespace Wolt.BLL.Services.Concrete
             {
                 await _UnitOfWork.UserInteractRepository.ReturnOrderAsync(userId, dto.OrderId, dto.Reason);
 
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
  
             }
 
@@ -644,7 +667,7 @@ namespace Wolt.BLL.Services.Concrete
             {
 
                 await _UnitOfWork.UserInteractRepository.UpdateCommentAsync(userId, dto.commId, dto.desc);
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
                
             }
@@ -681,7 +704,7 @@ namespace Wolt.BLL.Services.Concrete
                 basket.TotalAmount += dto.Quantity * product.Price;
                 await _UnitOfWork.UserInteractRepository.AddBasketQuantityAsync(basket.Id, dto.ProductId, dto.Quantity);
 
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
                 dto.TotalAmount=basket.TotalAmount;
             }
@@ -708,7 +731,7 @@ namespace Wolt.BLL.Services.Concrete
             {
 
                 await _UnitOfWork.UserInteractRepository.UpdateUserReviewAsync(userId, dto.revId, dto.Score, dto.Description);
-                _UnitOfWork.Commit();
+                await _UnitOfWork.CommitAsync();
 
             }
             catch (Exception ex)
