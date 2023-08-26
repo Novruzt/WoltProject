@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WOLT.DAL.DATA;
 
@@ -11,9 +12,11 @@ using WOLT.DAL.DATA;
 namespace WOLT.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230826152940_Initalizer")]
+    partial class Initalizer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,7 +62,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 26, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4675),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(3969),
                             IsDeleted = false,
                             Name = "Ickiler",
                             RestaurantId = 1
@@ -67,7 +70,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 26, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4679),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(3971),
                             IsDeleted = false,
                             Name = "Suplar",
                             RestaurantId = 1
@@ -131,22 +134,20 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreationTime = new DateTime(2023, 8, 26, 16, 41, 14, 887, DateTimeKind.Utc).AddTicks(4706),
+                            CreationTime = new DateTime(2023, 8, 26, 15, 29, 39, 889, DateTimeKind.Utc).AddTicks(3989),
                             Description = "Adi Su",
                             IsDeleted = false,
                             Name = "Su",
-                            Picture = "file:///C://Users//User//Desktop//WoltPics//arı-su.jpg",
                             Price = 0.5m
                         },
                         new
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreationTime = new DateTime(2023, 8, 26, 16, 41, 14, 887, DateTimeKind.Utc).AddTicks(4710),
+                            CreationTime = new DateTime(2023, 8, 26, 15, 29, 39, 889, DateTimeKind.Utc).AddTicks(3990),
                             Description = "Leziz Sup",
                             IsDeleted = false,
                             Name = "Mercimek",
-                            Picture = "file:///C://Users//User//Desktop//WoltPics//indir.jpg",
                             Price = 5m
                         });
                 });
@@ -197,7 +198,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             BaseAddress = "Mehelle 765",
-                            CreationTime = new DateTime(2023, 8, 26, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4178),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(3728),
                             Description = "Sumgayitin 1nomreli parki",
                             IsDeleted = false,
                             Name = "GoyercinPark",
@@ -665,7 +666,9 @@ namespace WOLT.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAddressId");
+                    b.HasIndex("UserAddressId")
+                        .IsUnique()
+                        .HasFilter("[UserAddressId] IS NOT NULL");
 
                     b.HasIndex("UserHistoryId");
 
@@ -760,22 +763,22 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 26, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4738),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4009),
                             IsDeleted = false,
                             PromoDiscount = 10.0,
-                            PromoEndTime = new DateTime(2023, 9, 5, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4738),
+                            PromoEndTime = new DateTime(2023, 9, 5, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4009),
                             PromoName = "WelcomeBonus",
-                            PromoStartTime = new DateTime(2023, 8, 26, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4748)
+                            PromoStartTime = new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4016)
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 26, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4752),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4019),
                             IsDeleted = false,
                             PromoDiscount = 15.0,
-                            PromoEndTime = new DateTime(2023, 9, 5, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4752),
+                            PromoEndTime = new DateTime(2023, 9, 5, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4019),
                             PromoName = "Bonus15",
-                            PromoStartTime = new DateTime(2023, 8, 26, 20, 41, 14, 887, DateTimeKind.Local).AddTicks(4753)
+                            PromoStartTime = new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4020)
                         });
                 });
 
@@ -1001,8 +1004,9 @@ namespace WOLT.DAL.Migrations
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.Order", b =>
                 {
                     b.HasOne("Wolt.Entities.Entities.UserEntities.UserAddress", "UserAddress")
-                        .WithMany()
-                        .HasForeignKey("UserAddressId");
+                        .WithOne()
+                        .HasForeignKey("Wolt.Entities.Entities.WoltEntities.Order", "UserAddressId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Wolt.Entities.Entities.UserEntities.UserHistory", null)
                         .WithMany("Orders")

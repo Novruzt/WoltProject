@@ -16,12 +16,6 @@ namespace WOLT.DAL.DATA.FluentAPIs.WoltAPIs
             var entity = modelBuilder.Entity<Order>();
 
             entity
-            .HasOne(o => o.UserAddress)
-            .WithOne() 
-            .HasForeignKey<Order>(o => o.UserAddressId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-            entity
              .HasOne(o => o.User)
              .WithMany(u => u.Orders)
              .HasForeignKey(o => o.UserId)
@@ -29,9 +23,7 @@ namespace WOLT.DAL.DATA.FluentAPIs.WoltAPIs
 
             entity
                 .Property(e => e.TotalPrice).HasColumnType("decimal(12,2)");
-                
-
-
+      
         }
     }
 }

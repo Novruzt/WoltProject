@@ -223,5 +223,44 @@ namespace Wolt.BLL.Services.Concrete
             return dto;
         }
 
+        public async Task AddUserAdressAsync(string token, AddUserAdressDTO dto)
+        {
+            dto.UserId = JwtService.GetIdFromToken(token);
+
+            try
+            {
+                UserAddress adress = _mapper.Map<UserAddress>(dto);
+
+                await _unitOfWork.UserProfileRepository.AddUserAdressAsync(adress);
+                await _unitOfWork.CommitAsync();
+
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex);
+            }
+
+        }
+
+        public async Task DeleteUserAdressAsync(string token, int adressId)
+        {
+            int userId = JwtService.GetIdFromToken(token);
+
+            bool IsAdress =  await _unitOfWork.ThingsRepository.CheckUserAdressAsync(userId, adressId);
+
+            if (!IsAdress)
+                throw new NotFoundException("You dont have such a adress");
+
+            try
+            {
+                await _unitOfWork.UserProfileRepository.RemoveNewAdressAsync(userId, adressId);
+                await _unitOfWork.CommitAsync();
+            } 
+
+            catch(Exception ex)
+            {
+                throw new BadRequestException(ex);
+            }
+        }
     }
 }

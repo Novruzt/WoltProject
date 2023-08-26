@@ -3,93 +3,161 @@ using Azure.Core;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Wolt.BLL.Exceptions;
 using Wolt.BLL.Extensions;
 using Wolt.BLL.Services.Abstract;
 using Wolt.BLL.Things;
 using Wolt.Entities.Entities.UserEntities;
+using Wolt.Entities.Entities.WoltEntities;
+using WOLT.DAL.DATA;
 using WOLT.DAL.Repository.Abstract;
+using WOLT.DAL.UnitOfWork.Abstract;
 
 namespace Wolt.BLL.Configurations
 {
     public class ApiCustomLoggingMiddleware
     {
         private readonly RequestDelegate _next;
+        
 
         public ApiCustomLoggingMiddleware(RequestDelegate next)
         {
             _next = next;
+            
         }
 
-       public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context)
+        {
+           
+
+                // Capture the request information
+                int userId = GetIdFromHeaders(context.Request.Headers); // Claim type "Id"
+
+                IUserAuthRepository repository = context.RequestServices.GetService<IUserAuthRepository>();
+                IWoltRepository woltRepository = context.RequestServices.GetService<IWoltRepository>();
+                IUnitOfWork unitOfWork = context.RequestServices.GetService<IUnitOfWork>();
+
+                string userEmail = string.Empty;
+                if (userId == 0 || userId==null)
             {
-                try
-                {
-                    IUserAuthRepository repository = context.RequestServices.GetService<IUserAuthRepository>();
+                userId =0;
+                userEmail = "Anonim";
+            }
+            else
+            {
+                User user = await repository.GetAsync(userId);
 
-                var userId = GetIdFromHeaders(context.Request.Headers);
+                    if (user == null)
+                        userEmail = "Anonim";
 
-                string requestBody = ""; //  await GetRequestBodyAsStringAsync(context);
-                string responseBody = ""; // await GetResponseBodyAsStringAsync(context);
+                    else
+                    userEmail = user.Email; // Claim type "email"
+            }
+
+            WoltLog woltLog = new WoltLog()
+            {
+                userId= userId,
+                userEmail= userEmail,
+               
+            };
+
+
+            string apiUrl = context.Request.Path.Value;
+            woltLog.ApiUrl = apiUrl;
+            DateTime requestDate = DateTime.Now;
+
+      
+            try
+            {
+
+                //  string apiUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}";
 
                 await _next(context);
 
-                if (userId == 0)
-                {
-                   var logMessage = $"Request Content:\n{requestBody}\n\n" +
-                                    $"Response Content:\n{responseBody}\n";
+                int statusCode = context.Response.StatusCode;
 
-                    Log.Information(logMessage);
+           //    Stream originalBody = context.Response.Body;
+                string requestBody = await ReadRequestBody(context.Request);
+
+                /*
+                
+                var originalResponseBody = context.Response.Body;
+
+            //     Stream originalBody = context.Response.Body;
+
+                    using (var memStream = new MemoryStream())
+                    {
+                        context.Response.Body = memStream;
+                        
+                        memStream.Position = 0;
+                        string responseBody = new StreamReader(memStream).ReadToEnd();
+
+                        memStream.Position = 0;
+                        await memStream.CopyToAsync(originalResponseBody);
+                    }
+
+                */
+
+                
+                if (statusCode / 100 == 4)
+                {
+                    Log.Information(
+                            "UserId: {UserId}, \nUserEmail: {UserEmail},\nApiURL: {apiUrl} \nRequestDate: {RequestDate}, \nRequestContent: {RequestContent}, \nStatusCode: {StatusCode}, \nResponseContent: {ResponseContent}",
+                            userId, userEmail, apiUrl, requestDate, requestBody, statusCode, "Not Succeed\n-----------------------------------\n");
+                    woltLog.StatusCode = statusCode;
                 }
+
                 else
                 {
-                    User user = await repository.GetAsync(userId);
-
-                    var apiPath = context.Request.Path;
-                    var requestDate = DateTimeOffset.Now;
-
-                    var logMessage = $"userId: {user.Id}\n" +
-                                     $"userEmail: {user.Email}\n" +
-                                     $"ApiUrl: {apiPath}\n" +
-                                     $"Request Status: {context.Response.StatusCode}\n" +
-                                     $"Request Date: {requestDate}\n";
-
-                    if (context.Response.StatusCode / 100 == 4)
-                    {
-
-                        logMessage += $"Request Content:\n{requestBody}\n\n" +
-                                      $"Response Content:\n{responseBody}\n";
-
-                        Log.Error(logMessage);
-                    }
-                    else
-                    {
-
-                        logMessage += $"Request Content:\n{requestBody}\n\n" +
-                                      $"Response Content:\n{responseBody}\n";
-
-                          Log.Information(logMessage);
-                    }
+                    Log.Information(
+                            "UserId: {UserId}, \nUserEmail: {UserEmail}, \n ApiURL: {apiUrl}\nRequestDate: {RequestDate}, \nRequestContent: {RequestContent}, \nStatusCode: {StatusCode}, \nResponseContent: \n{ResponseContent}",
+                            userId, userEmail, apiUrl, requestDate, requestBody, statusCode, "Succeed\n-----------------------------------\n");
+                    woltLog.StatusCode = statusCode;
                 }
-                   
-                }
-                catch (Exception ex)
-                {
-                    Log.Error($"An error occurred: {ex}");
-                }
-                finally
-               {
-               
-              }
+
                 
+
+            }
+            catch (Exception ex)
+            {
+                // Log the exception before re-throwing it
+                Log.Information(
+                            "UserId: {UserId}, \nUserEmail: {UserEmail},\nApiURL: {apiUrl} \nRequestDate: {RequestDate},  \nStatusCode: {StatusCode}, \nResponseContent: {ResponseContent}",
+                            userId, userEmail, apiUrl, requestDate, context.Response.StatusCode , "Not Succeed\n-----------------------------------\n");
+
+                woltLog.StatusCode = context.Response.StatusCode;
+                throw new BadRequestException(ex);
+
+               
+            }
+            finally
+            {
+                
+                await woltRepository.AddLogAsync(woltLog);
+                await unitOfWork.CommitAsync();
+
+            }
         }
+
+
+
+        #region
+
+        /*
 
         private async Task<string> GetRequestBodyAsStringAsync(HttpContext context)
         {
@@ -113,10 +181,6 @@ namespace Wolt.BLL.Configurations
         }
 
 
-
-        #region
-
-       
         private async Task<string> GetResponseBodyAsStringAsync(HttpContext context)
         {
             Stream originalBody = context.Response.Body;
@@ -179,6 +243,27 @@ namespace Wolt.BLL.Configurations
         #endregion
 
 
+        private async Task<string> ReadRequestBody(HttpRequest request)
+        {
+            request.EnableBuffering();
+
+            using var reader = new StreamReader(request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
+            string body = await reader.ReadToEndAsync();
+            request.Body.Seek(0, SeekOrigin.Begin);
+
+            return body;
+        }
+
+        private async Task<string> ReadResponseBody(Stream responseBodyStream)
+        {
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            using var reader = new StreamReader(responseBodyStream, Encoding.UTF8);
+            string body = await reader.ReadToEndAsync();
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+
+            return body;
+        }
+
         private int GetIdFromHeaders(IHeaderDictionary headers)
         {
           string token = headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
@@ -187,6 +272,16 @@ namespace Wolt.BLL.Configurations
                 return 0;
 
           return JwtService.GetIdFromToken(token);
+        }
+
+        private bool IsTokenGiven(IHeaderDictionary headers)
+        {
+            string token = headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
+
+            if (token != null)
+                return true;
+
+            return false;
         }
         
     }

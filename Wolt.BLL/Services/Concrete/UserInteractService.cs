@@ -163,6 +163,7 @@ namespace Wolt.BLL.Services.Concrete
 
         public async Task AddUserBasketAsync(string token, AddUserBasketDTO dto)
         {
+            dto.UserId = JwtService.GetIdFromToken(token);
            
                 try
                 {
@@ -277,7 +278,7 @@ namespace Wolt.BLL.Services.Concrete
 
             try
             { 
-                await _UnitOfWork.UserInteractRepository.DeleteCommentAsync(0, CommId);
+                await _UnitOfWork.UserInteractRepository.DeleteCommentAsync(userId, CommId);
 
                 await  _UnitOfWork.CommitAsync();
 
@@ -425,40 +426,25 @@ namespace Wolt.BLL.Services.Concrete
             if (!IsBasket)
                 throw new NotFoundException("You dont have any basket. Please, create one first!");
 
-            Order order= new Order();    
+            Order order = new Order()
+            {
+                UserId = userId
+            };    
 
             Basket basket = await _UnitOfWork.UserInteractRepository.GetUserBasketAsync(userId);
           
             order.UserId = basket.UserId;
 
-            if(dto.PaymentType==PaymentType.WithCard) 
+            if (dto.PaymentType == PaymentType.WithCard)
             {
                 bool IsCard = await _UnitOfWork.ThingsRepository.CheckUserPaymentAsync(userId, dto.CardNumber, dto.CVV, dto.ExpireDate);
 
                 if (!IsCard)
                     throw new NotFoundException("Please, enter valid card");
-
-                order.Products = basket.Products;
-                order.TotalPrice = basket.TotalAmount;
-
-                if(dto.PromoCodeId!=null || dto.PromoCodeId >= 1)
-                {
-                    PromoCode promoCode = await _UnitOfWork.UserInteractRepository.GetPromoCodeAsync(dto.PromoCodeId);
-
-                    if (promoCode.PromoEndTime >= promoCode.PromoStartTime)
-                        throw new NotFoundException("Enter valid PromoCode");
-
-                    if (promoCode != null)
-                    { 
-                        order.TotalPrice = order.TotalPrice - (order.TotalPrice* (promoCode.PromoDiscount/100));
-                    }
-
-                }
-
+            }
 
                 if (dto.UserAddressId == null && dto.OrderNewAddress == null)
                     throw new BadRequestException("Please, enter adress.");
-
 
                 if (dto.UserAddressId >= 0 && dto.OrderNewAddress != null)
                     throw new BadRequestException("Please, enter only one adress");
@@ -467,6 +453,7 @@ namespace Wolt.BLL.Services.Concrete
                 {
                     if (dto.OrderNewAddress == null)
                         throw new BadRequestException("Please, enter valid adress");
+
 
                     UserAddress address = new UserAddress()
                     {
@@ -493,52 +480,35 @@ namespace Wolt.BLL.Services.Concrete
                     order.UserAddressId = dto.UserAddressId;
                 }
 
-                await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order, userId);
-                await _UnitOfWork.CommitAsync();
 
-                await _UnitOfWork.UserInteractRepository.AddOrderHistoryAsync(userId, order.Id);
-                await  _UnitOfWork.CommitAsync();
+            order.Products = basket.Products;
+            order.TotalPrice = basket.TotalAmount;
 
-                if (basket != null)
+            if (dto.PromoCodeId != null)
+            {
+                PromoCode promoCode = await _UnitOfWork.UserInteractRepository.GetPromoCodeAsync(dto.PromoCodeId);
+
+                if (promoCode == null)
+                    throw new NotFoundException("Enter valid PromoCode");
+
+                if (promoCode.PromoEndTime <= promoCode.PromoStartTime)
+                    throw new NotFoundException("Enter valid PromoCode");
+
+                if (promoCode != null)
                 {
-                    var productQuantities = new List<GetProductsForBasketDTO>();
-
-                    foreach (var group in basket.Products.GroupBy(p => p.Id))
-                    {
-                        int productId = group.Key;
-                        BasketProductQuantity basketQuantity = await _UnitOfWork.UserInteractRepository.GetBasketQuantityAsync(basket.Id, productId);
-                        await _UnitOfWork.UserInteractRepository.AddOrderQuantityAsync(order.Id, productId, basketQuantity.Quantity);
-                       
-                    }
-
+                    order.TotalPrice = order.TotalPrice - (order.TotalPrice * (promoCode.PromoDiscount / 100));
                 }
 
-                await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
-                await _UnitOfWork.CommitAsync();
             }
 
             try
             {
-
-                order.Products = basket.Products;
-                order.TotalPrice = basket.TotalAmount;
-
-                if (dto.PromoCodeId != null && dto.PromoCodeId >= 1)
-                {
-                    PromoCode promoCode = await _UnitOfWork.UserInteractRepository.GetPromoCodeAsync(dto.PromoCodeId);
-
-                    if (promoCode != null)
-                    {
-                        order.TotalPrice = order.TotalPrice - (order.TotalPrice * promoCode.PromoDiscount/100);
-                    }
-                }
-
-                await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order, userId);
+                order.OrderDate= DateTime.Now;
+                await _UnitOfWork.UserInteractRepository.OrderBasketAsync(order);
                 await _UnitOfWork.CommitAsync();
 
                 await _UnitOfWork.UserInteractRepository.AddOrderHistoryAsync(userId, order.Id);
-                await  _UnitOfWork.CommitAsync();
-
+                await _UnitOfWork.CommitAsync();
 
                 if (basket != null)
                 {
@@ -555,6 +525,8 @@ namespace Wolt.BLL.Services.Concrete
                 }
 
                 await _UnitOfWork.UserInteractRepository.DeleteUserBasketAsync(userId);
+                await _UnitOfWork.CommitAsync();
+
 
                 await _UnitOfWork.CommitTransactionAsync();
                 await  _UnitOfWork.CommitAsync();
@@ -567,6 +539,8 @@ namespace Wolt.BLL.Services.Concrete
                 await _UnitOfWork.RollbackTransactionAsync();
                 throw new BadRequestException(ex);
             }
+
+           
         }
 
         public async Task RemoveFavoriteFoodAsync(string token, int FavId)

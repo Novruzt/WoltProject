@@ -27,8 +27,9 @@ namespace WOLT.DAL.Repository.Abstract
         Task<bool> CheckRestaurantAsync(int id);
         Task<bool> CheckUserPaymentAsync(int id, string number, string cvv, string Expiretime);
         Task<bool> CheckUserCardBySensetiveInfoAsync(int userId, int cardId, string CVV, string ExpireDate);
-        Task<bool> CheckUserAdressAsync(int userId);
+      //  Task<bool> CheckUserAdressAsync(int userId);
         Task<bool> CheckFavoriteFoodAsync(int userId, int favId);
         Task<bool> CheckFavoriteRestaurantAsync(int userId, int favId);
+        Task<bool> CheckUserAdressAsync(int userId, int adrssId);
     }
 }

@@ -206,6 +206,7 @@ namespace WOLT.DAL.DATA
         public DbSet<UserOldPassword> UserOldPasswords { get; set; }
         public DbSet<BasketProductQuantity> BasketProductQuantities { get; set; }
         public DbSet<OrderProductQuantity> OrderProductQuantities { get; set;}
+        public DbSet<WoltLog> WoltLogs { get; set; }
 
     }
 }

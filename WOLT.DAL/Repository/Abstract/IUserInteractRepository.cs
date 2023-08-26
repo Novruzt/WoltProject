@@ -31,7 +31,7 @@ namespace WOLT.DAL.Repository.Abstract
         Task<Basket> GetUserBasketAsync(int id);
         Task AddBasketQuantityAsync(int BasketId, int ProductId, int Quantity);
         Task<BasketProductQuantity> GetBasketQuantityAsync(int basketId, int ProductId);
-        Task OrderBasketAsync(Order order, int userId);
+        Task OrderBasketAsync(Order order);
         Task AddOrderQuantityAsync(int orderId, int ProductId,  int quantity);
         Task<OrderProductQuantity> GetOrderQuantityAsync(int orderId, int ProductId);
         Task<PromoCode> GetPromoCodeAsync(int? id);

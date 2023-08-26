@@ -23,5 +23,7 @@ namespace Wolt.BLL.Services.Abstract
         Task DeleteUserPaymentAsync(string token, DeleteUserCardDTO dto);
         Task<List<GetAllUserHistoryDTO>> GetAllActiveOrdersAsync(string token);
         Task<GetOrderDTO> GetOrderAsync(string token, int OrderId);
+        Task AddUserAdressAsync(string token, AddUserAdressDTO dto);
+        Task DeleteUserAdressAsync(string token, int adressId);
     }
 }

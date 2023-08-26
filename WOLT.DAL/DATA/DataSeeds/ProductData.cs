@@ -22,6 +22,8 @@ namespace WOLT.DAL.DATA.DataSeeds
                     Description = "Adi Su",
                     Price = 0.5,
                     Name = "Su",
+                    Picture= "file:///C://Users//User//Desktop//WoltPics//arı-su.jpg"
+
                 },
                 new Product()
                 {
@@ -30,7 +32,9 @@ namespace WOLT.DAL.DATA.DataSeeds
                     CreationTime = DateTime.UtcNow,
                     Price= 5,
                     Description="Leziz Sup",
-                    Name="Mercimek"
+                    Name="Mercimek",
+                    Picture= "file:///C://Users//User//Desktop//WoltPics//indir.jpg"
+
                 }
                 );
 

@@ -30,6 +30,7 @@ using Serilog;
 using DocumentFormat.OpenXml.InkML;
 using Serilog.Context;
 using System.Security.Claims;
+using Serilog.Events;
 
 namespace Wolt.API
 {
@@ -124,8 +125,11 @@ namespace Wolt.API
 
             Log.Logger=new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration)
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                 .Enrich.With<UserEnricher>()
+               // .Enrich.With<UserEnricher>()
                 .CreateLogger();
 
             builder.Host.UseSerilog();
@@ -146,7 +150,9 @@ namespace Wolt.API
             app.UseAuthorization();
 
    
-            app.UseSerilogRequestLogging();
+         //   app.UseSerilogRequestLogging();
+
+            /*
 
             app.Use(async (context, next) =>
             {
@@ -158,11 +164,14 @@ namespace Wolt.API
 
                 await next();
             });
+
+            */
+
             app.MapControllers();
 
             app.AddGlobalErrorHandler();
 
-          //  app.UseMiddleware<ApiCustomLoggingMiddleware>();
+           app.UseMiddleware<ApiCustomLoggingMiddleware>();
 
             app.Run();
 

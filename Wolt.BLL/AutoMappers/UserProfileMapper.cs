@@ -29,7 +29,6 @@ namespace Wolt.BLL.AutoMappers
 
             CreateMap<Product, GetOrderProductsDTO>()
                 .ForMember(dest => dest.Quantity, opt => opt.Ignore())
-                .ForMember(dest=>dest.CategoryName, opt=>opt.MapFrom(src=>src.Category.Name))
                 .ForMember(dest=>dest.Name, opt=>opt.MapFrom(src=>src.Name))
                 .ForMember(dest=>dest.Price, opt=>opt.MapFrom(src=>src.Price));
 
@@ -54,6 +53,8 @@ namespace Wolt.BLL.AutoMappers
                 .ForMember(dest=>dest.Picture, opt=>opt.MapFrom(src=>src.Product.Picture))
                 .ForMember(dest=>dest.CategoryName, opt=>opt.MapFrom(src=>src.Product.Category.Name))
                 .ForMember(dest=>dest.Price, opt=>opt.MapFrom(src=>src.Product.Price));
+
+            CreateMap<AddUserAdressDTO, UserAddress>();
 
         }
     }
