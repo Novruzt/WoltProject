@@ -59,6 +59,26 @@ namespace WOLT.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WoltLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    userId = table.Column<int>(type: "int", nullable: true),
+                    userEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StatusCode = table.Column<int>(type: "int", nullable: false),
+                    ApiUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WoltLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -302,8 +322,7 @@ namespace WOLT.DAL.Migrations
                         name: "FK_Orders_UsersAddress_UserAddressId",
                         column: x => x.UserAddressId,
                         principalTable: "UsersAddress",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_Users_UserId",
                         column: x => x.UserId,
@@ -508,22 +527,22 @@ namespace WOLT.DAL.Migrations
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "IsDeleted", "OrderId", "PromoDiscount", "PromoEndTime", "PromoName", "PromoStartTime", "UpdateTime", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9427), null, false, null, 10.0, new DateTime(2023, 9, 4, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9428), "WelcomeBonus", new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9434), null, null },
-                    { 2, new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9477), null, false, null, 15.0, new DateTime(2023, 9, 4, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9477), "Bonus15", new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9479), null, null }
+                    { 1, new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4009), null, false, null, 10.0, new DateTime(2023, 9, 5, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4009), "WelcomeBonus", new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4016), null, null },
+                    { 2, new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4019), null, false, null, 15.0, new DateTime(2023, 9, 5, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4019), "Bonus15", new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(4020), null, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Restaurants",
                 columns: new[] { "Id", "BaseAddress", "CreationTime", "DeleteTime", "Description", "IsDeleted", "Name", "Phone", "UpdateTime" },
-                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9103), null, "Sumgayitin 1nomreli parki", false, "GoyercinPark", "051 123 00 12", null });
+                values: new object[] { 1, "Mehelle 765", new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(3728), null, "Sumgayitin 1nomreli parki", false, "GoyercinPark", "051 123 00 12", null });
 
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "CreationTime", "DeleteTime", "IsDeleted", "Name", "RestaurantId", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9379), null, false, "Ickiler", 1, null },
-                    { 2, new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9381), null, false, "Suplar", 1, null }
+                    { 1, new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(3969), null, false, "Ickiler", 1, null },
+                    { 2, new DateTime(2023, 8, 26, 19, 29, 39, 889, DateTimeKind.Local).AddTicks(3971), null, false, "Suplar", 1, null }
                 });
 
             migrationBuilder.InsertData(
@@ -531,8 +550,8 @@ namespace WOLT.DAL.Migrations
                 columns: new[] { "Id", "BasketId", "CategoryId", "CreationTime", "DeleteTime", "Description", "IsDeleted", "Name", "OrderId", "Picture", "Price", "UpdateTime" },
                 values: new object[,]
                 {
-                    { 1, null, 1, new DateTime(2023, 8, 25, 10, 20, 54, 172, DateTimeKind.Utc).AddTicks(9400), null, "Adi Su", false, "Su", null, null, 0.5m, null },
-                    { 2, null, 2, new DateTime(2023, 8, 25, 10, 20, 54, 172, DateTimeKind.Utc).AddTicks(9401), null, "Leziz Sup", false, "Mercimek", null, null, 5m, null }
+                    { 1, null, 1, new DateTime(2023, 8, 26, 15, 29, 39, 889, DateTimeKind.Utc).AddTicks(3989), null, "Adi Su", false, "Su", null, null, 0.5m, null },
+                    { 2, null, 2, new DateTime(2023, 8, 26, 15, 29, 39, 889, DateTimeKind.Utc).AddTicks(3990), null, "Leziz Sup", false, "Mercimek", null, null, 5m, null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -679,6 +698,9 @@ namespace WOLT.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserReviews");
+
+            migrationBuilder.DropTable(
+                name: "WoltLogs");
 
             migrationBuilder.DropTable(
                 name: "Products");

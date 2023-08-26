@@ -27,5 +27,6 @@ namespace WOLT.DAL.Repository.Abstract
         Task<UserAddress> GetUserAddressAsync(int id, int? adressId);
         Task AddUserAdressAsync(UserAddress address);
         Task RemoveNewAdressAsync(int id, int adressId);
+        
     }
 }

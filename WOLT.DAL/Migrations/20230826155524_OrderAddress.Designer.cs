@@ -12,8 +12,8 @@ using WOLT.DAL.DATA;
 namespace WOLT.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230825102054_Initalizer")]
-    partial class Initalizer
+    [Migration("20230826155524_OrderAddress")]
+    partial class OrderAddress
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,7 +62,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9379),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(466),
                             IsDeleted = false,
                             Name = "Ickiler",
                             RestaurantId = 1
@@ -70,7 +70,7 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9381),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(469),
                             IsDeleted = false,
                             Name = "Suplar",
                             RestaurantId = 1
@@ -134,7 +134,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreationTime = new DateTime(2023, 8, 25, 10, 20, 54, 172, DateTimeKind.Utc).AddTicks(9400),
+                            CreationTime = new DateTime(2023, 8, 26, 15, 55, 24, 427, DateTimeKind.Utc).AddTicks(500),
                             Description = "Adi Su",
                             IsDeleted = false,
                             Name = "Su",
@@ -144,7 +144,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreationTime = new DateTime(2023, 8, 25, 10, 20, 54, 172, DateTimeKind.Utc).AddTicks(9401),
+                            CreationTime = new DateTime(2023, 8, 26, 15, 55, 24, 427, DateTimeKind.Utc).AddTicks(502),
                             Description = "Leziz Sup",
                             IsDeleted = false,
                             Name = "Mercimek",
@@ -198,7 +198,7 @@ namespace WOLT.DAL.Migrations
                         {
                             Id = 1,
                             BaseAddress = "Mehelle 765",
-                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9103),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 55, 24, 426, DateTimeKind.Local).AddTicks(9946),
                             Description = "Sumgayitin 1nomreli parki",
                             IsDeleted = false,
                             Name = "GoyercinPark",
@@ -666,9 +666,7 @@ namespace WOLT.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAddressId")
-                        .IsUnique()
-                        .HasFilter("[UserAddressId] IS NOT NULL");
+                    b.HasIndex("UserAddressId");
 
                     b.HasIndex("UserHistoryId");
 
@@ -763,23 +761,62 @@ namespace WOLT.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9427),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(528),
                             IsDeleted = false,
                             PromoDiscount = 10.0,
-                            PromoEndTime = new DateTime(2023, 9, 4, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9428),
+                            PromoEndTime = new DateTime(2023, 9, 5, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(529),
                             PromoName = "WelcomeBonus",
-                            PromoStartTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9434)
+                            PromoStartTime = new DateTime(2023, 8, 26, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(536)
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9477),
+                            CreationTime = new DateTime(2023, 8, 26, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(539),
                             IsDeleted = false,
                             PromoDiscount = 15.0,
-                            PromoEndTime = new DateTime(2023, 9, 4, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9477),
+                            PromoEndTime = new DateTime(2023, 9, 5, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(540),
                             PromoName = "Bonus15",
-                            PromoStartTime = new DateTime(2023, 8, 25, 14, 20, 54, 172, DateTimeKind.Local).AddTicks(9479)
+                            PromoStartTime = new DateTime(2023, 8, 26, 19, 55, 24, 427, DateTimeKind.Local).AddTicks(541)
                         });
+                });
+
+            modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.WoltLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApiUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("StatusCode")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("userEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("userId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WoltLogs");
                 });
 
             modelBuilder.Entity("Wolt.Entities.Entities.RestaurantEntities.Category", b =>
@@ -965,9 +1002,8 @@ namespace WOLT.DAL.Migrations
             modelBuilder.Entity("Wolt.Entities.Entities.WoltEntities.Order", b =>
                 {
                     b.HasOne("Wolt.Entities.Entities.UserEntities.UserAddress", "UserAddress")
-                        .WithOne()
-                        .HasForeignKey("Wolt.Entities.Entities.WoltEntities.Order", "UserAddressId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany()
+                        .HasForeignKey("UserAddressId");
 
                     b.HasOne("Wolt.Entities.Entities.UserEntities.UserHistory", null)
                         .WithMany("Orders")

@@ -245,7 +245,7 @@ namespace WOLT.DAL.Repository.Concrete
             return review;
         }
 
-        public async Task OrderBasketAsync(Order order, int userId)
+        public async Task OrderBasketAsync(Order order)
         {
 
             await _ctx.Orders.AddAsync(order);

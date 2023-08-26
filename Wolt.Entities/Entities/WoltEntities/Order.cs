@@ -12,6 +12,10 @@ namespace Wolt.Entities.Entities.WoltEntities
 {
     public class Order:BaseEntity
     {
+        public Order()
+        {
+            Products = new List<Product>();
+        }
         public int UserId { get; set; }
         public User User { get; set; }
         public OrderStatus OrderStatus { get; set; }

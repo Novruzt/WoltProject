@@ -17,8 +17,6 @@ namespace Wolt.BLL.DTOs.UserProfileDTOs
         public double Price { get; set; }
         public string? Picture { get; set; }
         public int Quantity { get; set; }
-        public string CategoryName { get; set; }
-
 
     }
 }

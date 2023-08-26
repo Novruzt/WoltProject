@@ -16,6 +16,7 @@ namespace Wolt.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [CustomAuth]
     public class UserProfileController : ControllerBase
     {
         private readonly IUserProfileService _profileService;
@@ -29,7 +30,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("AllFavoriteFoods")]
-        [CustomAuth]
+        
         public async Task<IActionResult> GetAllFavoriteFoods()
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -43,7 +44,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("FavoriteFood/{favId}")]
-        [CustomAuth]
+
         public async Task<IActionResult> GetFavoriteFood(int favId)
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -58,7 +59,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("AllFavoriteRestaurants")]
-        [CustomAuth]
+
         public async Task<IActionResult> GetAllFavoriteRestaurants()
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -72,7 +73,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("FavoriteRestaurant/{favId}")]
-        [CustomAuth]
+      
         public async Task<IActionResult> GetFavoriteRestaurant(int favId)
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -86,8 +87,22 @@ namespace Wolt.API.Controllers
 
         }
 
+        [HttpPost("AddUserAddress")]
+        public async Task<IActionResult> AddUserAddress(AddUserAdressDTO dto)
+        {
+
+            string token = JwtService.GetToken(Request.Headers);
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _profileService.AddUserAdressAsync(token, dto);
+
+            return Ok("You added new adress succesfully!");
+        }
+       
+
         [HttpGet("AllUserAdress")]
-        [CustomAuth]
+        
         public async Task<IActionResult> GetAllUserAddress()
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -100,8 +115,18 @@ namespace Wolt.API.Controllers
             return Ok(list);
         }
 
+        [HttpDelete("DeleteUserAddress/{addressId}")]
+        public async Task<IActionResult> DeleteUserAddress(int addressId)
+        {
+            string token = JwtService.GetToken(Request.Headers);
+
+            await _profileService.DeleteUserAdressAsync(token, addressId);
+
+            return Ok("You deleted address succesfully!");
+        }
+
         [HttpGet("UserHistory")]
-        [CustomAuth]
+   
         public async Task<IActionResult> GetAllUserHistory()
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -115,7 +140,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("UserPayments")]
-        [CustomAuth]
+       
         public async Task<IActionResult> GetAllUSerPayments()
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -130,7 +155,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpPost("AddUserCard")]
-        [CustomAuth]
+ 
         public async Task<IActionResult> AddUserCard(AddUserPaymentDTO dto)
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -141,7 +166,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpDelete("DeleteCard")]
-        [CustomAuth]
+
         public async Task<IActionResult> DeleteUserCard(DeleteUserCardDTO dto)
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -153,7 +178,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("ActiveOrders")]
-        [CustomAuth]
+
         public async Task<IActionResult> GetAllActiveOrders()
         {
              string token = JwtService.GetToken(Request.Headers);
@@ -168,7 +193,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpGet("GetOrder/{orderId}")]
-        [CustomAuth]
+
         public async Task<IActionResult> GetOrder(int orderId)
         {
 

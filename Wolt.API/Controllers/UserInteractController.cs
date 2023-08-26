@@ -177,7 +177,7 @@ namespace Wolt.API.Controllers
 
              string token = JwtService.GetToken(Request.Headers);
 
-             _UserInteractService.RemoveFavoriteFoodAsync(token, favId);
+            await _UserInteractService.RemoveFavoriteFoodAsync(token, favId);
 
             return Ok("You deleted food from your favorites succesfully!");
         }
@@ -252,7 +252,7 @@ namespace Wolt.API.Controllers
         }
 
         [HttpPost("OrderBasket")]
-        public async Task<IActionResult> OrderBasket(OrderBasketDTO dto)
+        public async Task<IActionResult> OrderBasket([FromForm] OrderBasketDTO dto)
         {
              string token = JwtService.GetToken(Request.Headers);
 

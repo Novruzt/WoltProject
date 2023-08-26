@@ -229,24 +229,13 @@ namespace WOLT.DAL.Repository.Concrete
             return false;
         }
 
-        public async Task<bool> CheckUserAdressAsync(int userId)
-        {
-            UserAddress userAddress = await _ctx.UsersAddress
-                .FirstOrDefaultAsync(u => u.UserId == userId);
-
-            if(userAddress != null) 
-                return true;
-
-            return false;
-        }
-
         public async Task<bool> CheckFavoriteFoodAsync(int userId, int favId)
         {
             FavoriteFood food = await _ctx.FavoriteFoods.FirstOrDefaultAsync(f=>f.UserId==userId && f.ProductId==favId);
 
             if(food != null) 
                 return true;
-
+            
             return false;
         }
 
@@ -265,6 +254,16 @@ namespace WOLT.DAL.Repository.Concrete
             Restaurant restaurant = await _ctx.Restaurants.FirstOrDefaultAsync(r=>r.Id==id);
 
             if(restaurant != null) 
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CheckUserAdressAsync(int userId, int addressId)
+        {
+            UserAddress address = await _ctx.UsersAddress.FirstOrDefaultAsync(a => a.Id == addressId && a.UserId == userId);
+
+             if(address != null) 
                 return true;
 
             return false;
