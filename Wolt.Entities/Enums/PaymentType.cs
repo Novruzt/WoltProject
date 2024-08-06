@@ -8,9 +8,9 @@ namespace Wolt.Entities.Enums
 {
     public enum PaymentType
     {
-
+        None=-1,
         OnDelivery=1,
-        WithCard=2
+        WithCard
 
     }
 }

@@ -8,9 +8,10 @@ namespace Wolt.Entities.Enums
 {
     public enum OrderStatus
     {
-        Waiting= 0,
-        Accepted= 1,
-        Failed= 2,
-        Returned=3
+        None=-1,
+        Waiting= 1,
+        Accepted,
+        Failed,
+        Returned,
     }
 }
